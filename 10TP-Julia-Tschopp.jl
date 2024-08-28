@@ -1,26 +1,35 @@
-# este script no es para personas fragiles de espiritu
+using CategoricalArrays
+
 
 using CSV, DataFrames, Random, Statistics
 using Primes
 using DecisionTree, Impute
 using Base.Threads
 
+using Distributed
+using Printf
+
+df = CSV.read("G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/datasets/competencia_01_julia.csv", DataFrame)
+
+### ARMADO DE ARBOL E HYPERPARAMETROS
+
 struct ttree
-   n_subfeatures::UInt
-   maxdepth::UInt
-   min_samples_split::UInt
-   min_samples_leaf::UInt
-   min_purity_increase::Float64
-end
+    n_subfeatures::UInt
+    maxdepth::UInt
+    min_samples_split::UInt
+    min_samples_leaf::UInt
+    min_purity_increase::Float64
+ end
+ 
+ ptree = ttree(0, 7, 800, 20, 0)
+ training = 0.8
+ semilla = 27
+ qsemillas = 100 #0
 
-ptree = ttree(0, 7, 800, 20, 0)
-training = 0.7
-semilla = 17
-qsemillas = 100
-
-#------------------------------------------------------------------------------
+ ### CALCULO GANANCIA
 
 function  EstimarGanancia( psemilla, training, ptree )
+    ganancia_test_normalizada = -1,0
 
     # particion
     Random.seed!(psemilla)
@@ -47,22 +56,18 @@ function  EstimarGanancia( psemilla, training, ptree )
         ["BAJA+1","BAJA+2","CONTINUA"]
     )
 
-
-   ganancia_test_normalizada = sum(
+    ganancia_test_normalizada = sum(
         ( dataset_clase[ vfold .== 2][ (pred[:, 2 ] .> 0.025) ] .== "BAJA+2"   )
         .* 280000
         .- 7000
        ) / ( 1.0 - training )
-
+    
    return  ganancia_test_normalizada
 end
-#------------------------------------------------------------------------------
-#------------------------------------------------------------------------------
-# Aqui empieza el programa
 
-# leo el dataset
+####ENTRENAMIENTO Y CALCULO DE MEDIAS
 
-dataset = CSV.read("G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/datasets/competencia_01_julia.csv", DataFrame)
+dataset = df
 
 # restrinjo al periodo 202104
 dataset = dataset[ dataset.foto_mes .== 202104, : ]
@@ -87,10 +92,14 @@ semillas = rand( Primes.primes( 100000, 999999 ), qsemillas )
 ganancia = Array{Float64}( undef, length( semillas ))
 
 # calculo las  ganancias
-@threads for i=1:length(semillas) 
-   ganancia[i] = EstimarGanancia( semillas[i], training, ptree )
+@time @threads for i=1:length(semillas) 
+    ganancia[i] = EstimarGanancia( semillas[i], training, ptree )
+ end
+  
+# Imprimir cada valor en el array con formato decimal
+for g in ganancia
+    @printf("%.2f\n", g)
 end
 
-print( ganancia )
-print( Statistics.mean( ganancia ) )
-
+# Imprimir la media con formato decimal
+@printf("Media: %.2f\n", Statistics.mean(ganancia))

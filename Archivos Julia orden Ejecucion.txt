@@ -1,0 +1,22 @@
+00TP-Julia-Tschopp
+    Carga de csv, 
+    calculo de Clase ternaria,
+    Guardado de csv opara uso posterior.
+
+01TP-Julia-Tschopp
+    Idea: pre procesamiento de datos
+    en un principio busqueda de faltantes,
+    tratamientod e faltantes:
+        -Eliminar usuarios (23)
+        -Copiar registros apra completar los faltantes de esos clientes.
+
+10TP-Julia-Tschopp
+    Entrenamiento y test de Moldelo.
+
+15TP-Julia-Tschopp
+    Validacion cruzada de hiperparametros pro grilla de parametros.
+    Validacion por ganancia total normalizada.
+    Validacion por curva ROC.
+
+20TP-Julia-Tschopp
+    Aca entrenamos y extraemos prediccion para kaggle con los hiperparametros calculados en 10TP
