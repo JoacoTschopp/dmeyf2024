@@ -4,6 +4,7 @@ using Primes
 using DecisionTree, Impute
 using Base.Threads
 using Printf
+using ZipFile
 
 df = CSV.read("G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/datasets/competencia_01_julia.csv", DataFrame)
 
@@ -31,6 +32,9 @@ dataset_test = df[df.foto_mes .== 202106, :]
 # Imputar valores nulos en el dataset de entrenamiento
 dataset_train = Impute.substitute(dataset_train)
 dataset_test = Impute.substitute(dataset_test)
+#Imputar por 0
+dataset_train = coalesce.(dataset_train, 0)
+dataset_test = coalesce.(dataset_test, 0)
 
 # formato para  DecisionTrees
 dataset_clase = string.(dataset_train[ :, :clase_ternaria ])
@@ -58,7 +62,7 @@ pred = apply_tree_proba(
 probabilidades_positivas = pred[:, 2]  # Probabilidad de "BAJA+2"
 
 # Establecer el umbral y realizar predicciones
-umbral = 1 / 40
+umbral = 1 / 30
 predicciones_umbral = probabilidades_positivas .> umbral
 
 println("Predicciones de personas que dejan el Banco: ", sum(predicciones_umbral))
@@ -70,5 +74,21 @@ dataset_test[!, :Predicted] = Int.(predicciones_umbral)
 resultado_exportar = select(dataset_test, :numero_de_cliente, :Predicted)
 
 # Exportar resultados a CSV
-archivo_numero = "005"
+archivo_numero = "007"
 CSV.write("G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/exp/KA2001/KJulia_" * archivo_numero * ".csv", resultado_exportar)
+
+###Guardar archivo zip con copia segun version del soft que genero la prediccion...
+# Archivos a incluir en el ZIP
+archivos = [
+    "G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/dmeyf2024/00TP-Julia-Tschopp.jl",
+    "G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/dmeyf2024/01TP-Julia-Tschopp.jl",
+    "G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/dmeyf2024/10TP-Julia-Tschopp.jl",
+    "G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/dmeyf2024/15TP-Julia-Tschopp.jl",
+    "G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/dmeyf2024/20TP-Julia-Tschopp.jl"
+]
+
+# Ruta del archivo ZIP de destino
+ruta_zip = "G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/dmeyf2024/Backup-version-JL/backup_Julia_" * archivo_numero * ".zip"
+
+# Crear un archivo ZIP
+ZipFile.zip(ruta_zip, archivos...)

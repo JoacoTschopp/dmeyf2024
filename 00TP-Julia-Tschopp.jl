@@ -3,7 +3,7 @@ using BenchmarkTools
 
 periodo_anterior(x::Integer) =  x % 100 > 1  ?  x-1  : 12 + (div(x,100) -1) * 100
 
-df = CSV.read("G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/competencia_01_crudo.csv", DataFrame)
+df = CSV.read("G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/datasets/competencia_01_crudo.csv", DataFrame)
 size(df)
 
 sort!(df, [:numero_de_cliente, :foto_mes])
@@ -31,4 +31,4 @@ for i in 1:last
   end
 end
 
-CSV.write( "G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/competencia_01_julia01.csv", df )
+CSV.write( "G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/datasets/competencia_01_julia.csv", df )
