@@ -18,15 +18,14 @@ struct ttree
     min_purity_increase::Float64
  end
  
-ptree = ttree(0, 5, 800, 10, 0)
-#training = 0.8
-#semilla = 27
-#qsemillas = 100
+#ptree = ttree(0, 5, 800, 10, -1.0)
+
+ptree = ttree(0, 7, 800, 10, -1.0)
 
 ####ENTRENAMIENTO Y CALCULO DE MEDIAS
 
 # Filtrar dataset para el entrenamiento y testeo
-dataset_train = df[df.foto_mes .== 202104, :]
+dataset_train = df[df.foto_mes .<= 202104, :]
 dataset_test = df[df.foto_mes .== 202106, :]
 
 # Imputar valores nulos en el dataset de entrenamiento
@@ -62,7 +61,7 @@ pred = apply_tree_proba(
 probabilidades_positivas = pred[:, 2]  # Probabilidad de "BAJA+2"
 
 # Establecer el umbral y realizar predicciones
-umbral = 1 / 30
+umbral = 1 / 40
 predicciones_umbral = probabilidades_positivas .> umbral
 
 println("Predicciones de personas que dejan el Banco: ", sum(predicciones_umbral))
@@ -74,7 +73,7 @@ dataset_test[!, :Predicted] = Int.(predicciones_umbral)
 resultado_exportar = select(dataset_test, :numero_de_cliente, :Predicted)
 
 # Exportar resultados a CSV
-archivo_numero = "007"
+archivo_numero = "010"
 CSV.write("G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/exp/KA2001/KJulia_" * archivo_numero * ".csv", resultado_exportar)
 
 ###Guardar archivo zip con copia segun version del soft que genero la prediccion...

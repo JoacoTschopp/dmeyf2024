@@ -27,15 +27,15 @@ min_samples_leaf = 20
 ptree = ttree(0, 7, min_samples_split, min_samples_leaf, 0)
 training = 0.7
 semilla = 17
-qsemillas = 1 #0
+qsemillas = 100 #0
 
 ### CALCULO GANANCIA
 
-function EstimarGanancia(semilla, training, ptree)
+function EstimarGanancia(psemilla, training, ptree)
     ganancia_test_normalizada = -1, 0
 
     # particion
-    Random.seed!(semilla)
+    Random.seed!(psemilla)
     vfold = 2 .- Int.(rand(Float64, length(dataset_clase)) .< training)
 
     # train_campos =  replace!( Matrix( dataset[ vfold .== 1 ,  Not(:clase_ternaria)] ), missing => 0  )
@@ -83,17 +83,17 @@ end
 ####ENTRENAMIENTO Y CALCULO DE MEDIAS
 
 dataset = df
-#dataset = sort!(dataset)#, cliente_antiguedad
+
 # restrinjo al periodo 202104
 dataset = dataset[dataset.foto_mes.==202104, :]
 
 # Lamentablemente debo imputar nulos, 
 #  porque la libreria DecisionTree no los soporta
 #Esto seria imputando pro lo que cree mejor segun los datos precentes.
-#dataset = Impute.substitute( dataset ) 
+dataset = Impute.substitute(dataset)
 
 #Imputar por 0
-dataset = coalesce.(dataset, 0)
+#dataset = coalesce.(dataset, 0)
 
 # formato para  DecisionTrees
 dataset_clase = string.(dataset[:, :clase_ternaria])
@@ -103,41 +103,64 @@ dataset_matriz = Matrix(dataset[:, Not(:clase_ternaria)])
 dataset = Nothing
 
 # genero la cantidad de qsemillas  nuevas semillas
-#####Random.seed!(semilla)
-#####semillas = rand(Primes.primes(100000, 999999), qsemillas)
-semillas = Vector{Int64}()
-push!(semillas, 214363)#115571
-push!(semillas, 777349)
-push!(semillas, 236917)
-push!(semillas, 175621)
-push!(semillas, 252277)
+Random.seed!(semilla)
+semillas = rand(Primes.primes(100000, 999999), qsemillas)
 
 # vector donde almaceno los resultados
 ganancia = Array{Float64}(undef, length(semillas))
 
-
+#=
 # Crear un DataFrame vacío para almacenar los resultados
 resultados = DataFrame(semilla=Int[], ganancia=Float64[], n_test_subjects=Int[], n_predicciones_baja2=Int[], n_verdaderos_baja2=Int[], aciertos_baja2=Int[])
 
-# Calcular las ganancias y almacenar los resultados@threads
-@time for i = 1:length(semillas)
+# Calcular las ganancias y almacenar los resultados
+@time @threads for i = 1:length(semillas)
     ganancia[i], n_test_subjects, n_predicciones_baja2, n_verdaderos_baja2, aciertos_baja2 = EstimarGanancia(semillas[i], training, ptree)
-    println("Semilla: $(semillas[i])")
-    println("Ganancia: $(ganancia[i])")
-    println("Cantidad de sujetos en testing: $n_test_subjects")
-    println("Cantidad de sujetos predichos como BAJA+2: $n_predicciones_baja2")
-    println("Cantidad de verdaderos BAJA+2 en testing: $n_verdaderos_baja2")
-    println("Cantidad de aciertos (BAJA+2 correctamente predichos): $aciertos_baja2")
-    #println("Ganancia: $(ganancia[i])")
-    # Agregar los resultados al DataFrame
-    #push!(resultados, (semillas[i], ganancia[i], n_test_subjects, n_predicciones_baja2, n_verdaderos_baja2, aciertos_baja2))
+
+    # Agrega los resultados al DataFrame compartido fuera del bloque de hilos
+    @sync @async begin
+        push!(resultados, (semillas[i], ganancia[i], n_test_subjects, n_predicciones_baja2, n_verdaderos_baja2, aciertos_baja2))
+    end
 end
 
-# Imprimir cada valor en el array con formato decimal
-for g in ganancia
-    @printf("%.2f\n", g)
 
+=#
+
+# Crear una lista para almacenar los resultados temporalmente
+resultados_temporales = Vector{Tuple{Int64,Float64,Int64,Int64,Int64,Int64}}()
+resultados = DataFrame(semilla=Int[], ganancia=Float64[], n_test_subjects=Int[], n_predicciones_baja2=Int[], n_verdaderos_baja2=Int[], aciertos_baja2=Int[])
+
+# Calcular las ganancias y almacenar los resultados en la lista temporal
+@time @threads for i = 1:length(semillas)
+    ganancia_i, n_test_subjects, n_predicciones_baja2, n_verdaderos_baja2, aciertos_baja2 = EstimarGanancia(semillas[i], training, ptree)
+
+    # Agregar los resultados a la lista temporal
+    push!(resultados_temporales, (semillas[i], ganancia_i, n_test_subjects, n_predicciones_baja2, n_verdaderos_baja2, aciertos_baja2))
+end
+
+# Una vez que se han calculado todos los resultados, agregar a DataFrame
+for resultado in resultados_temporales
+    push!(resultados, resultado)
+end
+
+# Encontrar la fila con la mayor ganancia
+mejor_resultado = resultados[argmax(resultados.ganancia), :]
+
+# Mostrar el resultado con la mayor ganancia
+println("\nMejor Resultado:")
+println("Semilla: $(mejor_resultado.semilla)")
+println("Ganancia: $(mejor_resultado.ganancia)")
+println("Cantidad de sujetos en testing: $(mejor_resultado.n_test_subjects)")
+println("Cantidad de sujetos predichos como BAJA+2: $(mejor_resultado.n_predicciones_baja2)")
+println("Cantidad de verdaderos BAJA+2 en testing: $(mejor_resultado.n_verdaderos_baja2)")
+println("Cantidad de aciertos (BAJA+2 correctamente predichos): $(mejor_resultado.aciertos_baja2)")
+
+
+
+# Imprimir cada valor en el array con formato decimal
+for g in resultados[:, :ganancia]
+    @printf("%.2f\n", g)
 end
 
 # Imprimir la media con formato decimal
-@printf("Media: %.2f\n", Statistics.mean(ganancia))
+@printf("Media: %.2f\n", mean(resultados[:, :ganancia]))
