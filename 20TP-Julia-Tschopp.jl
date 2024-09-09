@@ -20,7 +20,9 @@ struct ttree
  
 #ptree = ttree(0, 5, 800, 10, -1.0)
 
-ptree = ttree(0, 7, 800, 10, -1.0)
+#ptree = ttree(0, 7, 800, 10, -1.0)
+
+ptree = ttree(1, 7, 400, 30, -1.0)
 
 ####ENTRENAMIENTO Y CALCULO DE MEDIAS
 
@@ -73,7 +75,7 @@ dataset_test[!, :Predicted] = Int.(predicciones_umbral)
 resultado_exportar = select(dataset_test, :numero_de_cliente, :Predicted)
 
 # Exportar resultados a CSV
-archivo_numero = "010"
+archivo_numero = "011"
 CSV.write("G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/exp/KA2001/KJulia_" * archivo_numero * ".csv", resultado_exportar)
 
 ###Guardar archivo zip con copia segun version del soft que genero la prediccion...

@@ -1,0 +1,55 @@
+---
+title: "Histo-Analisis_422"
+author: "Tschopp Joaquin"
+date: "2024-09-06"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Librerias
+
+```{r cars}
+# Cargar la librería data.table
+library(data.table)
+library(ggplot2)
+
+
+```
+
+## Carga de datos
+```{r Datos}
+# Leer el archivo
+df <- fread("G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/exp/HT4220/HT4220.csv", 
+            header = TRUE, sep = ";")
+
+# Verificar los primeros registros
+print(head(df))
+
+```
+
+
+## Histograma
+
+```{r Histo, echo=FALSE}
+# Convertir la columna de ganancia a millones
+df$ganancia_millones <- df$ganancia / 1e6
+
+# Encontrar el punto con la ganancia más alta
+punto_maximo <- df[which.max(df$ganancia_millones), ]
+
+# Generar el gráfico
+ggplot(df, aes(x = iteracion, y = ganancia_millones)) +
+  geom_line() +                # Línea conectando los puntos
+  geom_point() +               # Puntos de cada iteración
+  geom_point(data = punto_maximo, aes(x = iteracion, y = ganancia_millones), 
+             color = "red", size = 4) + # Marcar el punto más alto en rojo
+  geom_text(data = punto_maximo, aes(x = iteracion, y = ganancia_millones, 
+             label = round(ganancia_millones, 2)), 
+             vjust = -1.5, color = "red") +  # Añadir etiqueta del valor más alto
+  labs(x = "Iteración", y = "Ganancia (millones)", title = "Curva de Ganancia por Iteración") +
+  theme_minimal() +
+  theme(plot.margin = unit(c(1, 1, 1, 1.5), "cm"))  # Ajustar los márgenes
+```
