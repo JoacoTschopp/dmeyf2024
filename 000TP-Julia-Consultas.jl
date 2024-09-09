@@ -1,11 +1,7 @@
-using CategoricalArrays
-
-
 using CSV, DataFrames, Random, Statistics
 using Primes
 using DecisionTree, Impute
 using Base.Threads
-
 using Distributed
 using Printf
 
