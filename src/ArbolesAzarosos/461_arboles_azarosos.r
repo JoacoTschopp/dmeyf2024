@@ -22,8 +22,8 @@ PARAM$semilla_primigenia <- 214363
 #  cargue aqui los hiperparametros elegidos
 PARAM$rpart <- data.table( 
   "cp" = -1,
-  "minsplit" = 50,
-  "minbucket" = 20,
+  "minsplit" = 1000,
+  "minbucket" = 50,
   "maxdepth" = 6
 )
 
@@ -36,8 +36,8 @@ PARAM$feature_fraction <- 0.5
 # voy a generar 128 arboles,
 #  a mas arboles mas tiempo de proceso y MEJOR MODELO,
 #  pero ganancias marginales
-PARAM$num_trees_max <- 128
-PARAM$grabar <- c(1, 2, 4, 8, 16, 32, 64, 128)
+PARAM$num_trees_max <- 512
+PARAM$grabar <- c(256, 512) #1, 2, 4, 8, 16, 32, 64, 128, 
 
 #------------------------------------------------------------------------------
 #------------------------------------------------------------------------------
