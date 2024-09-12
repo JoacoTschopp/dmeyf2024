@@ -2,6 +2,7 @@ using DataFrames
 using LightGBM
 using Random
 using Statistics
+using CSV
 
 # Configuración de la corrida
 PARAM = Dict(
@@ -37,7 +38,7 @@ hs = Dict(
 # Función para particionar el dataset
 function particionar(data, division, agrupa, campo = "fold", start = 1, seed = nothing)
     if !isnothing(seed)
-        Random.seed!(seed)
+        Random.seed!(214363)
     end
     bloque = repeat(division, inner = ceil(Int, size(data, 1) / length(division)))
     data[!, campo] = sample(bloque, size(data, 1))
@@ -68,7 +69,7 @@ end
 # Función para realizar la validación cruzada
 function lightgbm_CrossValidation(data, param, qfolds, pagrupa, semilla)
     divi = repeat([1], qfolds)
-    data = particionar(data, divi, pagrupa, seed = semilla)
+    data = particionar(data, divi, pagrupa)#, seed = semilla
     ganancias = [lightgbm_Simple(i, data, param) for i in 1:qfolds]
     data[!, :fold] = nothing
     ganancia_promedio = mean(ganancias)
@@ -115,7 +116,7 @@ function main()
     # Carga del dataset
     dataset = DataFrame(CSV.File(PARAM["dataset"]))
     # Particionamiento del dataset
-    dataset = particionar(dataset, [1, 1, 1, 1, 1], "clase_binaria", seed = PARAM["semillas"][1])
+    dataset = particionar(dataset, [1, 1, 1, 1, 1], "clase_binaria")#, seed = PARAM["semillas"][1]
     # Configuración de la optimización bayesiana
     funcion_optimizar, ctrl = configureMlr()
     # Inicio de la optimización bayesiana

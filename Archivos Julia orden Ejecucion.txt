@@ -36,7 +36,9 @@ Este archivo contiene el test de wilcox sobre un archivo de salida del una busqu
 20TP-Julia-Tschopp
     Aca entrenamos y extraemos prediccion para kaggle con los hiperparametros calculados en 10TP
 
-
+21TP-Julia-Tschopp
+    Aca entrenamos y extraemos prediccion para kaggle con los hiperparametros buscados como mejores
+    Utilizando el modelo LightGBM
 
 
 
