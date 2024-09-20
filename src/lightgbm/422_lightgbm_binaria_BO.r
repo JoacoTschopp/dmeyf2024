@@ -35,7 +35,7 @@ options(error = function() {
 PARAM <- list()
 
 PARAM$semilla_primigenia <- 214363
-PARAM$experimento <- "HT4220MisHiper"
+PARAM$experimento <- "HT4220AllData2"
 
 #PARAM$input$dataset <- "./datasets/competencia_01.csv"
 PARAM$input$dataset <- "G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/datasets/competencia_01_julia.csv"
@@ -64,17 +64,14 @@ PARAM$hyperparametertuning$NEG_ganancia <- -7000
 #)
 
 hs <- makeParamSet(
-  makeNumericParam("learning_rate", lower = 0.01, upper = 0.3),
+  makeNumericParam("learning_rate", lower = 0.01, upper = 1.0),
   makeIntegerParam("num_leaves", lower = 8L, upper = 1024L),
   makeNumericParam("feature_fraction", lower = 0.1, upper = 1.0),
-  makeIntegerParam("min_data_in_leaf", lower = 1L, upper = 8000L),
-  makeIntegerParam("envios", lower = 5000L, upper = 15000L),
-  makeIntegerParam("max_depth", lower = 5L, upper = 15L),
-  makeNumericParam("min_gain_to_split", lower = 0.1, upper = 0.5),
-  makeNumericParam("lambda_l1", lower = 0.01, upper = 0.1),
-  makeNumericParam("lambda_l2", lower = 0.01, upper = 0.1),
-  makeNumericParam("bagging_fraction", lower = 0.5, upper = 0.9),
-  makeIntegerParam("bagging_freq", lower = 1L, upper = 5L)
+  makeIntegerParam("min_data_in_leaf", lower = 1L, upper = 50000L),
+  makeIntegerParam("envios", lower = 5000L, upper = 15000L)
+  #makeNumericParam("min_gain_to_split", lower = 0.1, upper = 0.5),
+  #makeNumericParam("bagging_fraction", lower = 0.5, upper = 0.9),
+  #makeIntegerParam("bagging_freq", lower = 1L, upper = 5L)
 )
 
 #------------------------------------------------------------------------------
@@ -269,7 +266,7 @@ if (file.exists(klog)) {
 
 # paso la clase a binaria que tome valores {0,1}  enteros
 dataset[
-  foto_mes %in% PARAM$input$training,
+  foto_mes <= PARAM$input$training,
   clase01 := ifelse(clase_ternaria == "CONTINUA", 0L, 1L)
 ]
 
@@ -287,7 +284,7 @@ set.seed(ksemilla_azar2)
 dataset[, azar := runif(nrow(dataset))]
 dataset[, training := 0L]
 dataset[
-  foto_mes %in% PARAM$input$training &
+  foto_mes <= PARAM$input$training &
     (azar <= PARAM$trainingstrategy$undersampling | clase_ternaria %in% c("BAJA+1", "BAJA+2")),
   training := 1L
 ]
@@ -312,14 +309,14 @@ configureMlr(show.learner.output = FALSE)
 obj.fun <- makeSingleObjectiveFunction(
   fn = funcion_optimizar, # la funcion que voy a maximizar
   minimize = FALSE, # estoy Maximizando la ganancia
-  noisy = TRUE,
+  noisy = TRUE,  ####################################Recomendacion Catedra=FALSE
   par.set = hs, # definido al comienzo del programa
   has.simple.signature = FALSE # paso los parametros en una lista
 )
 
 # cada 600 segundos guardo el resultado intermedio
 ctrl <- makeMBOControl(
-  save.on.disk.at.time = 600, # se graba cada 600 segundos
+  save.on.disk.at.time = 1200, # se graba cada 600 segundos
   save.file.path = kbayesiana
 ) # se graba cada 600 segundos
 

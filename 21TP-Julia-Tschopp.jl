@@ -1,7 +1,12 @@
+# Establecer la variable de entorno para no usar bibliotecas del sistema
+ENV["LIGHTGBM_USE_SYSTEM_LIBS"] = "false"
+
+
 using CSV, DataFrames, Random
 using LightGBM  # Solo las librerías necesarias
 using ZipFile
 
+LIGHTGBM_SOURCE = abspath("~/LightGBM-3.3.5")
 
 # Leer el dataset
 df = CSV.read("G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/datasets/competencia_01_julia.csv", DataFrame)
@@ -30,30 +35,37 @@ dataset_test = df[df.foto_mes.==202106, :]
 dataset_train = coalesce.(dataset_train, 0)
 dataset_test = coalesce.(dataset_test, 0)
 
-# Preparar los datos de entrenamiento
-dtrain = LightGBM.Dataset(Matrix(dataset_train[:, Not(:clase_ternaria)]), label=dataset_train.clase_ternaria)
+# Mapa de etiquetas a valores numéricos
+label_map = Dict("BAJA+1" => 0, "BAJA+2" => 0, "CONTINUA" => 1)
+
+# Convertir las etiquetas de la columna clase_ternaria a valores numéricos
+label = map(x -> label_map[x], dataset_train.clase_ternaria)
+# Convertir los datos a matriz y las etiquetas a vector
+data = Matrix(dataset_train[:, Not(:clase_ternaria)])
 
 ### ENTRENAMIENTO DEL MODELO
-modelo = LightGBM.train(params, dtrain)
+
+# Entrenar el modelo
+modelo = LightGBM.fit!(params, data, label)
 
 ### PREDICCIÓN
 # Aplicar el modelo al dataset de prueba
 pred = LightGBM.predict(modelo, Matrix(dataset_test[:, Not(:clase_ternaria)]))
 
 # Extraer probabilidades de la clase BAJA+2 (asumiendo que la clase BAJA+2 es la segunda clase)
-probabilidades_baja2 = pred[:, 2]  # Columna de probabilidades para la clase "BAJA+2"
+probabilidades = 1 .- pred  # Columna de probabilidades para la clase "BAJA+2"
 
 # Definir el umbral para la clase "BAJA+2"
 umbral = 1 / 4
 
 # Realizar predicciones según el umbral definido
-predicciones_baja2 = probabilidades_baja2 .> umbral
+predicciones = probabilidades .> umbral
 
 # Imprimir cuántas personas se predicen que dejan el Banco (BAJA+2)
-println("Predicciones de personas que dejan el Banco (BAJA+2): ", sum(predicciones_baja2))
+println("Predicciones de personas que dejan el Banco (BAJA+2): ", sum(predicciones))
 
 # Convertir predicciones booleanas a 1 (BAJA+2) y 0 (CONTINUA/BAJA+1)
-dataset_test[!, :Predicted] = Int.(predicciones_baja2)
+dataset_test[!, :Predicted] = Int.(predicciones)
 
 # Seleccionar las columnas a exportar
 resultado_exportar = select(dataset_test, :numero_de_cliente, :Predicted)

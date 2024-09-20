@@ -10,6 +10,9 @@
         -Eliminar usuarios (23)
         -Copiar registros apra completar los faltantes de esos clientes.
 
+01TP-Julia-Tschopp
+    Idea: Busqueda exploratoria de Baja+2
+
 10TP-Julia-Tschopp
     Entrenamiento y test de Moldelo. 
     Con las Semillas elegidas.
