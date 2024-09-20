@@ -15,7 +15,7 @@ PARAM <- list()
 PARAM$experimento <- "clu-randomforest"
 PARAM$semilla_primigenia <- 214363   # aqui va SU semilla
 #PARAM$dataset <- "~/datasets/competencia_01.csv"
-PARAM$input$dataset <- "G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/datasets/competencia_01_julia.csv"
+PARAM$dataset <- "G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/datasets/competencia_01_julia.csv"
 
 
 #------------------------------------------------------------------------------
