@@ -1,0 +1,53 @@
+00TP-Julia-Tschopp
+    Carga de csv, 
+    calculo de Clase ternaria,
+    Guardado de csv opara uso posterior.
+
+01TP-Julia-Tschopp
+    Idea: pre procesamiento de datos
+    en un principio busqueda de faltantes,
+    tratamientod e faltantes:
+        -Eliminar usuarios (23)
+        -Copiar registros apra completar los faltantes de esos clientes.
+
+02TP-Julia-Tschopp
+    Idea: Busqueda exploratoria de Baja+2
+
+10TP-Julia-Tschopp
+    Entrenamiento y test de Moldelo. 
+    Con las Semillas elegidas.
+
+10TP-Julia-Tschopp
+    Entrenamiento y test de Moldelo.
+    con semillas aleatorias 10-20-30-40-50-100
+
+
+15TP-Julia-Tschopp
+    Validacion cruzada de hiperparametros pro grilla de parametros.
+    Validacion por ganancia total normalizada.
+    Validacion por curva ROC.
+
+17TP-Julia-Tschopp
+Este archivo contiene el test de wilcox sobre un archivo de salida del una busqueda de hiperparametros.
+
+18TP-Julia-Tschopp
+    Tomando los mejores hiperparametos.
+    Separando en entrenamiento y test 80/20.
+    Calculo de ganancia estimada del modelo.
+    (Capaz evaluar la posibilidad de realizar corridas varias apra sacar un promedio.)
+
+20TP-Julia-Tschopp
+    Aca entrenamos y extraemos prediccion para kaggle con los hiperparametros calculados en 10TP
+
+21TP-Julia-Tschopp
+    Aca entrenamos y extraemos prediccion para kaggle con los hiperparametros buscados como mejores
+    Utilizando el modelo LightGBM
+
+
+
+
+NOTA:
+Resultado script 18TP
+1395.860869 seconds (28.10 M allocations: 315.135 GiB, 2.55% gc time, 2.27% compilation time: <1% of which was recompilation)
+Media: 124915000.00
+
