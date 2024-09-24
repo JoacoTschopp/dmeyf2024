@@ -12,7 +12,7 @@ require("randomForest")
 require("ranger")
 
 PARAM <- list()
-PARAM$experimento <- "clu-randomforest"
+PARAM$experimento <- "clu-randomforest_misAtributosK5"
 PARAM$semilla_primigenia <- 214363   # aqui va SU semilla
 #PARAM$dataset <- "~/datasets/competencia_01.csv"
 PARAM$dataset <- "G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/datasets/competencia_01_julia.csv"
@@ -40,10 +40,57 @@ setwd(paste0("./exp/", PARAM$experimento, "/"))
 # campos arbitrarios, solo como ejemplo
 # usted DEBE MANDARIAMENTE agregar más campos aqui
 # no permita que la pereza se apodere de su alma
+#campos_cluster <- c("cliente_edad", "cliente_antiguedad", "ctrx_quarter",
+#  "mpayroll", "mcaja_ahorro", "mtarjeta_visa_consumo",
+#  "mtarjeta_master_consumo", "mprestamos_personales",
+#  "Visa_status", "Master_status", "cdescubierto_preacordado")
+
+
 campos_cluster <- c("cliente_edad", "cliente_antiguedad", "ctrx_quarter",
-  "mpayroll", "mcaja_ahorro", "mtarjeta_visa_consumo",
-  "mtarjeta_master_consumo", "mprestamos_personales",
-  "Visa_status", "Master_status", "cdescubierto_preacordado")
+                    "mpayroll", "mcaja_ahorro", "mrentabilidad", 
+                    "mrentabilidad_annual", "cproductos", "tcuentas", "ccuenta_corriente", 
+                    "mtarjeta_visa_consumo", "mtarjeta_master_consumo", "mprestamos_personales", 
+                    "cseguro_vida", "cseguro_auto", "cseguro_vivienda",
+                    "Visa_status", "Master_status", "cdescubierto_preacordado")
+
+###------------------------------------------------------------------------------------------------------------------------
+#Genero nuevos atributos de facil explicacìon
+
+###------------------------------------------------------------------------------------------------------------------------
+
+
+generar_variables_resumen <- function(df_filtrado, campos_cluster) {
+  # Activos totales
+  df_filtrado$activos_totales <- df_filtrado$mactivos_margen + df_filtrado$mpasivos_margen
+  
+  # Comisiones totales
+  df_filtrado$comisiones_totales <- df_filtrado$mcomisiones_mantenimiento + df_filtrado$mcomisiones_otras
+  
+  # Transacciones totales
+  df_filtrado$transacciones_totales <- df_filtrado$ctransferencias_recibidas + df_filtrado$ctransferencias_emitidas
+  
+  # Productos financieros totales
+  df_filtrado$productos_financieros_totales <- df_filtrado$cproductos + df_filtrado$tcuentas + df_filtrado$ccuenta_corriente
+  
+  # Servicios financieros totales
+  df_filtrado$servicios_financieros_totales <- df_filtrado$cseguro_vida + df_filtrado$cseguro_auto + df_filtrado$cseguro_vivienda
+  
+  # Agregar nuevas variables a campos_cluster
+  campos_cluster <- c(campos_cluster, "activos_totales", "comisiones_totales", "transacciones_totales", 
+                      "productos_financieros_totales", "servicios_financieros_totales")
+  
+  return(list(df_filtrado = df_filtrado, campos_cluster = campos_cluster))
+}
+
+resultados <- generar_variables_resumen(dataset, campos_cluster)
+dataset <- resultados$df_filtrado
+campos_cluster <- resultados$campos_cluster
+
+
+
+
+###------------------------------------------------------------------------------------------------------------------------
+
 
 
 # genero el dataset chico
@@ -65,7 +112,7 @@ set.seed(PARAM$semilla_primigenia)
 modelo <- randomForest( 
   x= dchico[, campos_cluster, with=FALSE ],
   y= NULL,
-  ntree= 1000, #se puede aumentar a 10000
+  ntree= 10000, #se puede aumentar a 10000
   proximity= TRUE,
   oob.prox=  TRUE )
 
@@ -97,8 +144,30 @@ while(  h>0  &  !( distintos >=kclusters & distintos <=kclusters ) )
   distintos <- nrow( dchico[, .N, cluster ] )
   cat( distintos, " " )
 }
+#######-----------------------------------------------Grafico de codo------------------------
+
+# Gráfico del codo
+distancias <- as.dist(1 - modelo$proximity)
+suma_distancias <- sapply(1:10, function(k) {
+  clusters <- cutree(hclust(distancias), k)
+  suma <- sum(distancias[clusters == clusters[1]])
+  return(suma)
+})
+df <- data.frame(k = 1:10, suma_distancias = suma_distancias)
 
 
+# Genera el PDF
+
+pdf( "cluster_codo.pdf" )
+grafico <- ggplot(df, aes(x = k, y = suma_distancias)) +
+  geom_point() +
+  geom_line() +
+  labs(x = "Número de clusters", y = "Suma de distancias dentro de cada cluster") +
+  theme_classic()
+print(grafico)
+dev.off()
+
+#######-----------------------------------------------fin Grafico de codo------------------------
 #--------------------------------------
 
 setorder( dchico, cluster, numero_de_cliente )
