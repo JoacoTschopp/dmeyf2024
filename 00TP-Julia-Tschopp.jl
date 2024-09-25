@@ -6,7 +6,6 @@ periodo_anterior(x::Integer) = x % 100 > 1 ? x - 1 : 12 + (div(x, 100) - 1) * 10
 ###Apartado apra ejecucion en Goggle Cloud y Bukets
 df = CSV.read("~/buckets/Joaco333/datasets/competencia_01.csv", DataFrame)
 
-
 size(df)
 
 sort!(df, [:numero_de_cliente, :foto_mes])
