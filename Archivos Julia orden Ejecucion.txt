@@ -51,3 +51,8 @@ Resultado script 18TP
 1395.860869 seconds (28.10 M allocations: 315.135 GiB, 2.55% gc time, 2.27% compilation time: <1% of which was recompilation)
 Media: 124915000.00
 
+
+
+CODEGPD 
+Groq
+API: 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
