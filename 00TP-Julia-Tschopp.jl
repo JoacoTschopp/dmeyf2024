@@ -7,11 +7,8 @@ periodo_anterior(x::Integer) = x % 100 > 1 ? x - 1 : 12 + (div(x, 100) - 1) * 10
 ###Apartado apra ejecucion en Goggle Cloud y Bukets
 #df = CSV.read("gs://joaco333/datasets/competencia_01_crudo.csv", DataFrame)
 
-# Crea un cliente de GCS
-gcs = GoogleCloud.GCSClient()
-
 # Lee el archivo desde GCS
-bucket = GoogleCloud.get_bucket(gcs, "joaco333")
+bucket = GoogleCloud.get_bucket("joaco333")
 file = GoogleCloud.get_file(bucket, "datasets/competencia_01_crudo.csv")
 data = GoogleCloud.read_file(file)
 
