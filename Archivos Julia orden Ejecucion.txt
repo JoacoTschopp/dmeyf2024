@@ -53,6 +53,3 @@ Media: 124915000.00
 
 
 
-CODEGPD 
-Groq
-API: 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
