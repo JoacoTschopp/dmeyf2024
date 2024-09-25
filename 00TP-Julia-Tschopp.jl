@@ -1,10 +1,25 @@
 using CSV, DataFrames
 using BenchmarkTools
+using GoogleCloud
 
 periodo_anterior(x::Integer) = x % 100 > 1 ? x - 1 : 12 + (div(x, 100) - 1) * 100
 
 ###Apartado apra ejecucion en Goggle Cloud y Bukets
-df = CSV.read("gs://joaco333/datasets/competencia_01_crudo.csv", DataFrame)
+#df = CSV.read("gs://joaco333/datasets/competencia_01_crudo.csv", DataFrame)
+
+# Crea un cliente de GCS
+gcs = GoogleCloud.GCSClient()
+
+# Lee el archivo desde GCS
+bucket = GoogleCloud.get_bucket(gcs, "joaco333")
+file = GoogleCloud.get_file(bucket, "datasets/competencia_01_crudo.csv")
+data = GoogleCloud.read_file(file)
+
+# Lee el archivo como un DataFrame
+using CSV
+df = CSV.read(data, DataFrame)
+
+
 
 size(df)
 
@@ -36,4 +51,6 @@ end
 #CSV.write( "G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/datasets/competencia_01_julia.csv", df )
 
 ###Apartado apra ejecucion en Goggle Cloud y Bukets
-CSV.write("gs://joaco333/datasets/competencia_01_ct.csv", df)
+#CSV.write("gs://joaco333/datasets/competencia_01_ct.csv", df)
+# Sube el archivo a GCS
+GoogleCloud.upload_file(gcs, "joaco333", "datasets/competencia_01_ct.csv", CSV.write(df))
