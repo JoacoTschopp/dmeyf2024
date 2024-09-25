@@ -1,12 +1,13 @@
 # Establecer la variable de entorno para no usar bibliotecas del sistema
-ENV["LIGHTGBM_USE_SYSTEM_LIBS"] = "false"
+#ENV["LIGHTGBM_USE_SYSTEM_LIBS"] = "false"
+#ENV["LIGHTGBM_SOURCE"] = "false"
 
 
 using CSV, DataFrames, Random
 using LightGBM  # Solo las librerías necesarias
 using ZipFile
 
-LIGHTGBM_SOURCE = abspath("~/LightGBM-3.3.5")
+# = abspath("~../LightGBM-3.3.5")
 
 # Leer el dataset
 df = CSV.read("G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/datasets/competencia_01_julia.csv", DataFrame)
