@@ -4,7 +4,7 @@ using BenchmarkTools
 periodo_anterior(x::Integer) = x % 100 > 1 ? x - 1 : 12 + (div(x, 100) - 1) * 100
 
 ###Apartado apra ejecucion en Goggle Cloud y Bukets
-df = CSV.read("~/buckets/Joaco333/datasets/competencia_01.csv", DataFrame)
+df = CSV.read("gs://joaco333/datasets/competencia_01.csv", DataFrame)
 
 size(df)
 
@@ -36,4 +36,4 @@ end
 #CSV.write( "G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/datasets/competencia_01_julia.csv", df )
 
 ###Apartado apra ejecucion en Goggle Cloud y Bukets
-CSV.write("~/buckets/Joaco333/datasets/competencia_01_ct.csv", df)
+CSV.write("gs://joaco333/datasets/competencia_01_ct.csv", df)
