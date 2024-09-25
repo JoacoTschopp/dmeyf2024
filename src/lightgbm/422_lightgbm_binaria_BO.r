@@ -37,8 +37,8 @@ PARAM <- list()
 PARAM$semilla_primigenia <- 214363
 PARAM$experimento <- "HT4220AllData2"
 
-#PARAM$input$dataset <- "./datasets/competencia_01.csv"
-PARAM$input$dataset <- "G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/datasets/competencia_01_julia.csv"
+PARAM$input$dataset <- "./datasets/competencia_01_ct.csv"
+#PARAM$input$dataset <- "G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/datasets/competencia_01_julia.csv"
 
 
 PARAM$input$training <- c(202104) # los meses en los que vamos a entrenar
@@ -225,8 +225,8 @@ EstimarGanancia_lightgbm <- function(x) {
 # Aqui empieza el programa
 
 # Aqui se debe poner la carpeta de la computadora local
-#setwd("~/buckets/b1/") # Establezco el Working Directory
-setwd("G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/")
+setwd("~/buckets/b1/") # Establezco el Working Directory
+# setwd("G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/")
 
 
 # genero numeros primos

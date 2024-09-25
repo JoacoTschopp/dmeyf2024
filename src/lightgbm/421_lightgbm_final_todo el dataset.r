@@ -15,8 +15,8 @@ PARAM$experimento <- "KA4210_todoymejor1"
 PARAM$semilla_primigenia <- 214363
 
 
-# PARAM$input$dataset <- "./datasets/competencia_01.csv"
-PARAM$input$dataset <- "G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/datasets/competencia_01_julia.csv"
+PARAM$input$dataset <- "./datasets/competencia_01_ct.csv"
+# PARAM$input$dataset <- "G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/datasets/competencia_01_julia.csv"
 
 PARAM$input$training <- c(202104) # meses donde se entrena el modelo
 PARAM$input$future <- c(202106) # meses donde se aplica el modelo
@@ -40,8 +40,8 @@ PARAM$finalmodel$max_bin <- 31
 #------------------------------------------------------------------------------
 #------------------------------------------------------------------------------
 # Aqui empieza el programa
-#setwd("~/buckets/b1")
-setwd("G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/")
+setwd("~/buckets/b1")
+#setwd("G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/")
 
 
 # cargo el dataset donde voy a entrenar
