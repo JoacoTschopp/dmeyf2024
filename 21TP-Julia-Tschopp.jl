@@ -5,6 +5,8 @@
 
 using CSV, DataFrames, Random
 using LightGBM  # Solo las librerías necesarias
+import LightGBM.LGBMEstimator
+
 using ZipFile
 
 # = abspath("~../LightGBM-3.3.5")
