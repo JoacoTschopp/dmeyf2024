@@ -10,7 +10,7 @@ require("lightgbm")
 
 # defino los parametros de la corrida, en una lista, la variable global  PARAM
 PARAM <- list()
-PARAM$experimento <- "KA4210_All_Data2"
+PARAM$experimento <- "KA4210_All_Data26-09"
 
 PARAM$semilla_primigenia <- 214363
 
@@ -28,12 +28,12 @@ PARAM$input$future <- c(202106) # meses donde se aplica el modelo
 #PARAM$finalmodel$min_data_in_leaf <- 1014
 #PARAM$finalmodel$num_leaves <- 928
 
-PARAM$finalmodel$num_iterations <- 1387
-PARAM$finalmodel$learning_rate <- 0.055204
-PARAM$finalmodel$feature_fraction <- 0.19479
-PARAM$finalmodel$min_data_in_leaf <- 112	
-PARAM$finalmodel$num_leaves <- 902
-PARAM$finalmodel$envios <- 1387
+PARAM$finalmodel$num_iterations <- 5443
+PARAM$finalmodel$learning_rate <- 0.01055
+PARAM$finalmodel$feature_fraction <- 0.30050
+PARAM$finalmodel$min_data_in_leaf <- 28	
+PARAM$finalmodel$num_leaves <- 752
+PARAM$finalmodel$envios <- 14968
 
 PARAM$finalmodel$max_bin <- 31
 

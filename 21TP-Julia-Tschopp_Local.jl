@@ -8,14 +8,14 @@ using LightGBM  # Solo las librerías necesarias
 using ZipFile
 
 # = abspath("~../LightGBM-3.3.5")
-ruta = "/home/joaquintschopp/datasets/competencia_01_ct.csv"
+#ruta = "/home/joaquintschopp/datasets/competencia_01_ct.csv"
 
 
 # Lee el archivo como un DataFrame
-df = CSV.read(ruta, DataFrame)
+#df = CSV.read(ruta, DataFrame)
 
 # Leer el dataset de forma Local
-#df = CSV.read("G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/datasets/competencia_01_julia.csv", DataFrame)
+df = CSV.read("G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/datasets/competencia_01_julia.csv", DataFrame)
 
 # Establecer la semilla de aleatoriedad
 seed = 214363
@@ -80,7 +80,7 @@ resultado_exportar = select(dataset_test, :numero_de_cliente, :Predicted)
 archivo_numero = "012"
 
 #guardar prediccion en Cloud
-CSV.write("/home/joaquintschopp/exp/KA2001/KJulia_" * archivo_numero * ".csv", resultado_exportar)
+#CSV.write("/home/joaquintschopp/exp/KA2001/KJulia_" * archivo_numero * ".csv", resultado_exportar)
 
 # guardar prediccion en local
 CSV.write("G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/exp/KA2001/KJulia_" * archivo_numero * ".csv", resultado_exportar)
@@ -98,8 +98,8 @@ archivos = [
 ]
 
 # Ruta del archivo ZIP de destino
-ruta_zip = "/home/joaquintschopp/exp/Backup-version-JL/backup_Julia_011.zip"
-
+#ruta_zip = "/home/joaquintschopp/exp/Backup-version-JL/backup_Julia_011.zip"
+ruta_zip = "G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/exp/Backup-version-JL/backup_Julia_011.zip"
 
 # Crear el archivo ZIP
 ZipFile.zip(ruta_zip, archivos)
