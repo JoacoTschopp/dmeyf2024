@@ -50,9 +50,11 @@ label = map(x -> label_map[x], dataset_train.clase_ternaria)
 data = Matrix(dataset_train[:, Not(:clase_ternaria)])
 
 ### ENTRENAMIENTO DEL MODELO
+# Create an LGBMEstimator object
+estimator = LGBMEstimator()
 
 # Entrenar el modelo
-modelo = LightGBM.fit!(params, data, label)
+modelo = LightGBM.fit!(estimator, params, data, label)
 
 ### PREDICCIÓN
 # Aplicar el modelo al dataset de prueba
