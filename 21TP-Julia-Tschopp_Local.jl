@@ -1,11 +1,11 @@
 using CSV, DataFrames, Random
 using LightGBM  # Solo las librerías necesarias
-#using ZipFile
 
+
+#using ZipFile
 
 # Leer el dataset de forma Local
 df = CSV.read("G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/datasets/competencia_01_julia.csv", DataFrame)
-
 
 seed = 214363
 Random.seed!(seed)
@@ -28,6 +28,11 @@ dataset_test = df[df.foto_mes.==202106, :]
 dataset_train = coalesce.(dataset_train, 0)
 dataset_test = coalesce.(dataset_test, 0)
 
+#println("Primeros 3 del train:")
+#println(typeof(dataset_train))
+#println("Primeros 3 del test:")
+#println(typeof(dataset_test))
+
 label_map = Dict("BAJA+1" => 0, "BAJA+2" => 0, "CONTINUA" => 1)
 
 # Convertir las etiquetas de la columna clase_ternaria a valores numéricos
@@ -35,10 +40,24 @@ label = map(x -> label_map[x], dataset_train.clase_ternaria)
 # Convertir los datos a matriz y las etiquetas a vector
 data = Matrix(dataset_train[:, Not(:clase_ternaria)])
 
+println("Tipo del Params:")
+println(typeof(params))
+println("Tipo del data:")
+println(typeof(data))
+println("Tipo del label:")
+println(typeof(label))
+
+println("Primeros 1 de label:")
+println(first(label,3))
+println("Primeros 3 de data:")
+println(first(data,5))
+
 ### ENTRENAMIENTO DEL MODELO
+# Crear un objeto LGBMEstimator
+estimator = LightGBM.LGBMCassifier()
 
 # Entrenar el modelo
-modelo = LightGBM.fit!(params, data, label)
+modelo = fit!(estimator, data, label, params)
 
 ### PREDICCIÓN
 pred = LightGBM.predict(modelo, Matrix(dataset_test[:, Not(:clase_ternaria)]))
