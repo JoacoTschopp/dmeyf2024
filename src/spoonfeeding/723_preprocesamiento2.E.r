@@ -239,7 +239,6 @@ drift_estandarizar <- function(campos_drift) {
       (get(campo) -mean(campo, na.rm=TRUE)) / sd(get(campo), na.rm=TRUE),
       by = "foto_mes"]
 
-    dataset[, (campo) := NULL]
   }
   cat( "fin drift_estandarizar()\n")
 }
@@ -479,6 +478,7 @@ dataset[ foto_mes %in% PARAM$trainingstrategy$final_train &
 ]
 
 # elimino el campo azar, ya no lo uso mas
+dataset[, (campos_monetarios) := NULL]
 dataset[, azar := NULL ]
 
 # Grabo el dataset
