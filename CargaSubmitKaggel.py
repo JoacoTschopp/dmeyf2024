@@ -1,27 +1,82 @@
 import os
-import json
-import kaggle
+from kaggle.api.kaggle_api_extended import KaggleApi
+import pandas as pd
 
-# Configuración de la competencia de Kaggle
-COMPETITION_NAME = "dm-ey-f-2024-primera"
+# Configura la ID de la competencia y la lista de archivos con sus descripciones
+competition = 'dm-ey-f-2024-primera'
+scores_dir = './scores'
+experiment_name = 'KA5720SA'
 
-# Directorio donde se encuentran los archivos a subir
-UPLOAD_DIR = "/home/tu_usuario/buckets/b1/exp/KA7250"
+files_dir = './exp/' + experiment_name
 
-# Ruta del archivo kaggle.json
-KAGGLE_JSON_FILE = "/home/tu_usuario/buckets/b1/kaggle.json"
+submission_description = 'DESCIPCION: Experimento 3 SA- Sin atributos entreno solo con 202104'
 
-# Carga del archivo kaggle.json
-with open(os.path.expanduser(KAGGLE_JSON_FILE), "r") as f:
-    kaggle_json = json.load(f)
+# Inicializar la API usando las credenciales de kaggle.json
+api = KaggleApi()
+api.authenticate()
 
-# Configuración de la API de Kaggle
-kaggle.api.authenticate()
+files = os.listdir(files_dir)
+files = [f for f in files if f.endswith('.csv')]
 
-# Carga de los archivos en Kaggle
-for file_path in os.listdir(UPLOAD_DIR):
-    if file_path.endswith(".csv"):
-        file_name = os.path.basename(file_path)
-        print(f"Cargando archivo {file_name}...")
-        kaggle.api.competition_submit_file(os.path.join(UPLOAD_DIR, file_path), COMPETITION_NAME, message="Experimento1 KA7250 Dataset original sin Drifting", quiet=False)
+# ordenar files por el numero antes de .csv
+files = sorted(files, key=lambda x: int(x.split('.')[0].split('_')[2]))
+
+# Lista de archivos a subir
+submissions = [{'file': f'{files_dir}/{f}',
+                'description': f'{submission_description}'} for f in files]
+
+# Subir los archivos a la competencia
+for submission in submissions:
+    file_path = submission['file']
+    description = submission['description']
+    if os.path.exists(file_path):
+        print(f'Subiendo {file_path}...')
+
+        error = True
+
+        while error:
+            try:
+                api.competition_submit(file_name=file_path,
+                                       message=description,
+                                       competition=competition)
+            except Exception as e:
+                print(f'Error al subir {file_path}: {e}')
+            else:
+                error = False
+
+        print(f'{file_path} subido con éxito.')
+    else:
+        print(f'El archivo {file_path} no existe.')
+
+
+# Get your submission history for the competition
+submissions = api.competition_submissions(competition, page_size=100)
+
+# Create a list of dictionaries to store submission details
+submission_list = []
+
+for submission in submissions:
+    submission_info = {
+        'SubmissionId': submission.ref,
+        'FileName': submission.fileName,
+        'Date': submission.date,
+        'Score': submission.publicScore,
+        'Description': submission.description
+    }
+    submission_list.append(submission_info)
+
+# Convert the list into a DataFrame for better readability and manipulation
+df = pd.DataFrame(submission_list)
+
+# Optionally, save the scores to a CSV file
+df.to_csv('./scores/my_kaggle_submissions.csv', index=False)
+
+print("Submission scores saved to 'my_kaggle_submissions.csv'")
+
+df = pd.read_csv('./scores/my_kaggle_submissions.csv')
+df.head()
+
+# extract the number of sends from the file name
+df['sends'] = df['FileName'].str.extract(r'_(\d+).csv').astype(int)
+
 
