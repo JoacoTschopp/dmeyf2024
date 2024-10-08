@@ -24,3 +24,4 @@ for file_path in os.listdir(UPLOAD_DIR):
         file_name = os.path.basename(file_path)
         print(f"Cargando archivo {file_name}...")
         kaggle.api.competition_submit_file(os.path.join(UPLOAD_DIR, file_path), COMPETITION_NAME, message="Experimento1 KA7250 Dataset original sin Drifting", quiet=False)
+
