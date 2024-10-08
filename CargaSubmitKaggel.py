@@ -2,6 +2,7 @@ import os
 from kaggle.api.kaggle_api_extended import KaggleApi
 import pandas as pd
 
+os.environ['KAGGLE_CONFIG_DIR'] = '/home/joaquintschopp/buckets/b1'
 # Configura la ID de la competencia y la lista de archivos con sus descripciones
 competition = 'dm-ey-f-2024-primera'
 scores_dir = '/home/joaquintschopp/buckets/b1/scores'
