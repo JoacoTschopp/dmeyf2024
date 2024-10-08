@@ -13,7 +13,7 @@ submission_description = 'DESCIPCION: Experimento 3 SA- Sin atributos entreno so
 
 # Inicializar la API usando las credenciales de kaggle.json
 api = KaggleApi()
-api.authenticate()
+api.authenticate(path='/home/joaquintschopp/buckets/b1/kaggle.json')
 
 files = os.listdir(files_dir)
 files = [f for f in files if f.endswith('.csv')]
