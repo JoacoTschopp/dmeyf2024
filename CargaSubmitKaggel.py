@@ -4,10 +4,10 @@ import pandas as pd
 
 # Configura la ID de la competencia y la lista de archivos con sus descripciones
 competition = 'dm-ey-f-2024-primera'
-scores_dir = './buckets/b1/scores'
+scores_dir = '/buckets/b1/scores'
 experiment_name = 'KA5720SA'
 
-files_dir = './buckets/b1/exp/' + experiment_name
+files_dir = '/buckets/b1/exp/' + experiment_name
 
 submission_description = 'DESCIPCION: Experimento 3 SA- Sin atributos entreno solo con 202104'
 
