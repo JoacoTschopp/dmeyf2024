@@ -5,7 +5,7 @@ import pandas as pd
 # Configura la ID de la competencia y la lista de archivos con sus descripciones
 competition = 'dm-ey-f-2024-primera'
 scores_dir = '~/buckets/b1/scores'
-experiment_name = 'KA5720SA'
+experiment_name = 'KA7250SA'
 
 files_dir = '~/buckets/b1/exp/' + experiment_name
 
