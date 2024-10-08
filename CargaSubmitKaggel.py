@@ -19,7 +19,7 @@ files = os.listdir(files_dir)
 files = [f for f in files if f.endswith('.csv')]
 
 # ordenar files por el numero antes de .csv
-files = sorted(files, key=lambda x: int(x.split('.')[0].split('_')[2]))
+files = sorted(files, key=lambda x: int(x.split('.')[0].split('_')[1]))
 
 # Lista de archivos a subir
 submissions = [{'file': f'{files_dir}/{f}',
