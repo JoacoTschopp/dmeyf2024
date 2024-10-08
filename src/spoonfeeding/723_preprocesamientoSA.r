@@ -282,8 +282,10 @@ setwd(paste0("./exp/", PARAM$experimento, "/"))
 # ordeno dataset
 setorder(dataset, numero_de_cliente, foto_mes)
 # corrijo usando el metido MachineLearning
-Corregir_Rotas(dataset, "MachineLearning")
+#Corregir_Rotas(dataset, "MachineLearning")
 
+# Eliminar columnas utilizando select
+dataset <- dataset[, -c("cprestamos_personales", "mprestamos_personales")]
 
 # Data Drifting  --------------------------------------------------------------
 #  atencion que lo que mejor funciona
