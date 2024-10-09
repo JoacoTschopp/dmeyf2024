@@ -335,7 +335,7 @@ dataset[
 # variable extraida de una tesis de maestria de Irlanda
 #  perdi el link a la tesis, NO es de mi autoria
 
-##dataset[, mpayroll_sobre_edad := mpayroll / cliente_edad]
+dataset[, mpayroll_sobre_edad := mpayroll / cliente_edad]
 
 
 # Por supuesto, usted puede COMENTARIAR todo lo que desee
@@ -484,7 +484,7 @@ dataset[, azar := NULL ]
 
 # Grabo el dataset
 fwrite( dataset,
-  file = "datasetSA_0.csv.gz",
+  file = "datasetSA_2.csv.gz",
   sep = "\t"
 )
 

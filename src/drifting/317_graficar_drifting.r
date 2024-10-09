@@ -42,6 +42,9 @@ precalcular_campo <- function( campo, pmes )
 #------------------------------------------------------------------------------
 
 graficar_drift <- function(campo, pmes0, pmes1) {
+  if (!campo %like% "^(m|Visa_m|Master_m|vm_m)") {
+    return()
+  }
   # quito de grafico las colas del 5% de las densidades
   tbl0 <- precalcular_campo( campo, pmes0 )
   tbl1 <- precalcular_campo( campo, pmes1 )
@@ -75,27 +78,39 @@ graficar_drift <- function(campo, pmes0, pmes1) {
     legend = c( pmes0, pmes1),
     col = c("blue", "red"), lty=c(1,1)
   )
+}
 
+graficar_ROC <- function(campo, pmes0, pmes1) {
+  # Curva ROC
+  auc <- calculate_auc(tbl0$neg_acum, tbl1$pos_acum)
+  if (auc <= 0.55) {
+    plot(
+      type="l",
+      col = "blue",
+      x = tbl0$neg_acum,
+      y = tbl0$pos_acum,
+      xlim = c(0, 1.1),
+      ylim = c(0, 1.1),
+      main =  paste0("raw ROC curve ", campo),
+      xlab = "negatives",
+      ylab = "positives"
+    )
 
- # Curva ROC
-  plot(
-    type="l",
-    col = "blue",
-    x = tbl0$neg_acum,
-    y = tbl0$pos_acum,
-    xlim = c(0, 1.1),
-    ylim = c(0, 1.1),
-    main =  paste0("raw ROC curve ", campo),
-    xlab = "negatives",
-    ylab = "positives"
-  )
+    lines( x=tbl1$neg_acum, y=tbl1$pos_acum, col="red", type="l")
+    legend("topright",
+      legend = c( pmes0, pmes1),
+      col = c("blue", "red")
+    )
+  }
+}
 
-  lines( x=tbl1$neg_acum, y=tbl1$pos_acum, col="red", type="l")
-  legend("topright",
-    legend = c( pmes0, pmes1),
-    col = c("blue", "red")
-  )
-
+calculate_auc <- function(x, y) {
+  # Calcula el área bajo la curva (AUC)
+  auc <- 0
+  for (i in 1:(length(x) - 1)) {
+    auc <- auc + (x[i + 1] - x[i]) * (y[i + 1] + y[i]) / 2
+  }
+  return(auc)
 }
 #------------------------------------------------------------------------------
 #------------------------------------------------------------------------------
@@ -141,13 +156,30 @@ campos_buenos <- setdiff(
 # genero los graficos en un archivo
 for( kmes0 in c(202101, 202102, 202103, 202104) )
 {
-  pdf( paste0("densidades_", kmes0, "_", kmes1, ".pdf") )
+  pdf( paste0("solom_densidades_", kmes0, "_", kmes1, ".pdf") )
 
   for (campo in campos_buenos) {
     cat(campo, "  ")
     graficar_drift(campo, kmes0, kmes1)
+    graficar_ROC(campo, kmes0, kmes1)
+    
   }
 
   dev.off()
 }
 
+# genero los graficos en un archivo para ver el drifting con 202104 que es donde estoy validando y testeando. 
+Kmes1 <- 202104
+for( kmes0 in c(202101, 202102, 202103) )
+{
+  pdf( paste0("solom_densidades_", kmes0, "_", kmes1, ".pdf") )
+
+  for (campo in campos_buenos) {
+    cat(campo, "  ")
+    graficar_drift(campo, kmes0, kmes1)
+    graficar_ROC(campo, kmes0, kmes1)
+    
+  }
+
+  dev.off()
+}
