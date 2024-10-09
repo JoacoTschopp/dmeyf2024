@@ -39,14 +39,14 @@ PARAM$clase_minoritaria <- c("BAJA+1","BAJA+2")
 #  la magia estara en experimentar exhaustivamente
 PARAM$trainingstrategy$testing <- c(202104)
 PARAM$trainingstrategy$validation <- c(202103)
-PARAM$trainingstrategy$training <- c(202102)#202101, 
+PARAM$trainingstrategy$training <- c(202101, 202102)# 
 
 
-PARAM$trainingstrategy$final_train <- c(202104) #202103, 202102, 
+PARAM$trainingstrategy$final_train <- c(202102, 202103, 202104) # 
 PARAM$trainingstrategy$future <- c(202106)
 
 # un undersampling de 0.1  toma solo el 10% de los CONTINUA
-PARAM$trainingstrategy$training_undersampling <- 1.0
+PARAM$trainingstrategy$training_undersampling <- 0.75
 
 # esta aberracion fue creada a pedido de Joaquin Tschopp
 #  Publicamente Gustavo Denicolay NO se hace cargo de lo que suceda
@@ -282,7 +282,7 @@ setwd(paste0("./exp/", PARAM$experimento, "/"))
 # ordeno dataset
 setorder(dataset, numero_de_cliente, foto_mes)
 # corrijo usando el metido MachineLearning
-#Corregir_Rotas(dataset, "MachineLearning")
+Corregir_Rotas(dataset, "MachineLearning")
 
 # Eliminar columnas utilizando select
 dataset <- dataset[, -c("cprestamos_personales", "mprestamos_personales")]
