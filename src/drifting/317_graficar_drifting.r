@@ -9,8 +9,8 @@ require("data.table")
 require("rpart")
 require("yaml")
 
-kmes0 <- 202104
-kmes1 <- 202106
+kmes0 <- 202103
+kmes1 <- 202104
 
 #------------------------------------------------------------------------------
 
@@ -139,7 +139,7 @@ campos_buenos <- setdiff(
 
 
 # genero los graficos en un archivo
-for( kmes0 in c(202101, 202102, 202103, 202104) )
+for( kmes0 in c(202101, 202102 ) )#202103, 202104
 {
   pdf( paste0("densidades_", kmes0, "_", kmes1, ".pdf") )
 
@@ -152,17 +152,3 @@ for( kmes0 in c(202101, 202102, 202103, 202104) )
   dev.off()
 }
 
-# genero los graficos en un archivo para ver el drifting con 202104 que es donde estoy validando y testeando. 
-Kmes1 <- 202104
-for( kmes0 in c(202101, 202102, 202103) )
-{
-  pdf( paste0("densidades_", kmes0, "_", kmes1, ".pdf") )
-
-  for (campo in campos_buenos) {
-    cat(campo, "  ")
-    graficar_drift(campo, kmes0, kmes1)
-    
-  }
-
-  dev.off()
-}
