@@ -42,9 +42,7 @@ precalcular_campo <- function( campo, pmes )
 #------------------------------------------------------------------------------
 
 graficar_drift <- function(campo, pmes0, pmes1) {
-  if (!campo %like% "^(m|Visa_m|Master_m|vm_m)") {
-    return()
-  }
+
   # quito de grafico las colas del 5% de las densidades
   tbl0 <- precalcular_campo( campo, pmes0 )
   tbl1 <- precalcular_campo( campo, pmes1 )
@@ -78,9 +76,7 @@ graficar_drift <- function(campo, pmes0, pmes1) {
     legend = c( pmes0, pmes1),
     col = c("blue", "red"), lty=c(1,1)
   )
-}
 
-graficar_ROC <- function(campo, pmes0, pmes1) {
   # Curva ROC
   auc <- calculate_auc(tbl0$neg_acum, tbl1$pos_acum)
   if (auc <= 0.55) {
@@ -104,14 +100,6 @@ graficar_ROC <- function(campo, pmes0, pmes1) {
   }
 }
 
-calculate_auc <- function(x, y) {
-  # Calcula el área bajo la curva (AUC)
-  auc <- 0
-  for (i in 1:(length(x) - 1)) {
-    auc <- auc + (x[i + 1] - x[i]) * (y[i + 1] + y[i]) / 2
-  }
-  return(auc)
-}
 #------------------------------------------------------------------------------
 #------------------------------------------------------------------------------
 # Aqui comienza el programa
@@ -156,12 +144,11 @@ campos_buenos <- setdiff(
 # genero los graficos en un archivo
 for( kmes0 in c(202101, 202102, 202103, 202104) )
 {
-  pdf( paste0("solom_densidades_", kmes0, "_", kmes1, ".pdf") )
+  pdf( paste0("densidades_", kmes0, "_", kmes1, ".pdf") )
 
   for (campo in campos_buenos) {
     cat(campo, "  ")
     graficar_drift(campo, kmes0, kmes1)
-    graficar_ROC(campo, kmes0, kmes1)
     
   }
 
@@ -172,12 +159,11 @@ for( kmes0 in c(202101, 202102, 202103, 202104) )
 Kmes1 <- 202104
 for( kmes0 in c(202101, 202102, 202103) )
 {
-  pdf( paste0("solom_densidades_", kmes0, "_", kmes1, ".pdf") )
+  pdf( paste0("densidades_", kmes0, "_", kmes1, ".pdf") )
 
   for (campo in campos_buenos) {
     cat(campo, "  ")
     graficar_drift(campo, kmes0, kmes1)
-    graficar_ROC(campo, kmes0, kmes1)
     
   }
 
