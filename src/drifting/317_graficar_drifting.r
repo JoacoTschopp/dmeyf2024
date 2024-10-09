@@ -77,27 +77,24 @@ graficar_drift <- function(campo, pmes0, pmes1) {
     col = c("blue", "red"), lty=c(1,1)
   )
 
-  # Curva ROC
-  auc <- calculate_auc(tbl0$neg_acum, tbl1$pos_acum)
-  if (auc <= 0.55) {
-    plot(
-      type="l",
-      col = "blue",
-      x = tbl0$neg_acum,
-      y = tbl0$pos_acum,
-      xlim = c(0, 1.1),
-      ylim = c(0, 1.1),
-      main =  paste0("raw ROC curve ", campo),
-      xlab = "negatives",
-      ylab = "positives"
-    )
+ # Curva ROC
+  plot(
+    type="l",
+    col = "blue",
+    x = tbl0$neg_acum,
+    y = tbl0$pos_acum,
+    xlim = c(0, 1.1),
+    ylim = c(0, 1.1),
+    main =  paste0("raw ROC curve ", campo),
+    xlab = "negatives",
+    ylab = "positives"
+  )
 
-    lines( x=tbl1$neg_acum, y=tbl1$pos_acum, col="red", type="l")
-    legend("topright",
-      legend = c( pmes0, pmes1),
-      col = c("blue", "red")
-    )
-  }
+  lines( x=tbl1$neg_acum, y=tbl1$pos_acum, col="red", type="l")
+  legend("topright",
+    legend = c( pmes0, pmes1),
+    col = c("blue", "red")
+  )
 }
 
 #------------------------------------------------------------------------------
