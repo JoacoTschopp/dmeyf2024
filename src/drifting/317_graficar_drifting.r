@@ -22,8 +22,8 @@ precalcular_campo <- function( campo, pmes )
   setorderv( tbl, "atributo" )
 
   tbl[, tot := 1 ]
-  tbl[, pos := ifelse( clase_ternaria %in% c("BAJA+1", "BAJA+2"), 1, 0  ) ]
-  tbl[, neg := ifelse( clase_ternaria %in% c("BAJA+1", "BAJA+2"), 0, 1  ) ]
+  tbl[, pos := ifelse( clase_ternaria %in% c("BAJA+2"), 1, 0  ) ]
+  tbl[, neg := ifelse( clase_ternaria %in% c("BAJA+2"), 0, 1  ) ]
 
   tbl[, tot_acum := cumsum( tot ) ]
   tbl[, pos_acum := cumsum( pos ) ]
