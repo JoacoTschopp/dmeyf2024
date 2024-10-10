@@ -22,8 +22,8 @@ precalcular_campo <- function( campo, pmes )
   setorderv( tbl, "atributo" )
 
   tbl[, tot := 1 ]
-  tbl[, pos := ifelse( clase_ternaria %in% c("BAJA+2"), 1, 0  ) ]
-  tbl[, neg := ifelse( clase_ternaria %in% c("BAJA+2"), 0, 1  ) ]
+  tbl[, pos := ifelse( clase_ternaria %in% c("BAJA+1", "BAJA+2"), 1, 0  ) ]
+  tbl[, neg := ifelse( clase_ternaria %in% c("BAJA+1", "BAJA+2"), 0, 1  ) ]
 
   tbl[, tot_acum := cumsum( tot ) ]
   tbl[, pos_acum := cumsum( pos ) ]
@@ -141,7 +141,7 @@ campos_buenos <- setdiff(
 # genero los graficos en un archivo
 for( kmes0 in c(202101, 202102 ) )#202103, 202104
 {
-  pdf( paste0("densidades_", kmes0, "_", kmes1, ".pdf") )
+  pdf( paste0("densidadesBaja12_", kmes0, "_", kmes1, ".pdf") )
 
   for (campo in campos_buenos) {
     cat(campo, "  ")
