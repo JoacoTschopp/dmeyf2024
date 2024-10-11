@@ -34,7 +34,7 @@ options(error = function() {
 PARAM <- list()
 
 PARAM$experimento_data <- "PP7230SA"
-PARAM$experimento <- "HT7240SA_2"
+PARAM$experimento <- "HT7240SA_11.1"
 
 PARAM$semilla_azar <- 214363 # Aqui poner su  primer  semilla
 
@@ -278,7 +278,7 @@ action_limitar_memoria( 4 )
 setwd("~/buckets/b1/exp/") # Establezco el Working Directory
 
 # cargo el dataset donde voy a entrenar el modelo
-dataset <- fread(paste0(PARAM$experimento_data,"/datasetSA_2.csv.gz"))
+dataset <- fread(paste0(PARAM$experimento_data,"/datasetSA_11.1.csv.gz"))
 
 
 # creo la carpeta donde va el experimento

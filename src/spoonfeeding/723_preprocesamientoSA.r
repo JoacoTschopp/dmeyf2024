@@ -32,7 +32,7 @@ PARAM$input$dataset <- "./datasets/competencia_01_ct.csv"
 PARAM$semilla_azar <- 214363 # Aqui poner su  primer  semilla
 
 
-PARAM$driftingcorreccion <- "ninguno"
+PARAM$driftingcorreccion <- "UVA"#"ninguno"
 PARAM$clase_minoritaria <- c("BAJA+1","BAJA+2")
 
 # los meses en los que vamos a entrenar
@@ -42,7 +42,7 @@ PARAM$trainingstrategy$validation <- c(202103)
 PARAM$trainingstrategy$training <- c(202101, 202102)# 
 
 
-PARAM$trainingstrategy$final_train <- c(202102, 202103, 202104) # 
+PARAM$trainingstrategy$final_train <- c(202101, 202102, 202103, 202104) # 
 PARAM$trainingstrategy$future <- c(202106)
 
 # un undersampling de 0.1  toma solo el 10% de los CONTINUA
@@ -284,8 +284,14 @@ setorder(dataset, numero_de_cliente, foto_mes)
 # corrijo usando el metido MachineLearning
 Corregir_Rotas(dataset, "MachineLearning")
 
-# Eliminar columnas utilizando select
+# Eliminar columnas PROPUESTAS POR MATERIA ""CONCEPT DRIFTING""
 dataset <- dataset[, -c("cprestamos_personales", "mprestamos_personales")]
+
+# Eliminar columnas PROPUESTAS POR MATERIA ""DRIFTING"" OBTENIDAS CON LGBM
+dataset <- dataset[, -c("ccomisiones_otras", "cextraccion_autoservicio", "ctrx_quarter", "cpayroll_trx")]
+
+
+
 
 # Data Drifting  --------------------------------------------------------------
 #  atencion que lo que mejor funciona
@@ -299,9 +305,18 @@ setorder(dataset, numero_de_cliente, foto_mes)
 
 # defino cuales son los campos monetarios de mi dataset
 campos_monetarios <- colnames(dataset)
+
 # a continuacion una expresion regular
 campos_monetarios <- campos_monetarios[campos_monetarios %like%
   "^(m|Visa_m|Master_m|vm_m)"]
+
+##CAMPOS ENCONTRADOS CON DRIFTING
+campos_monetarios <- ("mpayroll", "Visa_mlimitecompra", "Master_mfinanciacion_limite", 
+                      "mcomisiones_mantenimiento", "Visa_mfinanciacion_limite", 
+                      "Master_mlimitecompra", "Visa_msaldodolares", "Visa_mconsumosdolares", 
+                      "mcaja_ahorro_dolares", "mtransferencias_recibidas", 
+                      "mtarjeta_visa_consumo", "mpasivos_margen", "mcuentas_saldo", 
+                      "mextraccion_autoservicio", "mactivos_margen", "mrentabilidad_annual")
 
 switch(PARAM$driftingcorreccion,
   "ninguno"        = cat("No hay correccion del data drifting"),
@@ -484,7 +499,7 @@ dataset[, azar := NULL ]
 
 # Grabo el dataset
 fwrite( dataset,
-  file = "datasetSA_2.csv.gz",
+  file = "datasetSA_11.1.csv.gz",
   sep = "\t"
 )
 
