@@ -34,7 +34,7 @@ options(error = function() {
 PARAM <- list()
 
 PARAM$experimento_data <- "PP7230SA"
-PARAM$experimento <- "HT7240SA_12.1"
+PARAM$experimento <- "HT7240SA_12.6"
 
 PARAM$semilla_azar <- 214363 # Aqui poner su  primer  semilla
 
@@ -87,7 +87,7 @@ PARAM$bo_lgb <- makeParamSet(
 
 # si usted es ambicioso, y tiene paciencia, podria subir este valor a 100
 #  si se llama J.T. dejelo en 50 para no sufrir
-PARAM$bo_iteraciones <- 100 # iteraciones de la Optimizacion Bayesiana
+PARAM$bo_iteraciones <- 50 # iteraciones de la Optimizacion Bayesiana
 
 
 #------------------------------------------------------------------------------
@@ -278,7 +278,7 @@ action_limitar_memoria( 4 )
 setwd("~/buckets/b1/exp/") # Establezco el Working Directory
 
 # cargo el dataset donde voy a entrenar el modelo
-dataset <- fread(paste0(PARAM$experimento_data,"/datasetSA_12.1.csv.gz"))
+dataset <- fread(paste0(PARAM$experimento_data,"/datasetSA_12.6.csv.gz"))
 
 
 # creo la carpeta donde va el experimento

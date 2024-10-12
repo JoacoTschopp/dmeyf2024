@@ -32,7 +32,7 @@ PARAM$input$dataset <- "./datasets/competencia_01_ct.csv"
 PARAM$semilla_azar <- 214363 # Aqui poner su  primer  semilla
 
 
-PARAM$driftingcorreccion <- "estandarizar"#"ninguno"
+PARAM$driftingcorreccion <- "ninguno"#"estandarizar"
 PARAM$clase_minoritaria <- c("BAJA+1","BAJA+2")
 
 # los meses en los que vamos a entrenar
@@ -46,7 +46,7 @@ PARAM$trainingstrategy$final_train <- c(202102, 202103, 202104) #
 PARAM$trainingstrategy$future <- c(202106)
 
 # un undersampling de 0.1  toma solo el 10% de los CONTINUA
-PARAM$trainingstrategy$training_undersampling <- 1.0
+PARAM$trainingstrategy$training_undersampling <- 0.75
 
 # esta aberracion fue creada a pedido de Joaquin Tschopp
 #  Publicamente Gustavo Denicolay NO se hace cargo de lo que suceda
@@ -282,18 +282,18 @@ setwd(paste0("./exp/", PARAM$experimento, "/"))
 # ordeno dataset
 setorder(dataset, numero_de_cliente, foto_mes)
 # corrijo usando el metido MachineLearning
-Corregir_Rotas(dataset, "EstadisticaClasica)"# "MachineLearning")
+Corregir_Rotas(dataset,  "MachineLearning") #"EstadisticaClasica)"#
 
 # Eliminar columnas PROPUESTAS POR MATERIA ""CONCEPT DRIFTING""
 #"ccajas_depositos" todos ceros para 202105/06 no hay forma de arreglarlo
 #"Visa_Finiciomora" todos los meses NAs no tiene sentido dejarlo se ajustaria a ese dato si hay unos pocos. 
-dataset <- dataset[, -c("cprestamos_personales", "mprestamos_personales", "ccajas_depositos", "Visa_Finiciomora")]
+dataset <- dataset[, -c("cprestamos_personales", "mprestamos_personales")]#, "ccajas_depositos", "Visa_Finiciomora"
 
 # Eliminar columnas PROPUESTAS POR MATERIA ""DRIFTING"" OBTENIDAS CON LGBM
 #Estas son cantidades no es adecuado a mi entender eliminar. solo son influyentes.
 #"ccomisiones_otras", "cextraccion_autoservicio",
 #SACO EL "cpayroll_trx" PORQUE ES EL UNICO QUE SOBRESALE LUEGO DE ARREGLAR EL DRIFT EN LAS MONETARIAS
-dataset <- dataset[, -c("cpayroll_trx")]
+#dataset <- dataset[, -c("cpayroll_trx")]
 
 
 
@@ -316,12 +316,12 @@ campos_monetarios <- campos_monetarios[campos_monetarios %like%
   "^(m|Visa_m|Master_m|vm_m)"]
 
 ##CAMPOS ENCONTRADOS CON DRIFTING
-campos_monetarios <- as.character(c("mpayroll", "Visa_mlimitecompra", "Master_mfinanciacion_limite", 
-                                    "mcomisiones_mantenimiento", "Visa_mfinanciacion_limite", 
-                                    "Master_mlimitecompra", "Visa_msaldodolares", "Visa_mconsumosdolares", 
-                                    "mcaja_ahorro_dolares", "mtransferencias_recibidas", 
-                                    "mtarjeta_visa_consumo", "mpasivos_margen", "mcuentas_saldo", 
-                                    "mextraccion_autoservicio", "mactivos_margen", "mrentabilidad_annual"))
+#campos_monetarios <- as.character(c("mpayroll", "Visa_mlimitecompra", "Master_mfinanciacion_limite", 
+#                                    "mcomisiones_mantenimiento", "Visa_mfinanciacion_limite", 
+#                                    "Master_mlimitecompra", "Visa_msaldodolares", "Visa_mconsumosdolares", 
+#                                    "mcaja_ahorro_dolares", "mtransferencias_recibidas", 
+#                                    "mtarjeta_visa_consumo", "mpasivos_margen", "mcuentas_saldo", 
+#                                    "mextraccion_autoservicio", "mactivos_margen", "mrentabilidad_annual"))
 
 
 switch(PARAM$driftingcorreccion,
@@ -505,7 +505,7 @@ dataset[, azar := NULL ]
 
 # Grabo el dataset
 fwrite( dataset,
-  file = "datasetSA_12.1.csv.gz",
+  file = "datasetSA_12.6.csv.gz",
   sep = "\t"
 )
 
