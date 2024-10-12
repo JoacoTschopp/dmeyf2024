@@ -16,13 +16,9 @@ library(iml)
 dataset <- fread("G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/datasets/competencia_01_crudo.csv", stringsAsFactors = TRUE)
 print(dim(dataset))
 
-# Filtrar los meses de interés (202104 y 202106)
-dataset <- dataset[foto_mes %in% c(202104, 202106)]
-
-
 
 # Definir las columnas a eliminar
-cols_a_eliminar <- c("numero_de_cliente", "cliente_vip", 
+cols_a_eliminar <- c("cliente_vip", 
                       "internet", "cliente_edad", "cliente_antiguedad", 
                       "tcuentas", "tcallcenter", "ccallcenter_transacciones", 
                       "thomebanking", "chomebanking_transacciones", 
@@ -40,7 +36,167 @@ dataset <- dataset %>% select(-where(~ is.Date(.)))
 # Comprobar el resultado
 print(dim(dataset))
 
+##########################################################################
 
+#CORRIGO LAS ENCONTRADAS
+
+
+PARAM <- list()
+
+PARAM$driftingcorreccion <- "deflacion"#"ninguno"
+#"deflacion"      = drift_deflacion(campos_monetarios),
+#"dolar_blue"     = drift_dolar_blue(campos_monetarios),
+#"dolar_oficial"  = drift_dolar_oficial(campos_monetarios),
+#"UVA"            = drift_UVA(campos_monetarios),
+#"estandarizar" 
+
+#------------------------------------------------------------------------------
+# valores financieros
+# meses que me interesan
+vfoto_mes <- c(
+  202101, 202102, 202103,
+  202104, 202105, 202106
+)
+
+# los valores que siguen fueron calculados por alumnos
+#  si no esta de acuerdo, cambielos por los suyos
+
+# momento 1.0  31-dic-2020 a las 23:59
+vIPC <- c(
+  0.9680542110, 0.9344152616, 0.8882274350,
+  0.8532444140, 0.8251880213, 0.8003763543
+)
+
+vdolar_blue <- c(
+  157.900000, 149.380952, 143.615385,
+  146.250000, 153.550000, 162.000000
+)
+
+vdolar_oficial <- c(
+  91.474000,  93.997778,  96.635909,
+  98.526000,  99.613158, 100.619048
+)
+
+vUVA <- c(
+  0.9669867858358365, 0.9323750098728378, 0.8958202912590305,
+  0.8631993702994263, 0.8253893405524657, 0.7928918905364516
+)
+
+#------------------------------------------------------------------------------
+
+drift_UVA <- function(campos_monetarios) {
+  cat( "inicio drift_UVA()\n")
+  
+  dataset[tb_indices,
+          on = c("foto_mes"),
+          (campos_monetarios) := .SD * i.UVA,
+          .SDcols = campos_monetarios
+  ]
+  
+  cat( "fin drift_UVA()\n")
+}
+#------------------------------------------------------------------------------
+
+drift_dolar_oficial <- function(campos_monetarios) {
+  cat( "inicio drift_dolar_oficial()\n")
+  
+  dataset[tb_indices,
+          on = c("foto_mes"),
+          (campos_monetarios) := .SD / i.dolar_oficial,
+          .SDcols = campos_monetarios
+  ]
+  
+  cat( "fin drift_dolar_oficial()\n")
+}
+#------------------------------------------------------------------------------
+
+drift_dolar_blue <- function(campos_monetarios) {
+  cat( "inicio drift_dolar_blue()\n")
+  
+  dataset[tb_indices,
+          on = c("foto_mes"),
+          (campos_monetarios) := .SD / i.dolar_blue,
+          .SDcols = campos_monetarios
+  ]
+  
+  cat( "fin drift_dolar_blue()\n")
+}
+#------------------------------------------------------------------------------
+
+drift_deflacion <- function(campos_monetarios) {
+  cat( "inicio drift_deflacion()\n")
+  
+  dataset[tb_indices,
+          on = c("foto_mes"),
+          (campos_monetarios) := .SD * i.IPC,
+          .SDcols = campos_monetarios
+  ]
+  
+  cat( "fin drift_deflacion()\n")
+}
+#------------------------------------------------------------------------------
+
+drift_estandarizar <- function(campos_drift) {
+  
+  cat( "inicio drift_estandarizar()\n")
+  for (campo in campos_drift)
+  {
+    cat(campo, " ")
+    dataset[, paste0(campo, "_normal") := 
+              (get(campo) -mean(campo, na.rm=TRUE)) / sd(get(campo), na.rm=TRUE),
+            by = "foto_mes"]
+    
+    dataset[, (campo) := NULL]
+  }
+  cat( "fin drift_estandarizar()\n")
+}
+#------------------------------------------------------------------------------
+
+
+
+# tabla de indices financieros
+tb_indices <- as.data.table( list( 
+  "IPC" = vIPC,
+  "dolar_blue" = vdolar_blue,
+  "dolar_oficial" = vdolar_oficial,
+  "UVA" = vUVA
+  )
+)
+
+tb_indices$foto_mes <- vfoto_mes
+
+tb_indices
+
+##CAMPOS ENCONTRADOS CON DRIFTING
+campos_monetarios <- as.character(c("mpayroll", "Visa_mlimitecompra", "Master_mfinanciacion_limite", 
+                                    "mcomisiones_mantenimiento", "Visa_mfinanciacion_limite", 
+                                    "Master_mlimitecompra", "Visa_msaldodolares", "Visa_mconsumosdolares", 
+                                    "mcaja_ahorro_dolares", "mtransferencias_recibidas", 
+                                    "mtarjeta_visa_consumo", "mpasivos_margen", "mcuentas_saldo", 
+                                    "mextraccion_autoservicio", "mactivos_margen", "mrentabilidad_annual"))
+
+# ordeno dataset
+setorder(dataset, numero_de_cliente, foto_mes)
+
+switch(PARAM$driftingcorreccion,
+  "ninguno"        = cat("No hay correccion del data drifting"),
+  "deflacion"      = drift_deflacion(campos_monetarios),
+  "dolar_blue"     = drift_dolar_blue(campos_monetarios),
+  "dolar_oficial"  = drift_dolar_oficial(campos_monetarios),
+  "UVA"            = drift_UVA(campos_monetarios),
+  "estandarizar"   = drift_estandarizar(campos_monetarios)
+)
+
+######################################
+
+#EVALUACION DE DRIFT
+
+######################################
+
+# Filtrar los meses de interés (202104 y 202106)
+dataset <- dataset[foto_mes %in% c(202104, 202106)]
+
+dataset <- dataset[, -c("numero_de_cliente", "cpayroll_trx")]
 
 # Convertir foto_mes en 0 (para 202104) y 1 (para 202106)
 dataset[, foto_mes := ifelse(foto_mes == 202104, 0, 1)]
