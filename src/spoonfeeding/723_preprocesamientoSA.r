@@ -38,15 +38,15 @@ PARAM$clase_minoritaria <- c("BAJA+1","BAJA+2")
 # los meses en los que vamos a entrenar
 #  la magia estara en experimentar exhaustivamente
 PARAM$trainingstrategy$testing <- c(202104)
-PARAM$trainingstrategy$validation <- c(202104)
-PARAM$trainingstrategy$training <- c(202103)#202102 
+PARAM$trainingstrategy$validation <- c(202103)
+PARAM$trainingstrategy$training <- c(202102)# 202104
 
 
 PARAM$trainingstrategy$final_train <- c(202104) # 202102, 202103, 
 PARAM$trainingstrategy$future <- c(202106)
 
 # un undersampling de 0.1  toma solo el 10% de los CONTINUA
-PARAM$trainingstrategy$training_undersampling <- 0.75
+PARAM$trainingstrategy$training_undersampling <- 0.50
 
 # esta aberracion fue creada a pedido de Joaquin Tschopp
 #  Publicamente Gustavo Denicolay NO se hace cargo de lo que suceda
