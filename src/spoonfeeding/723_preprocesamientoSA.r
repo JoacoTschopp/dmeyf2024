@@ -32,7 +32,7 @@ PARAM$input$dataset <- "./datasets/competencia_01_ct.csv"
 PARAM$semilla_azar <- 214363 # Aqui poner su  primer  semilla
 
 
-PARAM$driftingcorreccion <- "UVA"#"ninguno"#
+PARAM$driftingcorreccion <- "ninguno"#"ninguno"#
 PARAM$clase_minoritaria <- c("BAJA+1","BAJA+2")
 
 # los meses en los que vamos a entrenar
