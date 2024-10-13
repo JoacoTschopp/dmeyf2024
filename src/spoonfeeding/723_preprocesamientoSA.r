@@ -316,12 +316,12 @@ campos_monetarios <- campos_monetarios[campos_monetarios %like%
   "^(m|Visa_m|Master_m|vm_m)"]
 
 ##CAMPOS ENCONTRADOS CON DRIFTING
-campos_monetarios <- as.character(c("mpayroll", "Visa_mlimitecompra", "Master_mfinanciacion_limite", 
-                                    "mcomisiones_mantenimiento", "Visa_mfinanciacion_limite", 
-                                    "Master_mlimitecompra", "Visa_msaldodolares", "Visa_mconsumosdolares", 
-                                    "mcaja_ahorro_dolares", "mtransferencias_recibidas", 
-                                    "mtarjeta_visa_consumo", "mpasivos_margen", "mcuentas_saldo", 
-                                    "mextraccion_autoservicio", "mactivos_margen", "mrentabilidad_annual"))
+#campos_monetarios <- as.character(c("mpayroll", "Visa_mlimitecompra", "Master_mfinanciacion_limite", 
+#                                    "mcomisiones_mantenimiento", "Visa_mfinanciacion_limite", 
+#                                    "Master_mlimitecompra", "Visa_msaldodolares", "Visa_mconsumosdolares", 
+#                                    "mcaja_ahorro_dolares", "mtransferencias_recibidas", 
+#                                    "mtarjeta_visa_consumo", "mpasivos_margen", "mcuentas_saldo", 
+#                                    "mextraccion_autoservicio", "mactivos_margen", "mrentabilidad_annual"))
 
 
 switch(PARAM$driftingcorreccion,

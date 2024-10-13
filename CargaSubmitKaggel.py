@@ -6,7 +6,7 @@ os.environ['KAGGLE_CONFIG_DIR'] = '/home/joaquintschopp/buckets/b1'
 # Configura la ID de la competencia y la lista de archivos con sus descripciones
 competition = 'dm-ey-f-2024-primera'
 scores_dir = '/home/joaquintschopp/buckets/b1/scores'
-experiment_name = 'KA7250SA_12.8'
+experiment_name = 'KA7250SA12.8'
 
 files_dir = '/home/joaquintschopp/buckets/b1/exp/' + experiment_name
 
