@@ -42,11 +42,11 @@ PARAM$trainingstrategy$validation <- c(202103)
 PARAM$trainingstrategy$training <- c(202102)# 202104
 
 
-PARAM$trainingstrategy$final_train <- c(202104) # 202102, 202103, 
+PARAM$trainingstrategy$final_train <- c(202102, 202103, 202104) #  
 PARAM$trainingstrategy$future <- c(202106)
 
 # un undersampling de 0.1  toma solo el 10% de los CONTINUA
-PARAM$trainingstrategy$training_undersampling <- 0.50
+PARAM$trainingstrategy$training_undersampling <- 0.75
 
 # esta aberracion fue creada a pedido de Joaquin Tschopp
 #  Publicamente Gustavo Denicolay NO se hace cargo de lo que suceda
@@ -316,12 +316,12 @@ campos_monetarios <- campos_monetarios[campos_monetarios %like%
   "^(m|Visa_m|Master_m|vm_m)"]
 
 ##CAMPOS ENCONTRADOS CON DRIFTING
-#campos_monetarios <- as.character(c("mpayroll", "Visa_mlimitecompra", "Master_mfinanciacion_limite", 
-#                                    "mcomisiones_mantenimiento", "Visa_mfinanciacion_limite", 
-#                                    "Master_mlimitecompra", "Visa_msaldodolares", "Visa_mconsumosdolares", 
-#                                    "mcaja_ahorro_dolares", "mtransferencias_recibidas", 
-#                                    "mtarjeta_visa_consumo", "mpasivos_margen", "mcuentas_saldo", 
-#                                    "mextraccion_autoservicio", "mactivos_margen", "mrentabilidad_annual"))
+campos_monetarios <- as.character(c("mpayroll", "Visa_mlimitecompra", "Master_mfinanciacion_limite", 
+                                    "mcomisiones_mantenimiento", "Visa_mfinanciacion_limite", 
+                                    "Master_mlimitecompra", "Visa_msaldodolares", "Visa_mconsumosdolares", 
+                                    "mcaja_ahorro_dolares", "mtransferencias_recibidas", 
+                                    "mtarjeta_visa_consumo", "mpasivos_margen", "mcuentas_saldo", 
+                                    "mextraccion_autoservicio", "mactivos_margen", "mrentabilidad_annual"))
 
 
 switch(PARAM$driftingcorreccion,
@@ -505,7 +505,7 @@ dataset[, azar := NULL ]
 
 # Grabo el dataset
 fwrite( dataset,
-  file = "datasetSA_12.7.csv.gz",
+  file = "datasetSA_12.8.csv.gz",
   sep = "\t"
 )
 
