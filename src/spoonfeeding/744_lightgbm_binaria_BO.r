@@ -40,7 +40,7 @@ options(error = function() {
 #  muy pronto esto se leera desde un archivo formato .yaml
 PARAM <- list()
 
-PARAM$experimento_data <- "PP7230SA"#PP7430
+PARAM$experimento_data <- "PP7230"#PP7430
 PARAM$experimento <- "HT744013.1"
 
 PARAM$semilla_azar <- 214363 # Aqui poner su  primer  semilla
@@ -260,7 +260,7 @@ ksemillas <- sample(primos)[seq(PARAM$semillas_cantidad)]
 setwd("~/buckets/b1/exp/") # Establezco el Working Directory
 
 # cargo el dataset donde voy a entrenar el modelo
-dataset <- fread(paste0(PARAM$experimento_data,"/dataset_12.6.csv.gz"))
+dataset <- fread(paste0(PARAM$experimento_data,"/dataset13.1.csv.gz"))
 
 # En un mundo prolijo, estas variables se eliminan
 #  durante la creacion del dataset

@@ -25,7 +25,7 @@ options(error = function() {
 #  muy pronto esto se leera desde un archivo formato .yaml
 PARAM <- list()
 
-PARAM$experimento <- "PP7230SA"
+PARAM$experimento <- "PP7230"
 
 PARAM$input$dataset <- "./datasets/competencia_01_ct.csv"
 
@@ -38,8 +38,8 @@ PARAM$clase_minoritaria <- c("BAJA+1","BAJA+2")
 # los meses en los que vamos a entrenar
 #  la magia estara en experimentar exhaustivamente
 PARAM$trainingstrategy$testing <- c(202104)
-PARAM$trainingstrategy$validation <- c(202103)
-PARAM$trainingstrategy$training <- c(202102)# 202104
+PARAM$trainingstrategy$validation <- c(202104)
+PARAM$trainingstrategy$training <- c(202102, 202103)# 202104
 
 
 PARAM$trainingstrategy$final_train <- c(202102, 202103, 202104) #  
@@ -505,7 +505,7 @@ dataset[, azar := NULL ]
 
 # Grabo el dataset
 fwrite( dataset,
-  file = "datasetSA_12.8.csv.gz",
+  file = "dataset13.1.csv.gz",
   sep = "\t"
 )
 
