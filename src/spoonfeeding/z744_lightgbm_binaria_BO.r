@@ -1,3 +1,8 @@
+# script dedicado a Joaquín Sebastian Tschopp
+# que permite que training y final_train tengan distinta cantidad de registros
+# PARAM$trainingstrategy$training <- c(202102, 202103)
+# PARAM$trainingstrategy$final_train <- c(202102, 202103, 202104)
+
 # Este script esta pensado para correr en Google Cloud
 #   8 vCPU
 # 128 GB memoria RAM
@@ -35,8 +40,8 @@ options(error = function() {
 #  muy pronto esto se leera desde un archivo formato .yaml
 PARAM <- list()
 
-PARAM$experimento_data <- "PP7230"
-PARAM$experimento <- "HT7340"
+PARAM$experimento_data <- "PP7430"
+PARAM$experimento <- "HT7440"
 
 PARAM$semilla_azar <- 102191 # Aqui poner su  primer  semilla
 
@@ -81,14 +86,14 @@ PARAM$lgb_basicos <- list(
 )
 
 
-# Aqui se cargan los hiperparametros que se optimizan
-#  en la Bayesian Optimization
+# Aqui se cargan los hiperparametros VIRTUALES
+#  que se optimzan en la Bayesian Optimization
 PARAM$bo_lgb <- makeParamSet(
   makeNumericParam("learning_rate", lower = 0.02, upper = 0.3),
   makeNumericParam("feature_fraction", lower = 0.01, upper = 1.0),
-  makeIntegerParam("min_data_in_leaf", lower = 4L, upper = 50000L),
-  makeIntegerParam("num_leaves", lower = 2L, upper = 1024L),
-  makeIntegerParam("num_iterations", lower = 16L, upper = 2048L)  # ATENCION
+  makeNumericParam("leaf_size_log", lower = -14.0, upper = -1.0),
+  makeNumericParam("coverage_log", lower = -15.0, upper = 0.0),
+  makeNumericParam("num_iterations_log", lower = 4.0, upper = 12.0)
 )
 
 
@@ -146,6 +151,22 @@ EstimarGanancia_lightgbm <- function(x) {
 
   # hago la union de los parametros basicos y los moviles que vienen en x
   param_completo <- c(PARAM$lgb_basicos, x)
+
+  # hago la transformacion de leaf_size_log y  coverage
+  if( "leaf_size_log"  %in% names(param_completo) )
+  {
+    # primero defino el tamaño de las hojas
+    param_completo$min_data_in_leaf <- pmax( 1,  round( nrow(dtrain) * ( 2.0 ^ param_completo$leaf_size_log ))  )
+    # luego la cantidad de hojas en funcion del valor anterior, el coverage, y la cantidad de registros
+    param_completo$num_leaves <- pmin( 131072, 
+     pmax( 2,  round( ((2.0^param_completo$coverage_log)) * nrow( dtrain ) / param_completo$min_data_in_leaf ) ) )
+  }
+
+  if( "num_iterations_log"  %in% names(param_completo) )
+  {
+    param_completo$num_iterations <- pmax( 2L, as.integer( round( 2.0 ^ param_completo$num_iterations_log ) ) )
+  }
+
 
   GLOBAL_arbol <<- 0L
   GLOBAL_gan_max <<- -Inf
@@ -240,6 +261,25 @@ setwd("~/buckets/b1/exp/") # Establezco el Working Directory
 
 # cargo el dataset donde voy a entrenar el modelo
 dataset <- fread(paste0(PARAM$experimento_data,"/dataset.csv.gz"))
+
+# En un mundo prolijo, estas variables se eliminan
+#  durante la creacion del dataset
+# https://www.youtube.com/watch?v=eitDnP0_83k
+dataset[, cprestamos_personales := NULL ]
+dataset[, cprestamos_personales_lag1 := NULL ]
+dataset[, cprestamos_personales_delta1 := NULL ]
+
+dataset[, mprestamos_personales := NULL ]
+dataset[, mprestamos_personales_lag1 := NULL ]
+dataset[, mprestamos_personales_delta1 := NULL ]
+
+dataset[, cplazo_fijo := NULL ]
+dataset[, cplazo_fijo_lag1 := NULL ]
+dataset[, cplazo_fijo_delta1 := NULL ]
+
+dataset[, ctarjeta_debito := NULL ]
+dataset[, ctarjeta_debito_lag1 := NULL ]
+dataset[, ctarjeta_debito_delta1 := NULL ]
 
 
 # creo la carpeta donde va el experimento
