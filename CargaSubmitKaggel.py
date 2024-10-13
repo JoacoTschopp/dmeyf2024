@@ -6,11 +6,11 @@ os.environ['KAGGLE_CONFIG_DIR'] = '/home/joaquintschopp/buckets/b1'
 # Configura la ID de la competencia y la lista de archivos con sus descripciones
 competition = 'dm-ey-f-2024-primera'
 scores_dir = '/home/joaquintschopp/buckets/b1/scores'
-experiment_name = 'KA7250SA_0'
+experiment_name = 'KA7250SA_12.8'
 
 files_dir = '/home/joaquintschopp/buckets/b1/exp/' + experiment_name
 
-submission_description = 'DESCIPCION: Experimento 6'
+submission_description = 'DESCIPCION: Experimento 12.8'
 
 # Inicializar la API usando las credenciales de kaggle.json
 api = KaggleApi()
@@ -20,14 +20,14 @@ files = os.listdir(files_dir)
 files = [f for f in files if f.endswith('.csv')]
 
 # ordenar files por el numero antes de .csv
-files = sorted(files, key=lambda x: int(x.split('.')[0].split('_')[1]))
+files = sorted(files, key=lambda x: int(x.split('_')[-1].split('.')[0]))
 
 # Lista de archivos a subir
 submissions = [{'file': f'{files_dir}/{f}',
                 'description': f'{submission_description}'} for f in files]
 
-submissions = sorted(submissions, key=lambda x: int(x['file'].split('/')[-1].split('.')[0].split('_')[1]))
-
+submissions = sorted(submissions, key=lambda x: int(
+    x['file'].split('/')[-1].split('_')[-1].split('.')[0]))
 # Subir los archivos a la competencia
 for submission in submissions:
     file_path = submission['file']
@@ -72,14 +72,14 @@ for submission in submissions:
 df = pd.DataFrame(submission_list)
 
 # Optionally, save the scores to a CSV file
-df.to_csv('/home/joaquintschopp/buckets/b1/scores/my_kaggle_submissions.csv', index=False)
+df.to_csv(
+    '/home/joaquintschopp/buckets/b1/scores/my_kaggle_submissions.csv', index=False)
 
 print("Submission scores saved to 'my_kaggle_submissions.csv'")
 
-df = pd.read_csv('/home/joaquintschopp/buckets/b1/scores/my_kaggle_submissions.csv')
+df = pd.read_csv(
+    '/home/joaquintschopp/buckets/b1/scores/my_kaggle_submissions.csv')
 df.head()
 
 # extract the number of sends from the file name
 df['sends'] = df['FileName'].str.extract(r'_(\d+).csv').astype(int)
-
-
