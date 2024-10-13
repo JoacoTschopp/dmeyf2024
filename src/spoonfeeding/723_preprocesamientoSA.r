@@ -282,18 +282,18 @@ setwd(paste0("./exp/", PARAM$experimento, "/"))
 # ordeno dataset
 setorder(dataset, numero_de_cliente, foto_mes)
 # corrijo usando el metido MachineLearning
-Corregir_Rotas(dataset, "EstadisticaClasica)"#"MachineLearning"
+Corregir_Rotas(dataset, "EstadisticaClasica")#"MachineLearning"
 
 # Eliminar columnas PROPUESTAS POR MATERIA ""CONCEPT DRIFTING""
 #"ccajas_depositos" todos ceros para 202105/06 no hay forma de arreglarlo
 #"Visa_Finiciomora" todos los meses NAs no tiene sentido dejarlo se ajustaria a ese dato si hay unos pocos. 
-dataset <- dataset[, -c("cprestamos_personales", "mprestamos_personales")]#, "ccajas_depositos", "Visa_Finiciomora"
+dataset <- dataset[, -c("cprestamos_personales", "mprestamos_personales", "ccajas_depositos", "Visa_Finiciomora")]#
 
 # Eliminar columnas PROPUESTAS POR MATERIA ""DRIFTING"" OBTENIDAS CON LGBM
 #Estas son cantidades no es adecuado a mi entender eliminar. solo son influyentes.
 #"ccomisiones_otras", "cextraccion_autoservicio",
 #SACO EL "cpayroll_trx" PORQUE ES EL UNICO QUE SOBRESALE LUEGO DE ARREGLAR EL DRIFT EN LAS MONETARIAS
-#dataset <- dataset[, -c("cpayroll_trx")]
+dataset <- dataset[, -c("cpayroll_trx")]
 
 
 
@@ -505,7 +505,7 @@ dataset[, azar := NULL ]
 
 # Grabo el dataset
 fwrite( dataset,
-  file = "dataset13.2.csv.gz",
+  file = "dataset13.3.csv.gz",
   sep = "\t"
 )
 
