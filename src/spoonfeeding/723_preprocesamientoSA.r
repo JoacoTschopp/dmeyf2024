@@ -282,7 +282,7 @@ setwd(paste0("./exp/", PARAM$experimento, "/"))
 # ordeno dataset
 setorder(dataset, numero_de_cliente, foto_mes)
 # corrijo usando el metido MachineLearning
-Corregir_Rotas(dataset,  "MachineLearning") #"EstadisticaClasica)"#
+Corregir_Rotas(dataset, "EstadisticaClasica)"#"MachineLearning"
 
 # Eliminar columnas PROPUESTAS POR MATERIA ""CONCEPT DRIFTING""
 #"ccajas_depositos" todos ceros para 202105/06 no hay forma de arreglarlo
@@ -505,7 +505,7 @@ dataset[, azar := NULL ]
 
 # Grabo el dataset
 fwrite( dataset,
-  file = "dataset13.1.csv.gz",
+  file = "dataset13.2.csv.gz",
   sep = "\t"
 )
 
