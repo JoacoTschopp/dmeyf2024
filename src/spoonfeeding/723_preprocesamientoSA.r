@@ -32,7 +32,7 @@ PARAM$input$dataset <- "./datasets/competencia_01_ct.csv"
 PARAM$semilla_azar <- 214363 # Aqui poner su  primer  semilla
 
 
-PARAM$driftingcorreccion <- "estandarizar"#"ninguno"#
+PARAM$driftingcorreccion <- "UVA"#"ninguno"#
 PARAM$clase_minoritaria <- c("BAJA+1","BAJA+2")
 
 # los meses en los que vamos a entrenar
@@ -287,15 +287,16 @@ Corregir_Rotas(dataset, "MachineLearning")#"EstadisticaClasica"
 # Eliminar columnas PROPUESTAS POR MATERIA ""CONCEPT DRIFTING""
 #"ccajas_depositos" todos ceros para 202105/06 no hay forma de arreglarlo
 #"Visa_Finiciomora" todos los meses NAs no tiene sentido dejarlo se ajustaria a ese dato si hay unos pocos. 
-dataset <- dataset[, -c("cprestamos_personales", "mprestamos_personales", "ccajas_depositos", "Visa_Finiciomora")]#
+dataset <- dataset[, -c("cprestamos_personales", "mprestamos_personales", "datcplazo_fijo", "ctarjeta_debito", "ccajas_depositos", "Visa_Finiciomora")]#
+
 
 # Eliminar columnas PROPUESTAS POR MATERIA ""DRIFTING"" OBTENIDAS CON LGBM
 #Estas son cantidades no es adecuado a mi entender eliminar. solo son influyentes.
 #"ccomisiones_otras", "cextraccion_autoservicio",
 #SACO EL "cpayroll_trx" PORQUE ES EL UNICO QUE SOBRESALE LUEGO DE ARREGLAR EL DRIFT EN LAS MONETARIAS
-dataset <- dataset[, -c("cpayroll_trx")]#, "mpayroll", "Visa_mlimitecompra", "Master_mfinanciacion_limite", 
-                                    #"mcomisiones_mantenimiento", "Visa_mfinanciacion_limite", 
-                                    #"Master_mlimitecompra")]
+dataset <- dataset[, -c("cpayroll_trx", "Visa_mlimitecompra", "Master_mfinanciacion_limite", 
+                          "mcomisiones_mantenimiento", "Visa_mfinanciacion_limite", 
+                          "Master_mlimitecompra")]
 
 
 
@@ -318,9 +319,7 @@ campos_monetarios <- campos_monetarios[campos_monetarios %like%
   "^(m|Visa_m|Master_m|vm_m)"]
 
 ##CAMPOS ENCONTRADOS CON DRIFTING
-campos_monetarios <- as.character(c("mpayroll", "Visa_mlimitecompra", "Master_mfinanciacion_limite", 
-                                    "mcomisiones_mantenimiento", "Visa_mfinanciacion_limite", 
-                                    "Master_mlimitecompra", "Visa_msaldodolares", "Visa_mconsumosdolares", 
+campos_monetarios <- as.character(c("Visa_msaldodolares", "Visa_mconsumosdolares", 
                                     "mcaja_ahorro_dolares", "mtransferencias_recibidas", 
                                     "mtarjeta_visa_consumo", "mpasivos_margen", "mcuentas_saldo", 
                                     "mextraccion_autoservicio", "mactivos_margen", "mrentabilidad_annual"))
@@ -360,7 +359,8 @@ dataset[
 
 dataset[, mpayroll_sobre_edad := mpayroll / cliente_edad]
 
-#dataset <- dataset[, -c("mpayroll")]
+#/*Para la version 13.4 elimino aca y no hago tratameinto de drifting a la variable*/
+dataset <- dataset[, -c("mpayroll")]
 
 
 
@@ -511,7 +511,7 @@ dataset[, azar := NULL ]
 
 # Grabo el dataset
 fwrite( dataset,
-  file = "dataset13.4.csv.gz",
+  file = "dataset13.5.csv.gz",
   sep = "\t"
 )
 

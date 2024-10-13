@@ -29,9 +29,9 @@ options(error = function() {
 #  muy pronto esto se leera desde un archivo formato .yaml
 PARAM <- list()
 PARAM$experimento_data <- "PP7230"#PP7430
-PARAM$experimento_bayesiana <- "HT744013.4"
+PARAM$experimento_bayesiana <- "HT744013.5"
 
-PARAM$experimento <- "KA745013.4"
+PARAM$experimento <- "KA745013.5"
 
 PARAM$semilla_azar <- 214363 # Aqui poner su  primer  semilla
 PARAM$semillas_cantidad <- 3
@@ -73,7 +73,7 @@ ksemillas <- sample(primos)[seq(PARAM$semillas_cantidad)]
 tb_BO_log <- fread(paste0(PARAM$experimento_bayesiana,"/BO_log.txt"))
 
 # cargo el dataset donde voy a entrenar el modelo
-dataset <- fread(paste0(PARAM$experimento_data,"/dataset13.4.csv.gz"))
+dataset <- fread(paste0(PARAM$experimento_data,"/dataset13.5.csv.gz"))
 
 # En un mundo prolijo, estas variables se eliminan
 #  durante la creacion del dataset
