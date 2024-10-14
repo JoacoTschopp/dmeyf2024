@@ -1,1 +1,47 @@
-Se 
+Instructivo de Ejecución - Kaggle DMEyF 2024 Primera
+A continuación se detalla el orden de ejecución de los archivos para la competencia, basada en los scripts almacenados en la carpeta Entrega_dm-ey-f-2024-primer.
+
+1. Creación del dataset (Clase Ternaria)
+    Archivo: 00TP-Julia-Tschopp.jl
+    Descripción: Este script en Julia genera el dataset base, añadiendo la variable clase_ternaria, que probablemente servirá para la posterior clasificación de los datos.
+                Comando de ejecución:
+
+    julia 00TP-Julia-Tschopp.jl
+    
+    Resultado: Archivo de salida con el dataset creado que incluirá la variable clase_ternaria.
+
+2. Preprocesamiento y armado del dataset para entrenamiento
+    Archivo: 723_preprocesamientoSA.r
+    Descripción: Preprocesa el dataset generado anteriormente, realizando tareas como limpieza de datos, creación de nuevas variables y selección de atributos para preparar el dataset de entrenamiento.
+                Comando de ejecución:
+
+    Rscript 723_preprocesamientoSA.r
+    
+    Resultado: Dataset listo para entrenar los modelos con las transformaciones necesarias.
+
+3. Búsqueda de hiperparámetros (LightGBM)
+    Archivo: 744_lightgbm_binaria_BO.r
+    Descripción: Realiza la búsqueda de los mejores hiperparámetros utilizando un enfoque de optimización bayesiana sobre el modelo LightGBM.
+                Comando de ejecución:
+
+    Rscript 744_lightgbm_binaria_BO.r
+    
+    Resultado: Archivo que almacena los mejores conjuntos de hiperparámetros identificados.
+
+4. Predicción final con mejores hiperparámetros
+    Archivo: 745_lightgbm_final.r
+    Descripción: Ejecuta el modelo LightGBM utilizando los dos mejores sets de hiperparámetros encontrados previamente. Se ejecuta el modelo con 3 semillas distintas para cada set de hiperparámetros.
+                Comando de ejecución:
+
+    Rscript 745_lightgbm_final.r
+    
+    Resultado: Genera las predicciones para cada una de las configuraciones y semillas utilizadas.
+
+5. Toma del archivo final de predicciones
+    Carpeta: exp/KA745013.6/
+    Descripción: Se debe tomar el archivo de predicciones generado en el paso anterior, específicamente el siguiente archivo:
+
+    KA745013.6_1_745249_12500.csv
+
+    Ubicación: exp/KA745013.6/KA745013.6_1_745249_12500.csv
+    Acción: Utiliza este archivo para la entrega final en la competencia.
