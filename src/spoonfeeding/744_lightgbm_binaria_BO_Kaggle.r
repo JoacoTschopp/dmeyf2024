@@ -206,13 +206,6 @@ EstimarGanancia_lightgbm <- function(x) {
       align = "center", na.rm = TRUE, hasNA = TRUE
     )]
 
-    #Creo un archivo para kaggle
-    write.csv(data.frame(numero_de_cliente = dataset_test$numero_de_cliente, Predicted = ifelse(prediccion > 0.5, 1, 0)), 
-          file = paste0("predicciones_", sprintf("%03d", GLOBAL_iteracion), ".csv"),
-          row.names = FALSE)
-    
-    ganancia <- as.numeric(readline(prompt = "Ingrese la ganancia: "))
-
     ganancia_test <- tbl[, max(gan_suavizada, na.rm = TRUE)]
     ganancia_test_normalizada <- c( ganancia_test_normalizada, ganancia_test )
     cantidad_test_normalizada <- c( cantidad_test_normalizada, which.max(tbl[, gan_suavizada]) )
