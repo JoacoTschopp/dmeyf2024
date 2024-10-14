@@ -287,7 +287,7 @@ Corregir_Rotas(dataset, "MachineLearning")#"EstadisticaClasica"
 # Eliminar columnas PROPUESTAS POR MATERIA ""CONCEPT DRIFTING""
 #"ccajas_depositos" todos ceros para 202105/06 no hay forma de arreglarlo
 #"Visa_Finiciomora" todos los meses NAs no tiene sentido dejarlo se ajustaria a ese dato si hay unos pocos. 
-dataset <- dataset[, -c("cprestamos_personales", "mprestamos_personales", "datcplazo_fijo", "ctarjeta_debito", "ccajas_depositos", "Visa_Finiciomora")]#
+dataset <- dataset[, -c("cprestamos_personales", "mprestamos_personales", "datcplazo_fijo", "Visa_Finiciomora")]#
 
 
 # Eliminar columnas PROPUESTAS POR MATERIA ""DRIFTING"" OBTENIDAS CON LGBM
@@ -511,7 +511,7 @@ dataset[, azar := NULL ]
 
 # Grabo el dataset
 fwrite( dataset,
-  file = "dataset13.5.csv.gz",
+  file = "dataset13.6.csv.gz",
   sep = "\t"
 )
 
