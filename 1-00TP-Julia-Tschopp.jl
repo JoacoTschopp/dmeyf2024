@@ -7,7 +7,7 @@ periodo_anterior(x::Integer) = x % 100 > 1 ? x - 1 : 12 + (div(x, 100) - 1) * 10
 ###Apartado apra ejecucion en Goggle Cloud y Bukets
 #df = CSV.read("gs://joaco333/datasets/competencia_01_crudo.csv", DataFrame)
 
-ruta = "/home/joaquintschopp/datasets/competencia_02_crudo.csv"
+ruta = "/home/joaquintschopp/buckets/b1/datasets/competencia_02_crudo.csv"
 
 
 # Lee el archivo como un DataFrame
@@ -43,4 +43,4 @@ for i in 1:last
 end
 
 #CSV.write( "G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/datasets/competencia_01_julia.csv", df )
-CSV.write("/home/joaquintschopp/datasets/competencia_02_ct.csv", df)
+CSV.write("/home/joaquintschopp/buckets/b1/datasets/competencia_02_ct.csv", df)
