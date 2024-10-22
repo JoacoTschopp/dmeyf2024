@@ -6,8 +6,11 @@ periodo_anterior(x::Integer) = x % 100 > 1 ? x - 1 : 12 + (div(x, 100) - 1) * 10
 
 ###Apartado apra ejecucion en Goggle Cloud y Bukets
 #df = CSV.read("gs://joaco333/datasets/competencia_01_crudo.csv", DataFrame)
-df = CSV.read( "G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/datasets/competencia_01_crudo.csv", DataFrame )
+#df = CSV.read( "G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/datasets/competencia_01_crudo.csv", DataFrame )
 #ruta = "/home/joaquintschopp/datasets/competencia_01_crudo.csv"
+
+
+df = CSV.read( "D:/Backup DMEYF/competencia_02_crudo.csv.gz", DataFrame )
 
 # Lee el archivo como un DataFrame
 #df = CSV.read(ruta, DataFrame)
@@ -38,6 +41,6 @@ for i in 1:last
     df.clase_ternaria[i] = "BAJA+2"
   end
 end
-
-CSV.write( "G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/datasets/competencia_01_julia.csv", df )
+#CSV.write( "G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/datasets/competencia_01_julia.csv", df )
+CSV.write( "D:/Backup DMEYF/competencia_02_ct.csv", df )
 #CSV.write("/home/joaquintschopp/datasets/competencia_01_ct.csv", df)

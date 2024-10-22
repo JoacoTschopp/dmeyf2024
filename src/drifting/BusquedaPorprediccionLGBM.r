@@ -13,7 +13,10 @@ library(lubridate)
 library(iml)
 
 # Cargo el dataset donde voy a entrenar
-dataset <- fread("G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/datasets/competencia_01_crudo.csv", stringsAsFactors = TRUE)
+setwd("~/buckets/b1/") # Establezco el Working Directory
+# cargo dataset
+dataset <- fread( "./datasets/competencia_02_ct.csv" )
+#dataset <- fread("G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/datasets/competencia_01_crudo.csv", stringsAsFactors = TRUE)
 print(dim(dataset))
 
 
@@ -43,7 +46,7 @@ print(dim(dataset))
 
 PARAM <- list()
 
-PARAM$driftingcorreccion <- "deflacion"#"ninguno"
+PARAM$driftingcorreccion <- "ninguno"
 #"deflacion"      = drift_deflacion(campos_monetarios),
 #"dolar_blue"     = drift_dolar_blue(campos_monetarios),
 #"dolar_oficial"  = drift_dolar_oficial(campos_monetarios),
@@ -194,7 +197,7 @@ switch(PARAM$driftingcorreccion,
 ######################################
 
 # Filtrar los meses de interés (202104 y 202106)
-dataset <- dataset[foto_mes %in% c(202104, 202106)]
+dataset <- dataset[foto_mes %in% c(202106, 202108)]
 
 dataset <- dataset[, -c("numero_de_cliente", "cpayroll_trx")]
 

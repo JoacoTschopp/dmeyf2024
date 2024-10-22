@@ -9,8 +9,8 @@ require("data.table")
 require("rpart")
 require("yaml")
 
-kmes0 <- 202103
-kmes1 <- 202104
+kmes0 <- 202104
+kmes1 <- 202106
 
 #------------------------------------------------------------------------------
 
@@ -104,11 +104,11 @@ setwd("~/buckets/b1/") # Establezco el Working Directory
 
 
 # cargo dataset
-dataset <- fread( "./datasets/competencia_01_ct.csv" )
+dataset <- fread( "./datasets/competencia_02_ct.csv" )
 
 dir.create("./exp/", showWarnings = FALSE)
-dir.create("./exp/DR3161/", showWarnings = FALSE)
-setwd("./exp/DR3161/")
+dir.create("./exp/DR3161_Kaggle02/", showWarnings = FALSE)
+setwd("./exp/DR3161_Kaggle02/")
 
 # creo la clase_binaria SI={ BAJA+1, BAJA+2 }    NO={ CONTINUA }
 dataset[

@@ -56,11 +56,11 @@ setwd("~/buckets/b1/") # Establezco el Working Directory
 
 
 # cargo dataset
-dataset <- fread( "./datasets/competencia_01_ct.csv" )
+dataset <- fread( "./datasets/competencia_02_ct.csv" )
 
 dir.create("./exp/", showWarnings = FALSE)
-dir.create("./exp/DR3150/", showWarnings = FALSE)
-setwd("./exp/DR3150/")
+dir.create("./exp/DR3150_Kaggle02/", showWarnings = FALSE)
+setwd("./exp/DR3150_Kaggle02/")
 
 dataset <- dataset[foto_mes %in% c(kmes0, kmes1)]
 
