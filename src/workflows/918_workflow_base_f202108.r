@@ -450,7 +450,7 @@ wf_Kaggle02 <- function( pnombrewf )
 
   # Etapas modelado
   ts8 <- TS_strategy_base8()
-  ht <- HT_tuning_base( bo_iteraciones = 41 )  # iteraciones inteligentes
+  ht <- HT_tuning_base( bo_iteraciones = 42 )  # iteraciones inteligentes
 
   # Etapas finales
   fm <- FM_final_models_lightgbm( c(ht, ts8), ranks=c(1), qsemillas=10 )
