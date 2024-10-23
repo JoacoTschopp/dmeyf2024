@@ -440,11 +440,11 @@ wf_Kaggle02 <- function( pnombrewf )
   DR_drifting_base(metodo="UVA") #DRIFTING rank_cero_fijo
   FEhist_base()
 
-  FErf_attributes_base( arbolitos= 20,
-    hojas_por_arbol= 16,
-    datos_por_hoja= 1000,
-    mtry_ratio= 0.2
-  )
+  #FErf_attributes_base( arbolitos= 20,
+  #  hojas_por_arbol= 16,
+  #  datos_por_hoja= 1000,
+  #  mtry_ratio= 0.2
+  #)
 
   CN_canaritos_asesinos_base(ratio=0.2, desvio=4.0)
 
