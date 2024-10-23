@@ -93,7 +93,7 @@ CA_catastrophe_base <- function( pinputexps, metodo )
   #"ccajas_depositos" todos ceros para 202105/06 no hay forma de arreglarlo
   #"Visa_Finiciomora" todos los meses NAs no tiene sentido dejarlo se ajustaria a ese dato si hay unos pocos. 
   #dataset <- dataset[, -c("cprestamos_personales", "mprestamos_personales", "datcplazo_fijo", "Visa_Finiciomora")]
-  #param_local$atributos_eliminar <- c("cprestamos_personales", "mprestamos_personales", "datcplazo_fijo", "Visa_Finiciomora", "tmobile_app", "cmobile_app_trx" )
+  param_local$atributos_eliminar <- c("cprestamos_personales", "mprestamos_personales", "datcplazo_fijo", "Visa_Finiciomora", "tmobile_app", "cmobile_app_trx" )
 
   return( exp_correr_script( param_local ) ) # linea fija}
 }
@@ -156,7 +156,7 @@ FEhist_base <- function( pinputexps)
   param_local$Tendencias1$ratiomax <- FALSE
 
   # no me engraso las manos con las tendencias de segundo orden
-  param_local$Tendencias2$run <- TRUE
+  param_local$Tendencias2$run <- FALSE
   param_local$Tendencias2$ventana <- 12
   param_local$Tendencias2$tendencia <- FALSE
   param_local$Tendencias2$minimo <- FALSE
@@ -249,7 +249,7 @@ CN_canaritos_asesinos_base <- function( pinputexps, ratio, desvio)
   param_local$train$positivos <- c( "BAJA+2")
   param_local$train$training <- c(202005, 202006, 202007, 202008, 202009, 202010, 202011, 202012, 202101, 202102, 202103, 202104)
   param_local$train$validation <- c( 202106 )
-  param_local$train$undersampling <- 0.2
+  param_local$train$undersampling <- 0.1
   param_local$train$gan1 <- 273000
   param_local$train$gan0 <-  -7000
 
