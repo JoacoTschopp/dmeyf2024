@@ -93,7 +93,7 @@ CA_catastrophe_base <- function( pinputexps, metodo )
   #"ccajas_depositos" todos ceros para 202105/06 no hay forma de arreglarlo
   #"Visa_Finiciomora" todos los meses NAs no tiene sentido dejarlo se ajustaria a ese dato si hay unos pocos. 
   #dataset <- dataset[, -c("cprestamos_personales", "mprestamos_personales", "datcplazo_fijo", "Visa_Finiciomora")]
-  param_local$atributos_eliminar <- c("cprestamos_personales", "mprestamos_personales", "datcplazo_fijo", "Visa_Finiciomora", "tmobile_app", "cmobile_app_trx" )
+  #param_local$atributos_eliminar <- c("cprestamos_personales", "mprestamos_personales", "datcplazo_fijo", "Visa_Finiciomora", "tmobile_app", "cmobile_app_trx" )
 
   return( exp_correr_script( param_local ) ) # linea fija}
 }
@@ -440,11 +440,11 @@ wf_Kaggle02 <- function( pnombrewf )
   DR_drifting_base(metodo="UVA") #DRIFTING rank_cero_fijo
   FEhist_base()
 
-  #FErf_attributes_base( arbolitos= 20,
-  #  hojas_por_arbol= 16,
-  #  datos_por_hoja= 1000,
-  #  mtry_ratio= 0.2
-  #)
+  FErf_attributes_base( arbolitos= 20,
+    hojas_por_arbol= 16,
+    datos_por_hoja= 1000,
+    mtry_ratio= 0.2
+  )
 
   CN_canaritos_asesinos_base(ratio=0.2, desvio=4.0)
 
