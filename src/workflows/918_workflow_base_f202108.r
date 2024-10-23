@@ -88,6 +88,13 @@ CA_catastrophe_base <- function( pinputexps, metodo )
   param_local$metodo <- metodo
   param_local$semilla <- NULL  # no usa semilla, es deterministico
 
+  #Variables a Eliminar
+  # Eliminar columnas PROPUESTAS POR MATERIA ""CONCEPT DRIFTING""
+  #"ccajas_depositos" todos ceros para 202105/06 no hay forma de arreglarlo
+  #"Visa_Finiciomora" todos los meses NAs no tiene sentido dejarlo se ajustaria a ese dato si hay unos pocos. 
+  #dataset <- dataset[, -c("cprestamos_personales", "mprestamos_personales", "datcplazo_fijo", "Visa_Finiciomora")]
+  param_local$atributos_eliminar <- c("cprestamos_personales", "mprestamos_personales", "datcplazo_fijo", "Visa_Finiciomora", "tmobile_app", "cmobile_app_trx" )
+
   return( exp_correr_script( param_local ) ) # linea fija}
 }
 #------------------------------------------------------------------------------
@@ -136,7 +143,7 @@ FEhist_base <- function( pinputexps)
 
   param_local$lag1 <- TRUE
   param_local$lag2 <- TRUE # no me engraso con los lags de orden 2
-  param_local$lag3 <- FALSE # no me engraso con los lags de orden 3
+  param_local$lag3 <- TRUE # no me engraso con los lags de orden 3
 
   # no me engraso las manos con las tendencias
   param_local$Tendencias1$run <- TRUE  # FALSE, no corre nada de lo que sigue
@@ -149,7 +156,7 @@ FEhist_base <- function( pinputexps)
   param_local$Tendencias1$ratiomax <- FALSE
 
   # no me engraso las manos con las tendencias de segundo orden
-  param_local$Tendencias2$run <- FALSE
+  param_local$Tendencias2$run <- TRUE
   param_local$Tendencias2$ventana <- 12
   param_local$Tendencias2$tendencia <- FALSE
   param_local$Tendencias2$minimo <- FALSE
@@ -181,7 +188,7 @@ FErf_attributes_base <- function( pinputexps,
 
   # Parametros de un LightGBM que se genera para estimar la column importance
   param_local$train$clase01_valor1 <- c( "BAJA+2", "BAJA+1")
-  param_local$train$training <- c( 202101, 202102, 202103)
+  param_local$train$training <- c( 202104, 202105, 202106)
 
   # parametros para que LightGBM se comporte como Random Forest
   param_local$lgb_param <- list(
@@ -240,9 +247,9 @@ CN_canaritos_asesinos_base <- function( pinputexps, ratio, desvio)
   # Parametros de un LightGBM que se genera para estimar la column importance
   param_local$train$clase01_valor1 <- c( "BAJA+2", "BAJA+1")
   param_local$train$positivos <- c( "BAJA+2")
-  param_local$train$training <- c(202001, 202002, 202003, 202004, 202005, 202006, 202007, 202008, 202009, 202010, 202011, 202012, 202102, 202103, 202104)
+  param_local$train$training <- c(202005, 202006, 202007, 202008, 202009, 202010, 202011, 202012, 202101, 202102, 202103, 202104)
   param_local$train$validation <- c( 202106 )
-  param_local$train$undersampling <- 0.1
+  param_local$train$undersampling <- 0.2
   param_local$train$gan1 <- 273000
   param_local$train$gan0 <-  -7000
 
@@ -271,12 +278,12 @@ TS_strategy_base8 <- function( pinputexps )
 
   param_local$final_train$undersampling <- 1.0
   param_local$final_train$clase_minoritaria <- c( "BAJA+1", "BAJA+2")
-  param_local$final_train$training <- c(202106, 202105, 202104,
-    202103, 202102, 202101, 202001, 202002, 202003, 202004, 202005, 202006, 202007, 202008, 202009, 202010, 202011, 202012)
+  param_local$final_train$training <- c(202106, 202105, 202104, 202103, 202102, 202101, 
+    202005, 202006, 202007, 202008, 202009, 202010, 202011, 202012)
 
 
-  param_local$train$training <- c(202104, 202103, 202102,
-    202101, 202012, 202011, 202101, 202001, 202002, 202003, 202004, 202005, 202006, 202007, 202008, 202009, 202010)
+  param_local$train$training <- c(202104, 202103, 202102, 202101, 
+    202012, 202011, 202005, 202006, 202007, 202008, 202009, 202010)
   param_local$train$validation <- c(202105)
   param_local$train$testing <- c(202106)
 
@@ -428,7 +435,7 @@ wf_Kaggle02 <- function( pnombrewf )
   DT_incorporar_dataset( "~/buckets/b1/datasets/competencia_02_ct.csv.gz")
 
   # Etapas preprocesamiento
-  CA_catastrophe_base( metodo="MachineLearning")
+  CA_catastrophe_base( metodo="EstadisticaClasica")# MachineLearning
   FEintra_manual_base()
   DR_drifting_base(metodo="UVA") #DRIFTING rank_cero_fijo
   FEhist_base()
