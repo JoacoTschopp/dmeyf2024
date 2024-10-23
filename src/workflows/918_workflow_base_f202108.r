@@ -188,7 +188,7 @@ FErf_attributes_base <- function( pinputexps,
 
   # Parametros de un LightGBM que se genera para estimar la column importance
   param_local$train$clase01_valor1 <- c( "BAJA+2", "BAJA+1")
-  param_local$train$training <- c( 202104, 202105, 202106)
+  param_local$train$training <- c( 202101, 202102, 202103)
 
   # parametros para que LightGBM se comporte como Random Forest
   param_local$lgb_param <- list(
@@ -450,7 +450,7 @@ wf_Kaggle02 <- function( pnombrewf )
 
   # Etapas modelado
   ts8 <- TS_strategy_base8()
-  ht <- HT_tuning_base( bo_iteraciones = 40 )  # iteraciones inteligentes
+  ht <- HT_tuning_base( bo_iteraciones = 41 )  # iteraciones inteligentes
 
   # Etapas finales
   fm <- FM_final_models_lightgbm( c(ht, ts8), ranks=c(1), qsemillas=10 )
