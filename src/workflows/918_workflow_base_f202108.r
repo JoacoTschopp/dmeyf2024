@@ -439,7 +439,7 @@ wf_Kaggle02 <- function( pnombrewf )
   FEintra_manual_base()
   DR_drifting_base(metodo="UVA") #DRIFTING rank_cero_fijo
   FEhist_base()
-  CN_canaritos_asesinos_base(ratio=0.2, desvio=4.0)
+  CN_canaritos_asesinos_base(ratio=0.5, desvio=4.0)
   
   FErf_attributes_base( arbolitos= 20,
     hojas_por_arbol= 16,
@@ -447,7 +447,7 @@ wf_Kaggle02 <- function( pnombrewf )
     mtry_ratio= 0.2
   )
 
-  CN_canaritos_asesinos_base(ratio=0.2, desvio=4.0)
+  CN_canaritos_asesinos_base(ratio=0.5, desvio=4.0)
 
   # Etapas modelado
   ts8 <- TS_strategy_base8()
