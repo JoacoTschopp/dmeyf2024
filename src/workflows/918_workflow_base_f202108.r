@@ -156,7 +156,7 @@ FEhist_base <- function( pinputexps)
   param_local$Tendencias1$ratiomax <- FALSE
 
   # no me engraso las manos con las tendencias de segundo orden
-  param_local$Tendencias2$run <- FALSE
+  param_local$Tendencias2$run <- TRUE
   param_local$Tendencias2$ventana <- 12
   param_local$Tendencias2$tendencia <- FALSE
   param_local$Tendencias2$minimo <- FALSE
@@ -188,7 +188,7 @@ FErf_attributes_base <- function( pinputexps,
 
   # Parametros de un LightGBM que se genera para estimar la column importance
   param_local$train$clase01_valor1 <- c( "BAJA+2", "BAJA+1")
-  param_local$train$training <- c( 202101, 202102, 202103)
+  param_local$train$training <- c( 202101, 202102, 202103, 202104, 202105, 202106)
 
   # parametros para que LightGBM se comporte como Random Forest
   param_local$lgb_param <- list(
@@ -439,7 +439,8 @@ wf_Kaggle02 <- function( pnombrewf )
   FEintra_manual_base()
   DR_drifting_base(metodo="UVA") #DRIFTING rank_cero_fijo
   FEhist_base()
-
+  CN_canaritos_asesinos_base(ratio=0.2, desvio=4.0)
+  
   FErf_attributes_base( arbolitos= 20,
     hojas_por_arbol= 16,
     datos_por_hoja= 1000,
