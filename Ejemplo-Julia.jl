@@ -1,47 +1,45 @@
-using Pkg
-Pkg.add("MLJ")
-Pkg.add("LightGBM")
-Pkg.add("DataFrames")
-Pkg.add("Random")
-
-using DataFrames
-using Random
-using MLJ
 using LightGBM
+using DataFrames
+using Statistics
 
+# Definir el modelo
+modelo = LGBMClassification()
 
-# Generar un dataset de prueba con 1000 filas y 5 columnas
-Random.seed!(123)
-n_filas = 1000
-n_columnas = 5
-X = rand(n_filas, n_columnas)
-y = rand(n_filas)
+# Definir el dataset
+X = rand(100, 5)
+y = rand(100)
 
-# Convertir a DataFrame
-df = DataFrame(X, :auto)
-rename!(df, [:X1, :X2, :X3, :X4, :X5])
-df[!, :y] = y
-
-
-
-# Definir el modelo LightGBM
-modelo = @load LightGBMClassifier
-
-# Definir el pipeline
-pipeline = @pipeline(
-    StandardScaler(),
-    modelo
+# Crear un DataFrame con columnas individuales para cada característica
+df = DataFrame(
+    X1 = X[:, 1],
+    X2 = X[:, 2],
+    X3 = X[:, 3],
+    X4 = X[:, 4],
+    X5 = X[:, 5],
+    y = y
 )
 
-# Preparar los datos para el entrenamiento
-X = select!(df, Not(:y))
-y = df[!, :y]
+# Definir la función de escalado
+function escalar(X)
+    mean_X = mean(X, dims=1)
+    std_X = std(X, dims=1)
+    return (X .- mean_X) ./ std_X
+end
+
+# Definir la función de entrenamiento
+function entrenar(modelo, X, y)
+    X_esc = escalar(X)
+    fit!(modelo, X_esc, y)
+end
+
+# Definir la función de predicción
+function predecir(modelo, X)
+    X_esc = escalar(X)
+    return predict(modelo, X_esc)
+end
 
 # Entrenar el modelo
-mach = machine(pipeline, X, y)
-fit!(mach)
+entrenar(modelo, Matrix(df[:, 1:5]), df[:, 6])
 
-# Evaluar el modelo
-y_pred = predict(mach, X)
-accuracy = mean(y_pred .== y)
-println("Precisión: ", accuracy)
+# Predecir con el modelo
+predicciones = predecir(modelo, Matrix(df[:, 1:5]))
