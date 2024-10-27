@@ -5,12 +5,15 @@ using Pkg
 #Pkg.add("Random")
 #Pkg.add("CSV")
 
-include("./funciones_preproc_julia.jl")
+
 
 using LightGBM
 using DataFrames
 using Statistics
 using CSV, DataFrames
+
+
+include("./funciones_preproc_julia.jl")
 
 # Definir las variables importantes
 param_local = Dict(
