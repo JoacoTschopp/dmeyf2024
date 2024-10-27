@@ -13,7 +13,7 @@ training_months = [202108, 202107, 202106, 202105, 202104, 202103, 202102, 20210
 @info "Filtrando dataset"
 
 # Usar Dagger para crear un flujo de trabajo
-filtered_data = Dagger.@dagger dataset[dataset.foto_mes.∈training_months, :]
+filtered_data = Dagger.@apawn dataset[dataset.foto_mes.∈training_months, :]
 
 # Ejecutar el trabajo de Dagger y recoger los resultados
 @info "Ejecutando el filtro"
