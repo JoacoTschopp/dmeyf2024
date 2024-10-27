@@ -3,7 +3,9 @@ using Pkg
 #Pkg.add("LightGBM")
 #Pkg.add("DataFrames")
 #Pkg.add("Random")
-Pkg.add("CSV")
+#Pkg.add("CSV")
+
+include(funciones_preproc_julia.jl)
 
 using LightGBM
 using DataFrames
@@ -111,33 +113,6 @@ function predecir(modelo, X)
     return predict(modelo, X_esc)
 end
 
-function generar_csv_cortes(predicciones::DataFrame)
-    # Verificar que el DataFrame `predicciones` tenga las columnas requeridas
-    if !all(["numero_de_cliente", "Predicted"] .∈ names(predicciones))
-        error("El DataFrame debe contener las columnas `numero_de_cliente` y `Predicted`.")
-    end
-
-    # Ordenar el DataFrame de mayor a menor según la columna `Predicted`
-    sort!(predicciones, :Predicted, rev=true)
-
-    # Definir los cortes de 8500 a 13500, sumando de a 500
-    cortes = 8500:500:13500
-
-    # Generar CSV para cada corte
-    for corte in cortes
-        # Crear copia de `predicciones` y asignar 1 para los primeros `corte` y 0 para el resto
-        resultados_corte = copy(predicciones)
-        resultados_corte.Predicted .= 0
-        resultados_corte[1:corte, :Predicted] .= 1
-
-        # Guardar el archivo CSV con el nombre correspondiente al corte
-        nombre_archivo = "~/buckets/b1/exportaJulia/predicciones_corte_$corte.csv"
-        CSV.write(nombre_archivo, resultados_corte; header=["numero_de_cliente", "Predicted"])
-        println("Archivo generado: $nombre_archivo")
-    end
-end
-
-
 #########################################################################
 #  ACA empieza el programa
 
@@ -159,6 +134,13 @@ training = param_local["final_train"]["training"]
 
 # Filtrar los datos para `X_train` y `predic`
 #X_train_data = dataset[dataset[!, :foto_mes].∈training, :]
+println(size(dataset))                    # Tamaño del DataFrame original
+println(length(dataset.foto_mes .∈ training)) # Longitud del filtro booleano
+
+filter_result = dataset.foto_mes .∈ training
+println(filter_result)
+
+
 X_train_data = dataset[dataset.foto_mes.∈training, :]
 println(size(X_train_data))
 
