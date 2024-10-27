@@ -5,7 +5,7 @@ using Pkg
 #Pkg.add("Random")
 #Pkg.add("CSV")
 
-include(funciones_preproc_julia.jl)
+include("./funciones_preproc_julia.jl"; precompile=true)
 
 using LightGBM
 using DataFrames
