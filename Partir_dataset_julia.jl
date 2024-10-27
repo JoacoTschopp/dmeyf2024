@@ -1,27 +1,27 @@
 using Dagger, CSV, DataFrames
 
-# Definir el dataset
-@info "Comienza la carga del dataset"
+# Ruta de archivo y parámetros de filtro
 file_path = "/home/joaquintschopp/buckets/b1/datasets/competencia_02_ct.csv.gz"
-dataset = CSV.File(file_path; buffer_in_memory=true) |> DataFrame
-@info "Carga del dataset completada"
+output_path = "/home/joaquintschopp/buckets/b1/datasets/competencia_julia_ct.csv"
+training_months = Set([202108, 202107, 202106, 202105, 202104, 202103, 202102, 202101])  # Convertido a Set para mejorar eficiencia
 
-# Definir los meses para el filtro
-training_months = [202108, 202107, 202106, 202105, 202104, 202103, 202102, 202101]
+# Cargar el dataset completo
+@info "Comienza carga del dataset"
+dataset = DataFrame(CSV.File(file_path; buffer_in_memory=true))
 
-# Crear una tarea para filtrar los datos
-@info "Filtrando dataset"
+# Definir una función de filtro para trabajar con `Dagger`
+function filter_training_months(df, months)
+    return filter(row -> row.foto_mes in months, df)
+end
 
-# Usar Dagger para crear un flujo de trabajo
-filtered_data = Dagger.@spawn dataset[dataset.foto_mes.∈training_months, :]
+# Ejecutar el filtro en paralelo
+@info "Inicia filtrado paralelo con Dagger"
+filtered_data_future = Dagger.@spawn filter_training_months(dataset, training_months)
+filtered_data = fetch(filtered_data_future)
 
-# Ejecutar el trabajo de Dagger y recoger los resultados
-@info "Ejecutando el filtro"
-filtered_result = Dagger.collect(filtered_data)
-
-# Guardar el dataset filtrado
-output_path = "/home/joaquintschopp/buckets/b1/datasets/competencia_julia_ct.csv.gz"
+# Guardar el resultado
 @info "Guardando el dataset filtrado"
-CSV.write(output_path, filtered_result, compress=true)
-@info "Dataset guardado con éxito en $(output_path)"
+CSV.write(output_path, filtered_data; compress=true)
+@info "Proceso completo, archivo guardado en $output_path"
+
 
