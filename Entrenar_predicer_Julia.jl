@@ -145,9 +145,12 @@ end
 modelo = LGBMClassification()
 
 # Definir el dataset
+@info "Comienza carga de Dataset"
 file = CSV.File("/home/joaquintschopp/buckets/b1/datasets/competencia_02_ct.csv.gz"; buffer_in_memory=true)
 dataset = DataFrame(file)
+@info "Fin Carga"
 
+@info "Pipline de entrenamiento"
 hiperparametros = param_local["lgb_param"]
 
 # Definir `future` y `training` utilizando los valores del diccionario
@@ -159,16 +162,26 @@ X_train_data = dataset[dataset[!, :foto_mes].∈training, :]
 predic_data = dataset[dataset[!, :foto_mes].==future[1], :]
 
 # Seleccionar `X` y `y` para el entrenamiento
-X_train = select(X_train_data, Not(:clase_ternaria)) |> Matrix
+#X_train = select(X_train_data, Not(:clase_ternaria)) |> Matrix
+println(names(X_train_data))
+# Seleccionar todas las columnas excepto `clase_ternaria`
+X_train_data_filtered = select(X_train_data, Not(:clase_ternaria))
+
+# Convertir a matriz solo si la selección es correcta
+X_train = Matrix(X_train_data_filtered)
+
 y_train = map(x -> x in ["BAJA+1", "BAJA+2"] ? 1 : 0, X_train_data.clase_ternaria)
 
 # Crear `predic`
 predic = select(predic_data, Not(:clase_ternaria)) |> Matrix
 
-
+@info "Entrenamietno del modelo"
 entrenar(modelo, X_train, y_train, hiperparametros)
 
+@info "Predicciones sobre el modelo"
 # Predecir con el modelo
 predicciones = predecir(modelo, predic)
 
+
+@info "Genero contes y archivos para Kaggle"
 generar_csv_cortes(predicciones, numero_de_cliente)
