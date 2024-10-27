@@ -158,8 +158,11 @@ future = param_local["future"]
 training = param_local["final_train"]["training"]
 
 # Filtrar los datos para `X_train` y `predic`
-X_train_data = dataset[filter(row -> row[:foto_mes] in training, eachrow(dataset)), :]
+println(size(X_train_data))
 #X_train_data = dataset[dataset[!, :foto_mes].∈training, :]
+X_train_data = dataset[dataset.foto_mes.∈training, :]
+println(size(X_train_data))
+
 predic_data = dataset[dataset[!, :foto_mes].==future[1], :]
 
 # Seleccionar `X` y `y` para el entrenamiento
