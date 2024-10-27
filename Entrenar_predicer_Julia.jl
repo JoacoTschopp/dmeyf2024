@@ -16,12 +16,12 @@ param_local = Dict(
     "final_train" => Dict(
         "undersampling" => 1.0,
         "clase_minoritaria" => ["BAJA+1", "BAJA+2"],
-        "training" => [202106, 202105, 202104, 202103, 202102, 202101, 
-                        202005, 202006, 202007, 202008, 202009, 202010, 202011, 202012]
+        "training" => [202106, 202105, 202104, 202103, 202102, 202101,
+            202005, 202006, 202007, 202008, 202009, 202010, 202011, 202012]
     ),
     "train" => Dict(
-        "training" => [202104, 202103, 202102, 202101, 
-                          202012, 202011, 202005, 202006, 202007, 202008, 202009, 202010],
+        "training" => [202104, 202103, 202102, 202101,
+            202012, 202011, 202005, 202006, 202007, 202008, 202009, 202010],
         "validation" => [202105],
         "testing" => [202106],
         "undersampling" => 0.75,
@@ -116,7 +116,7 @@ function generar_csv_cortes(predicciones::DataFrame)
     if !all(["numero_de_cliente", "Predicted"] .∈ names(predicciones))
         error("El DataFrame debe contener las columnas `numero_de_cliente` y `Predicted`.")
     end
-    
+
     # Ordenar el DataFrame de mayor a menor según la columna `Predicted`
     sort!(predicciones, :Predicted, rev=true)
 
@@ -145,7 +145,7 @@ end
 modelo = LGBMClassification()
 
 # Definir el dataset
-dataset = CSV.read("~/buckets/b1/datasets/competencia_02_ct.csv.gz")
+dataset = CSV.read("~/buckets/b1/datasets/competencia_02_ct.csv.gz", DataFrame)
 
 hiperparametros = param_local["lgb_param"]
 
@@ -154,8 +154,8 @@ future = param_local["future"]
 training = param_local["final_train"]["training"]
 
 # Filtrar los datos para `X_train` y `predic`
-X_train_data = dataset[dataset[!, :foto_mes] .∈ training, :]
-predic_data = dataset[dataset[!, :foto_mes] .== future[1], :]
+X_train_data = dataset[dataset[!, :foto_mes].∈training, :]
+predic_data = dataset[dataset[!, :foto_mes].==future[1], :]
 
 # Seleccionar `X` y `y` para el entrenamiento
 X_train = select(X_train_data, Not(:clase_ternaria)) |> Matrix
