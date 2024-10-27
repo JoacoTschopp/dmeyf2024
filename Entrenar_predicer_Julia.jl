@@ -140,11 +140,14 @@ training = param_local["final_train"]["training"]
 println(size(dataset))                    # Tamaño del DataFrame original
 println(length(dataset.foto_mes .∈ training)) # Longitud del filtro booleano
 
-filter_result = dataset.foto_mes .∈ training
+
+
+filter_result = filter(row -> row.foto_mes in training, dataset)
 println(filter_result)
 
+X_train_data = filter(row -> row.foto_mes in training, dataset)
 
-X_train_data = dataset[dataset.foto_mes.∈training, :]
+#X_train_data = dataset[dataset.foto_mes.∈training, :]
 println(size(X_train_data))
 
 predic_data = dataset[dataset[!, :foto_mes].==future[1], :]
