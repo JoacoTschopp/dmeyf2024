@@ -1,3 +1,10 @@
+using Pkg
+#Pkg.add("MLJ")
+#Pkg.add("LightGBM")
+#Pkg.add("DataFrames")
+#Pkg.add("Random")
+Pkg.add("CSV")
+
 using LightGBM
 using DataFrames
 using Statistics
