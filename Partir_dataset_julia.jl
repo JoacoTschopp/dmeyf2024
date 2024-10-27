@@ -1,35 +1,27 @@
-using Dagger, CSV, DataFrames, Tables
+using Dagger, CSV, DataFrames
 
-# Ruta de archivo y parámetros de filtro
+# Definir el dataset
+@info "Comienza la carga del dataset"
 file_path = "/home/joaquintschopp/buckets/b1/datasets/competencia_02_ct.csv.gz"
-output_path = "/home/joaquintschopp/buckets/b1/datasets/competencia_julia_ct.csv"
+dataset = CSV.File(file_path; buffer_in_memory=true) |> DataFrame
+@info "Carga del dataset completada"
+
+# Definir los meses para el filtro
 training_months = [202108, 202107, 202106, 202105, 202104, 202103, 202102, 202101]
 
-# Función para cargar, filtrar y escribir fragmentos
-function process_and_filter(file_path, training_months, output_path)
-    @info "Comienza carga y filtrado por fragmentos del dataset"
+# Crear una tarea para filtrar los datos
+@info "Filtrando dataset"
 
-    # Abrir archivo para escritura con compresión
-    CSV.open(output_path, write=true, compress=true) do writer
-        first_chunk = true
+# Usar Dagger para crear un flujo de trabajo
+filtered_data = Dagger.@spawn dataset[dataset.foto_mes.∈training_months, :]
 
-        # Leer y procesar fragmentos del archivo de entrada
-        for chunk in CSV.File(file_path; buffer=2^20, reusebuffer=true)
-            df_chunk = DataFrame(chunk)
+# Ejecutar el trabajo de Dagger y recoger los resultados
+@info "Ejecutando el filtro"
+filtered_result = Dagger.collect(filtered_data)
 
-            # Filtrar fragmento
-            filtered_chunk = df_chunk[df_chunk.foto_mes.∈training_months, :]
-
-            # Escribir el fragmento filtrado en el archivo de salida
-            CSV.write(writer, filtered_chunk, append=(!first_chunk))
-            first_chunk = false
-        end
-    end
-
-    @info "Filtrado y guardado completado en $output_path"
-end
-
-# Ejecutar el procesamiento
-process_and_filter(file_path, training_months, output_path)
-
+# Guardar el dataset filtrado
+output_path = "/home/joaquintschopp/buckets/b1/datasets/competencia_julia_ct.csv.gz"
+@info "Guardando el dataset filtrado"
+CSV.write(output_path, filtered_result, compress=true)
+@info "Dataset guardado con éxito en $(output_path)"
 
