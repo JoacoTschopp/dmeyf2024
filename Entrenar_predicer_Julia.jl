@@ -158,14 +158,15 @@ future = param_local["future"]
 training = param_local["final_train"]["training"]
 
 # Filtrar los datos para `X_train` y `predic`
-X_train_data = dataset[dataset[!, :foto_mes].∈training, :]
+X_train_data = dataset[filter(row -> row[:foto_mes] in training, eachrow(dataset)), :]
+#X_train_data = dataset[dataset[!, :foto_mes].∈training, :]
 predic_data = dataset[dataset[!, :foto_mes].==future[1], :]
 
 # Seleccionar `X` y `y` para el entrenamiento
-#X_train = select(X_train_data, Not(:clase_ternaria)) |> Matrix
-println(names(X_train_data))
+X_train = select(X_train_data, Not(:clase_ternaria)) |> Matrix
+#println(names(X_train_data))
 # Seleccionar todas las columnas excepto `clase_ternaria`
-X_train_data_filtered = select(X_train_data, Not(:clase_ternaria))
+#X_train_data_filtered = select(X_train_data, Not(:clase_ternaria))
 
 # Convertir a matriz solo si la selección es correcta
 X_train = Matrix(X_train_data_filtered)
