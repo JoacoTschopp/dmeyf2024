@@ -145,7 +145,7 @@ end
 modelo = LGBMClassification()
 
 # Definir el dataset
-file = CSV.File("~/buckets/b1/datasets/competencia_02_ct.csv.gz"; buffer_in_memory=true)
+file = CSV.File("/home/joaquintschopp/buckets/b1/datasets/competencia_02_ct.csv.gz"; buffer_in_memory=true)
 dataset = DataFrame(file)
 
 hiperparametros = param_local["lgb_param"]
