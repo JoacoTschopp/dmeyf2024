@@ -149,8 +149,8 @@ entrenar(modelo, X_train, y_train, hiperparametros)
 # Predecir con el modelo
 predicciones = predecir(modelo, X_future)
 
-print()
-numero_de_cliente = X_future[:, :numero_de_cliente]  # Extraer el número de cliente de `X_future`
+
+numero_de_cliente = predic_data[:, :numero_de_cliente]  # Extraer el número de cliente de `X_future`
 # Crear DataFrame con `numero_de_cliente` y las `predicciones`
 df_predicciones = DataFrame(numero_de_cliente=numero_de_cliente, Predicted=predicciones)
     
