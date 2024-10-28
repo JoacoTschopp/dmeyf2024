@@ -22,8 +22,6 @@ end
 
 # Función de optimización
 """
-using BayesianOptimization, LightGBM, CSV, DataFrames
-
 function optimizar_lightgbm(X_train, y_train, X_val, y_val, X_test, y_test, HP_fijos, HP_optimizar)
     # Archivos CSV para los logs
     log_file = "logs_lightgbm.csv"
@@ -68,6 +66,51 @@ function optimizar_lightgbm(X_train, y_train, X_val, y_val, X_test, y_test, HP_f
 end
 
 """
+#######################################################################################
+## Cargar Archivos a Kaggle
+
+function cargar_y_obtener_ganancia(filepath::String, competition::String)
+    # Enviar el archivo a Kaggle y obtener el submissionId
+    submit_command = `kaggle competitions submit -c $competition -f $filepath -m "Carga automática desde Julia"`
+    submit_output = read(submit_command, String)
+    
+    # Extraer submissionId del resultado
+    match = match(r"Successfully submitted to .+ with id (\d+)", submit_output)
+    if match === nothing
+        println("Error: No se pudo obtener el submissionId.")
+        return nothing
+    end
+    submission_id = match.captures[1]
+    println("Envío exitoso. ID de submission: $submission_id")
+
+    # Esperar unos segundos antes de consultar la puntuación
+    sleep(15)  # Espera inicial de 15 segundos; ajusta según sea necesario
+
+    # Intentar obtener la ganancia varias veces
+    for i in 1:10
+        score_command = `kaggle competitions submissions -c $competition`
+        submissions_output = read(score_command, String)
+
+        # Buscar el score de la submission más reciente
+        lines = split(submissions_output, '\n')
+        for line in lines
+            if occursin(submission_id, line)
+                match_score = match(r"([0-9]+\.[0-9]+)", line)
+                if match_score !== nothing
+                    score = match_score.match
+                    println("Ganancia obtenida: $score")
+                    return score
+                end
+            end
+        end
+        println("Ganancia no disponible aún. Reintentando...")
+        sleep(10)  # Esperar antes de intentar nuevamente
+    end
+
+    println("Error: No se pudo obtener la ganancia después de varios intentos.")
+    return nothing
+end
+
 
 
 #######################################################################################
@@ -75,6 +118,10 @@ end
 
 function generar_csv_cortes(predicciones::DataFrame)
     # Verificar que el DataFrame `predicciones` tenga las columnas requeridas
+    @info "Tamaño de predic_data", size(predicciones)
+    @info "Tipo de archivo", typeof(predicciones)
+    first(predicciones, 5)  # Imprime las primeras 5 filas del DataFrame
+
     if !all(in(["numero_de_cliente", "Predicted"], names(predicciones)))
         error("El DataFrame debe contener las columnas `numero_de_cliente` y `Predicted`.")
     end
@@ -85,7 +132,7 @@ function generar_csv_cortes(predicciones::DataFrame)
 
     @info "Guardado de Predicciones ordenadas."
     # Guardar las predicciones ordenadas en un archivo .txt
-    nombre_archivo_predicciones = "~/buckets/b1/exportaJulia/predicciones_ordenadas.txt"
+    nombre_archivo_predicciones = "D:/DmEyF_Julia/exportaJulia/predicciones_ordenadas.txt"
     open(nombre_archivo_predicciones, "w") do io
         for (i, row) in enumerate(eachrow(predicciones))
             println(io, "Cliente $(row.numero_de_cliente): $(row.Predicted)")
@@ -105,9 +152,14 @@ function generar_csv_cortes(predicciones::DataFrame)
         resultados_corte[1:corte, :Predicted] .= 1
 
         # Guardar el archivo CSV con el nombre correspondiente al corte
-        nombre_archivo = "~/buckets/b1/exportaJulia/predicciones_corte_$corte.csv"
+        nombre_archivo = "D:/DmEyF_Julia/exportaJulia/predicciones_corte_$corte.csv"
         CSV.write(nombre_archivo, resultados_corte; header=["numero_de_cliente", "Predicted"])
         println("Archivo generado: $nombre_archivo")
+        
+        @info "Carga de Archivo a Kaggle", corte
+        ganancia = cargar_y_obtener_ganancia(nombre_archivo, "dm-ey-f-2024-segunda")
+        println("Ganancia del submit: ", ganancia)
+
     end
 end
 

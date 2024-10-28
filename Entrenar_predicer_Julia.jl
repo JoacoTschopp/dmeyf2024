@@ -4,14 +4,12 @@ using Pkg
 #Pkg.add("DataFrames")
 #Pkg.add("Random")
 #Pkg.add("CSV")
-
-
+#Pkg.add("BayesianOptimization")
 
 using LightGBM
 using DataFrames
 using Statistics
 using CSV, DataFrames
-using Dagger
 using Dates
 
 include("Paraetros_Julia_LGBM.jl")
@@ -29,34 +27,34 @@ end
 # Definir la función de entrenamiento
 function entrenar(modelo, X, y, hiperparametros)
     # Cargar los hiperparámetros en el modelo
-    modelo.boosting = hiperparametros["boosting"]
-    modelo.objective = hiperparametros["objective"]
-    modelo.metric = [hiperparametros["metric"]]
+    modelo.boosting = hiperparametros[:boosting]
+    modelo.objective = hiperparametros[:objective]
+    modelo.metric = [hiperparametros[:metric]]
     #modelo.first_metric_only = hiperparametros["first_metric_only"]
-    modelo.boost_from_average = hiperparametros["boost_from_average"]
-    modelo.feature_pre_filter = hiperparametros["feature_pre_filter"]
-    modelo.force_row_wise = hiperparametros["force_row_wise"]
+    modelo.boost_from_average = hiperparametros[:boost_from_average]
+    modelo.feature_pre_filter = hiperparametros[:feature_pre_filter]
+    modelo.force_row_wise = hiperparametros[:force_row_wise]
     #modelo.verbosity = hiperparametros["verbosity"]
-    modelo.max_depth = hiperparametros["max_depth"]
-    modelo.min_gain_to_split = hiperparametros["min_gain_to_split"]
-    modelo.min_sum_hessian_in_leaf = hiperparametros["min_sum_hessian_in_leaf"]
-    modelo.lambda_l1 = hiperparametros["lambda_l1"]
-    modelo.lambda_l2 = hiperparametros["lambda_l2"]
-    modelo.max_bin = hiperparametros["max_bin"]
-    modelo.num_iterations = hiperparametros["num_iterations"]
-    modelo.bagging_fraction = hiperparametros["bagging_fraction"]
-    modelo.pos_bagging_fraction = hiperparametros["pos_bagging_fraction"]
-    modelo.neg_bagging_fraction = hiperparametros["neg_bagging_fraction"]
-    modelo.is_unbalance = hiperparametros["is_unbalance"]
-    modelo.scale_pos_weight = hiperparametros["scale_pos_weight"]
-    modelo.drop_rate = hiperparametros["drop_rate"]
-    modelo.max_drop = hiperparametros["max_drop"]
-    modelo.skip_drop = hiperparametros["skip_drop"]
-    modelo.extra_trees = hiperparametros["extra_trees"]
-    modelo.learning_rate = hiperparametros["learning_rate"]
-    modelo.feature_fraction = hiperparametros["feature_fraction"]
-    modelo.num_leaves = hiperparametros["num_leaves"]
-    modelo.min_data_in_leaf = hiperparametros["min_data_in_leaf"]
+    modelo.max_depth = hiperparametros[:max_depth]
+    modelo.min_gain_to_split = hiperparametros[:min_gain_to_split]
+    modelo.min_sum_hessian_in_leaf = hiperparametros[:min_sum_hessian_in_leaf]
+    modelo.lambda_l1 = hiperparametros[:lambda_l1]
+    modelo.lambda_l2 = hiperparametros[:lambda_l2]
+    modelo.max_bin = hiperparametros[:max_bin]
+    modelo.num_iterations = hiperparametros[:num_iterations]
+    modelo.bagging_fraction = hiperparametros[:bagging_fraction]
+    modelo.pos_bagging_fraction = hiperparametros[:pos_bagging_fraction]
+    modelo.neg_bagging_fraction = hiperparametros[:neg_bagging_fraction]
+    modelo.is_unbalance = hiperparametros[:is_unbalance]
+    modelo.scale_pos_weight = hiperparametros[:scale_pos_weight]
+    modelo.drop_rate = hiperparametros[:drop_rate]
+    modelo.max_drop = hiperparametros[:max_drop]
+    modelo.skip_drop = hiperparametros[:skip_drop]
+    modelo.extra_trees = hiperparametros[:extra_trees]
+    modelo.learning_rate = hiperparametros[:learning_rate]
+    modelo.feature_fraction = hiperparametros[:feature_fraction]
+    modelo.num_leaves = hiperparametros[:num_leaves]
+    modelo.min_data_in_leaf = hiperparametros[:min_data_in_leaf]
     modelo.num_class = 1
 
     # Convertir valores faltantes en X a 0
@@ -100,7 +98,7 @@ modelo = LGBMClassification()
 
 # Definir el dataset
 @info "Comienza carga de Dataset - $(now())"
-file = CSV.File("/home/joaquintschopp/buckets/b1/datasets/competencia_julia_ct.csv"; buffer_in_memory=true)
+file = CSV.File("D:/DmEyF_Julia/dataset/competencia_julia_ct.csv"; buffer_in_memory=true)
 dataset = DataFrame(file)
 @info "Fin Carga - $(now())"
 
@@ -143,6 +141,14 @@ X_future = select(predic_data, Not(:clase_ternaria)) |> Matrix
 @info "Entrenamietno del modelo"
 entrenar(modelo, X_train, y_train, hiperparametros)
 @info "FIN Entrenamietno del modelo - $(now())"
+
+# Guardar el modelo en un archivo
+@info "Guardo el modelo"
+LightGBM.savemodel(modelo, "D:/DmEyF_Julia/exportaJulia/modelo_entrenado.txt")
+
+# Cargar el modelo en otra sesión o script
+#@info "Cargo modelo guardado"
+#modelo = LightGBM.loadmodel!("D:/DmEyF_Julia/exportaJulia/modelo_entrenado.txt")
 
 
 @info "Predicciones sobre el modelo"
