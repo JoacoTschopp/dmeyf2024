@@ -68,11 +68,11 @@ function entrenar(modelo, X, y, hiperparametros)
     if size(X, 1) != length(y)
         throw(ArgumentError("Las dimensiones de X y y no coinciden después de reemplazar valores faltantes."))
     end
-    # Crear un dataset de LightGBM
-    dtrain = LightGBM.Dataset(X, label=y)
+
+    y = collect(y)
 
     # Entrenar el modelo
-    fit!(modelo, dtrain)
+    fit!(modelo, X, y)
 end
 
 # Definir la función de predicción
