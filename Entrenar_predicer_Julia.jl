@@ -87,7 +87,7 @@ end
 
 # Definir la función de predicción
 function predecir(modelo, X)
-    X_esc = escalar(X)
+    X = replace(X, missing => 0.0)
     return predict(modelo, X_esc)
 end
 
