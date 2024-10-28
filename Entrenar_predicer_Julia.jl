@@ -16,7 +16,7 @@ using Dates
 
 include("Paraetros_Julia_LGBM.jl")
 
-include("./funciones_preproc_julia.jl")
+include("./Funciones_julia.jl")
 
 
 # Definir la función de escalado
@@ -88,7 +88,7 @@ end
 # Definir la función de predicción
 function predecir(modelo, X)
     X = replace(X, missing => 0.0)
-    return predict(modelo, X_esc)
+    return predict(modelo, X)
 end
 
 #########################################################################
