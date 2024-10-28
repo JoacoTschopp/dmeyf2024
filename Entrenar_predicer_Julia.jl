@@ -79,7 +79,7 @@ modelo = LGBMClassification()
 
 # Definir el dataset
 @info "Comienza carga de Dataset"
-file = CSV.File("/home/joaquintschopp/buckets/b1/datasets/competencia_julia_ct.csv.gz"; buffer_in_memory=true)
+file = CSV.File("/home/joaquintschopp/buckets/b1/datasets/competencia_julia_ct.csv"; buffer_in_memory=true)
 dataset = DataFrame(file)
 @info "Fin Carga"
 
