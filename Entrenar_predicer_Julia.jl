@@ -58,14 +58,16 @@ function entrenar(modelo, X, y, hiperparametros)
     modelo.num_leaves = hiperparametros["num_leaves"]
     modelo.min_data_in_leaf = hiperparametros["min_data_in_leaf"]
 
+    # Convertir valores faltantes en X a 0
+    X = replace(X, missing => 0.0)  # Cambia a 0.0 para asegurarte de que sea del tipo correcto
+
     # Convertir valores faltantes en y a 0
-    y_clean = replace(y, missing => 0)  # Cambia a 0 para que y sea un vector de enteros o booleanos
+    y = replace(y, missing => 0)  # Cambia a 0 para que y sea un vector de enteros o booleanos
 
     # Asegúrate de que `y` y `X` sean compatibles
-    if size(X_clean, 1) != length(y_clean)
+    if size(X, 1) != length(y)
         throw(ArgumentError("Las dimensiones de X y y no coinciden después de reemplazar valores faltantes."))
     end
-
 
     # Entrenar el modelo
     fit!(modelo, X, y)
