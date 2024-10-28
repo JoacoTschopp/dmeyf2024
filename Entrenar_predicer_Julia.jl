@@ -94,7 +94,7 @@ println(size(X_train_data))  # Tamaño del DataFrame filtrado
 # Filtrado para `predic_data`
 @info "Iniciando filtrado de datos para predicción"
 print(future)
-predic_data = filter(row -> row.foto_mes == future, dataset)
+predic_data = filter(row -> row.foto_mes in future, dataset)
 
 # Mostrar el tamaño de los datos de predicción
 @info "Tamaño de predic_data", size(predic_data)
