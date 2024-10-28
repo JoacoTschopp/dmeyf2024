@@ -124,6 +124,10 @@ y_train = collect(Int64[y_train...])
 println("El tipo de y_train es: ", typeof(y_train))
 # Crear `predic`
 
+println("Dimensiones de X_train: ", size(X_train))
+println("Dimensiones de y_train: ", length(y_train))
+
+
 predic = select(predic_data, Not(:clase_ternaria)) |> Matrix
 
 @info "Entrenamietno del modelo"
