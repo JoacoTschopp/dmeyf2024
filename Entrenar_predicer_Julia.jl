@@ -12,7 +12,7 @@ using DataFrames
 using Statistics
 using CSV, DataFrames
 using Dagger
-
+using Dates
 
 include("Paraetros_Julia_LGBM.jl")
 
@@ -58,11 +58,8 @@ function entrenar(modelo, X, y, hiperparametros)
     modelo.num_leaves = hiperparametros["num_leaves"]
     modelo.min_data_in_leaf = hiperparametros["min_data_in_leaf"]
 
-    # Escalar los datos
-    X_esc = escalar(X)
-
     # Entrenar el modelo
-    fit!(modelo, X_esc, y)
+    fit!(modelo, X, y)
 end
 
 # Definir la función de predicción
@@ -78,10 +75,10 @@ end
 modelo = LGBMClassification()
 
 # Definir el dataset
-@info "Comienza carga de Dataset"
+@info "Comienza carga de Dataset - $(now())"
 file = CSV.File("/home/joaquintschopp/buckets/b1/datasets/competencia_julia_ct.csv"; buffer_in_memory=true)
 dataset = DataFrame(file)
-@info "Fin Carga"
+@info "Fin Carga - $(now())"
 
 @info "Pipline de entrenamiento"
 hiperparametros = param_local["lgb_param"]
@@ -96,6 +93,7 @@ println(size(X_train_data))  # Tamaño del DataFrame filtrado
 
 # Filtrado para `predic_data`
 @info "Iniciando filtrado de datos para predicción"
+print(future)
 predic_data = filter(row -> row.foto_mes == future, dataset)
 
 # Mostrar el tamaño de los datos de predicción
@@ -106,9 +104,12 @@ X_train = select(X_train_data, Not(:clase_ternaria)) |> Matrix
 y_train = map(x -> x in ["BAJA+1", "BAJA+2"] ? 1 : 0, X_train_data.clase_ternaria)
 
 # Crear `predic`
+
 predic = select(predic_data, Not(:clase_ternaria)) |> Matrix
 
 @info "Entrenamietno del modelo"
+X_train = Array(X_train)
+y_train = Vector(y_train)
 entrenar(modelo, X_train, y_train, hiperparametros)
 
 @info "Predicciones sobre el modelo"
