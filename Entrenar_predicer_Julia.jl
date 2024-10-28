@@ -119,7 +119,9 @@ y_train = map(x -> x in ["BAJA+1", "BAJA+2"] ? 1 : 0, X_train_data.clase_ternari
 # Imprimir los valores únicos de y_train
 println("Valores únicos de y_train:")
 println(unique(y_train))
-
+println(typeof(y_train))
+y_train = collect(Int64[y_train...])
+println("El tipo de y_train es: ", typeof(y_train))
 # Crear `predic`
 
 predic = select(predic_data, Not(:clase_ternaria)) |> Matrix
