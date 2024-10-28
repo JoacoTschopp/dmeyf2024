@@ -99,6 +99,8 @@ hiperparametros = param_local["lgb_param"]
 # Definir `future` y `training` utilizando los valores del diccionario
 future = param_local["future"]
 training = param_local["final_train"]["training"]
+training = param_local["final_train"]["clase_minoritaria"]
+
 
 # Filtrar los datos para `X_train` y `predic`
 X_train_data = filter(row -> row.foto_mes in training, dataset)
@@ -115,6 +117,10 @@ predic_data = filter(row -> row.foto_mes in future, dataset)
 # Seleccionar `X` y `y` para el entrenamiento
 X_train = select(X_train_data, Not(:clase_ternaria)) |> Matrix
 y_train = map(x -> x in ["BAJA+1", "BAJA+2"] ? 1 : 0, X_train_data.clase_ternaria)
+
+# Imprimir los valores únicos de y_train
+println("Valores únicos de y_train:")
+println(unique(y_train))
 
 # Crear `predic`
 
