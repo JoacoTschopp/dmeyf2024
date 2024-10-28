@@ -95,7 +95,7 @@ end
 #  ACA empieza el programa
 
 # Definir el modelo
-modelo = LGBMClassification()
+modelo = LGBMClassification(n_classes=2)
 
 # Definir el dataset
 @info "Comienza carga de Dataset - $(now())"
