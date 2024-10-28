@@ -1,12 +1,13 @@
 using LightGBM
 using CSV
 using DataFrames
-using BayesOpt
+#using BayesOpt
 
 #######################################################################################
 #  BO
 #######################################################################################
 # Función de optimización
+"""
 function optimizar_lightgbm(X_train, y_train, X_val, y_val, X_test, y_test, HP_fijos, HP_optimizar)
     # Crear archivo CSV para almacenar los resultados
     log_file = "logs_lightgbm.csv"
@@ -62,7 +63,7 @@ HP_optimizar = param_local["lgb_param_BO"]
 # Llamar a la función de optimización
 #resultado_final = optimizar_lightgbm(X_train, y_train, X_val, y_val, X_test, y_test, HP_fijos, HP_optimizar)
 
-
+"""
 
 
 
