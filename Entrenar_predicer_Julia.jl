@@ -79,7 +79,7 @@ function entrenar(modelo, X, y, hiperparametros)
 
     # Entrenar el modelo
     try
-        @info "Entrenando el modelo..."
+        @info "Entrenando el modelo  - $(now())"
         fit!(modelo, X, y, verbosity = -1)
     catch e
         println("Error durante el entrenamiento: ", e)
@@ -140,7 +140,7 @@ println("Dimensiones de y_train: ", size(y_train))
 
 X_future = select(predic_data, Not(:clase_ternaria)) |> Matrix
 
-@info "Entrenamietno del modelo - $(now())"
+@info "Entrenamietno del modelo"
 entrenar(modelo, X_train, y_train, hiperparametros)
 @info "FIN Entrenamietno del modelo - $(now())"
 
@@ -150,9 +150,9 @@ entrenar(modelo, X_train, y_train, hiperparametros)
 predicciones = predecir(modelo, X_future)
 
 
-numero_de_cliente = predic_data[:, :numero_de_cliente]  # Extraer el número de cliente de `X_future`
+numero_de_cliente = predic_data[:, :numero_de_cliente]  # Extraer el número de cliente de `predic_data`
 # Crear DataFrame con `numero_de_cliente` y las `predicciones`
-df_predicciones = DataFrame(numero_de_cliente=numero_de_cliente, Predicted=predicciones)
+df_predicciones = DataFrame(numero_de_cliente=numero_de_cliente, Predicted=vec(predicciones))
     
 
 @info "Genero contes y archivos para Kaggle"
