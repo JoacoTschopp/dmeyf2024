@@ -72,7 +72,12 @@ function entrenar(modelo, X, y, hiperparametros)
     y = collect(y)
 
     # Entrenar el modelo
-    fit!(modelo, X, y)
+    try
+        @info "Entrenando el modelo..."
+        fit!(modelo, X, y)
+    catch e
+        println("Error durante el entrenamiento: ", e)
+    end
 end
 
 # Definir la función de predicción
