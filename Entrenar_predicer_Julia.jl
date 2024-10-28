@@ -53,7 +53,7 @@ function entrenar(modelo, X, y, hiperparametros)
     modelo.max_drop = hiperparametros["max_drop"]
     modelo.skip_drop = hiperparametros["skip_drop"]
     modelo.extra_trees = hiperparametros["extra_trees"]
-    modelo.learning_rate = hiperparametros["learning_rate"]
+    modelo.learning_rate = [hiperparametros["learning_rate"]]
     modelo.feature_fraction = hiperparametros["feature_fraction"]
     modelo.num_leaves = hiperparametros["num_leaves"]
     modelo.min_data_in_leaf = hiperparametros["min_data_in_leaf"]
