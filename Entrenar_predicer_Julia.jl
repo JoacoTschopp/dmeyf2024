@@ -61,6 +61,11 @@ function entrenar(modelo, X, y, hiperparametros)
     # Convertir valores faltantes en X a 0
     X = replace(X, missing => 0.0)  # Cambia a 0.0 para asegurarte de que sea del tipo correcto
 
+    # Contar los valores faltantes
+    num_missing = count(ismissing.(X_train))
+
+    println("Número total de valores faltantes en X_train: ", num_missing)
+
     # Convertir valores faltantes en y a 0
     y = replace(y, missing => 0)  # Cambia a 0 para que y sea un vector de enteros o booleanos
 
