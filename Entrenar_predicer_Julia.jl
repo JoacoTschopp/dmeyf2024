@@ -36,7 +36,7 @@ function entrenar(modelo, X, y, hiperparametros)
     modelo.boost_from_average = hiperparametros["boost_from_average"]
     modelo.feature_pre_filter = hiperparametros["feature_pre_filter"]
     modelo.force_row_wise = hiperparametros["force_row_wise"]
-    modelo.verbosity = hiperparametros["verbosity"]
+    #modelo.verbosity = hiperparametros["verbosity"]
     modelo.max_depth = hiperparametros["max_depth"]
     modelo.min_gain_to_split = hiperparametros["min_gain_to_split"]
     modelo.min_sum_hessian_in_leaf = hiperparametros["min_sum_hessian_in_leaf"]
