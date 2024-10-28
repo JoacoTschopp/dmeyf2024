@@ -42,10 +42,10 @@ param_local = Dict(
         "max_drop" => 50,
         "skip_drop" => 0.5,
         "extra_trees" => false,
-        "learning_rate" => [0.02, 0.3],
-        "feature_fraction" => [0.5, 0.9],
+        "learning_rate" => 0.02,#, 0.3],
+        "feature_fraction" => 0.5,# 0.9],
         "num_leaves" => [2048], #8,
-        "min_data_in_leaf" => [100, 10000]
+        "min_data_in_leaf" => 100#, 10000]
     )
 )
 
