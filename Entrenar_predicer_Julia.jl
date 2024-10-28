@@ -11,7 +11,7 @@ using LightGBM
 using DataFrames
 using Statistics
 using CSV, DataFrames
-
+using Dagger
 
 include("./funciones_preproc_julia.jl")
 
@@ -21,12 +21,14 @@ param_local = Dict(
     "final_train" => Dict(
         "undersampling" => 1.0,
         "clase_minoritaria" => ["BAJA+1", "BAJA+2"],
-        "training" => [202106, 202105, 202104, 202103, 202102, 202101,
-            202005, 202006, 202007, 202008, 202009, 202010, 202011, 202012]
+        "training" => [202106, 202105, 202104, 202103, 202102, 202101],
+        # [202106, 202105, 202104, 202103, 202102, 202101,
+        #    202005, 202006, 202007, 202008, 202009, 202010, 202011, 202012]
     ),
     "train" => Dict(
-        "training" => [202104, 202103, 202102, 202101,
-            202012, 202011, 202005, 202006, 202007, 202008, 202009, 202010],
+        "training" => [202106, 202105, 202104, 202103, 202102, 202101],
+        #[202104, 202103, 202102, 202101,
+        #202012, 202011, 202005, 202006, 202007, 202008, 202009, 202010],
         "validation" => [202105],
         "testing" => [202106],
         "undersampling" => 0.75,
@@ -124,7 +126,7 @@ modelo = LGBMClassification()
 
 # Definir el dataset
 @info "Comienza carga de Dataset"
-file = CSV.File("/home/joaquintschopp/buckets/b1/datasets/competencia_02_ct.csv.gz"; buffer_in_memory=true)
+file = CSV.File("/home/joaquintschopp/buckets/b1/datasets/competencia_julia_ct.csv.gz"; buffer_in_memory=true)
 dataset = DataFrame(file)
 @info "Fin Carga"
 
@@ -140,15 +142,29 @@ training = param_local["final_train"]["training"]
 println(size(dataset))                    # Tamaño del DataFrame original
 
 
-filter_result = filter(row -> row.foto_mes in training, dataset)
-println(filter_result)
+# Realizar el filtrado de `X_train_data` y `predic_data` usando Dagger
+@info "Iniciando filtrado de datos para entrenamiento"
+filter_tasks = [
+    Dagger.@spawn filter(row -> row.foto_mes in training_months, chunk) for chunk in eachslice(dataset, 100000)
+]
 
-X_train_data = filter(row -> row.foto_mes in training, dataset)
+# Concatenar los resultados obtenidos de cada partición
+X_train_data = vcat(fetch.(filter_tasks)...)
 
-#X_train_data = dataset[dataset.foto_mes.∈training, :]
-println(size(X_train_data))
+# Mostrar el tamaño del resultado
+@info "Tamaño de X_train_data", size(X_train_data)
 
-predic_data = dataset[dataset[!, :foto_mes].==future[1], :]
+# Filtrado para `predic_data`
+@info "Iniciando filtrado de datos para predicción"
+future_filter_tasks = [
+    Dagger.@spawn filter(row -> row.foto_mes == future_month, chunk) for chunk in eachslice(dataset, 100000)
+]
+
+# Concatenar los resultados para `predic_data`
+predic_data = vcat(fetch.(future_filter_tasks)...)
+
+# Mostrar el tamaño de los datos de predicción
+@info "Tamaño de predic_data", size(predic_data)
 
 # Seleccionar `X` y `y` para el entrenamiento
 X_train = select(X_train_data, Not(:clase_ternaria)) |> Matrix
