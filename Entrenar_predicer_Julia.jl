@@ -31,7 +31,7 @@ function entrenar(modelo, X, y, hiperparametros)
     # Cargar los hiperparámetros en el modelo
     modelo.boosting = hiperparametros["boosting"]
     modelo.objective = hiperparametros["objective"]
-    modelo.metric = hiperparametros["metric"]
+    modelo.metric = [hiperparametros["metric"]]
     modelo.first_metric_only = hiperparametros["first_metric_only"]
     modelo.boost_from_average = hiperparametros["boost_from_average"]
     modelo.feature_pre_filter = hiperparametros["feature_pre_filter"]
@@ -108,8 +108,6 @@ y_train = map(x -> x in ["BAJA+1", "BAJA+2"] ? 1 : 0, X_train_data.clase_ternari
 predic = select(predic_data, Not(:clase_ternaria)) |> Matrix
 
 @info "Entrenamietno del modelo"
-X_train = Array(X_train)
-y_train = Vector(y_train)
 entrenar(modelo, X_train, y_train, hiperparametros)
 
 @info "Predicciones sobre el modelo"
