@@ -57,7 +57,8 @@ function entrenar(modelo, X, y, hiperparametros)
     modelo.feature_fraction = hiperparametros["feature_fraction"]
     modelo.num_leaves = hiperparametros["num_leaves"]
     modelo.min_data_in_leaf = hiperparametros["min_data_in_leaf"]
-
+    modelo.num_class = 1
+    
     # Convertir valores faltantes en X a 0
     X = replace(X, missing => 0.0)  # Cambia a 0.0 para asegurarte de que sea del tipo correcto
 
