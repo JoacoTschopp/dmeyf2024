@@ -138,15 +138,22 @@ println("El tipo de y_train es: ", typeof(y_train))
 println("Dimensiones de X_train: ", size(X_train))
 println("Dimensiones de y_train: ", size(y_train))
 
-predic = select(predic_data, Not(:clase_ternaria)) |> Matrix
+X_future = select(predic_data, Not(:clase_ternaria)) |> Matrix
 
-@info "Entrenamietno del modelo"
+@info "Entrenamietno del modelo - $(now())"
 entrenar(modelo, X_train, y_train, hiperparametros)
+@info "FIN Entrenamietno del modelo - $(now())"
+
 
 @info "Predicciones sobre el modelo"
 # Predecir con el modelo
-predicciones = predecir(modelo, predic)
+predicciones = predecir(modelo, X_future)
 
+print()
+numero_de_cliente = X_future[:, :numero_de_cliente]  # Extraer el número de cliente de `X_future`
+# Crear DataFrame con `numero_de_cliente` y las `predicciones`
+df_predicciones = DataFrame(numero_de_cliente=numero_de_cliente, Predicted=predicciones)
+    
 
 @info "Genero contes y archivos para Kaggle"
-generar_csv_cortes(predicciones, numero_de_cliente)
+generar_csv_cortes(df_predicciones)

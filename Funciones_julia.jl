@@ -35,3 +35,4 @@ function generar_csv_cortes(predicciones::DataFrame)
         println("Archivo generado: $nombre_archivo")
     end
 end
+
