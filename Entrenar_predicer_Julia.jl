@@ -99,8 +99,6 @@ hiperparametros = param_local["lgb_param"]
 # Definir `future` y `training` utilizando los valores del diccionario
 future = param_local["future"]
 training = param_local["final_train"]["training"]
-training = param_local["final_train"]["clase_minoritaria"]
-
 
 # Filtrar los datos para `X_train` y `predic`
 X_train_data = filter(row -> row.foto_mes in training, dataset)
