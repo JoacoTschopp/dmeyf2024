@@ -1,4 +1,75 @@
+using LightGBM
+using CSV
+using DataFrames
+using BayesOpt
 
+#######################################################################################
+#  BO
+#######################################################################################
+# Función de optimización
+function optimizar_lightgbm(X_train, y_train, X_val, y_val, X_test, y_test, HP_fijos, HP_optimizar)
+    # Crear archivo CSV para almacenar los resultados
+    log_file = "logs_lightgbm.csv"
+    best_file = "mejores_resultados_lightgbm.csv"
+
+    # Escribir el encabezado del archivo CSV de log
+    CSV.write(log_file, DataFrame(), append=false)
+    
+    # Definir la función objetivo
+    function objective(hp)
+        # Crear una configuración de hiperparámetros combinada con los valores fijos
+        params = merge(HP_fijos, hp)
+        
+        # Entrenar el modelo con los parámetros actuales
+        modelo = LGBMClassification()
+        fit!(modelo, X_train, y_train, verbosity = -1)#, valid_set=(X_val, y_val)
+
+        # Evaluar el modelo en el conjunto de validación
+        preds_val = predict(modelo, X_val)
+
+        # Usar una métrica de evaluación, como el error cuadrático medio
+        score_val = mean((y_val .- preds_val).^2)
+        
+        # Guardar el resultado de la iteración en el archivo CSV
+        new_row = DataFrame(; Iteración=[hp[:iter]], Ganancia=[-score_val], Hiperparámetros=[params])
+        CSV.write(log_file, new_row, append=true)
+        
+        return -score_val  # Retorna ganancia negativa porque BO maximiza por defecto
+    end
+
+    # Ejecutar la optimización Bayesiana
+    results = optimize(objective, HP_optimizar, max_evals=50)
+
+    # Leer el log y guardar el mejor resultado en el archivo de resultados finales
+    logs = CSV.read(log_file, DataFrame)
+    mejor_resultado = logs[findmax(logs.Ganancia)[2], :]
+    CSV.write(best_file, mejor_resultado)
+    
+    return mejor_resultado
+end
+
+# Ejemplo de uso de la función
+X_train, y_train = "..." # Tus datos de entrenamiento
+X_val, y_val = "..."     # Tus datos de validación
+X_test, y_test =  "..."   # Tus datos de prueba
+
+# Hiperparámetros fijos
+HP_fijos = param_local["lgb_param"]
+
+# Hiperparámetros que queremos optimizar
+HP_optimizar = param_local["lgb_param_BO"]
+
+# Llamar a la función de optimización
+#resultado_final = optimizar_lightgbm(X_train, y_train, X_val, y_val, X_test, y_test, HP_fijos, HP_optimizar)
+
+
+
+
+
+
+
+
+#######################################################################################
 ## FUuncion para generar cortes a partir de las predicciones del modelo.
 
 function generar_csv_cortes(predicciones::DataFrame)
