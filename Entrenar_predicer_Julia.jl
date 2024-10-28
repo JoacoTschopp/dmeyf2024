@@ -32,7 +32,7 @@ function entrenar(modelo, X, y, hiperparametros)
     modelo.boosting = hiperparametros["boosting"]
     modelo.objective = hiperparametros["objective"]
     modelo.metric = [hiperparametros["metric"]]
-    modelo.first_metric_only = hiperparametros["first_metric_only"]
+    #modelo.first_metric_only = hiperparametros["first_metric_only"]
     modelo.boost_from_average = hiperparametros["boost_from_average"]
     modelo.feature_pre_filter = hiperparametros["feature_pre_filter"]
     modelo.force_row_wise = hiperparametros["force_row_wise"]
