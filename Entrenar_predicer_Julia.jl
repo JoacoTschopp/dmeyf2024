@@ -66,6 +66,7 @@ function entrenar(modelo, X, y, hiperparametros)
         throw(ArgumentError("Las dimensiones de X y y no coinciden después de reemplazar valores faltantes."))
     end
 
+
     # Entrenar el modelo
     fit!(modelo, X, y)
 end
