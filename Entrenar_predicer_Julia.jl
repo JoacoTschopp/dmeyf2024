@@ -58,14 +58,14 @@ function entrenar(modelo, X, y, hiperparametros)
     modelo.num_leaves = hiperparametros["num_leaves"]
     modelo.min_data_in_leaf = hiperparametros["min_data_in_leaf"]
     modelo.num_class = 1
-    
+
     # Convertir valores faltantes en X a 0
     X = replace(X, missing => 0.0)  # Cambia a 0.0 para asegurarte de que sea del tipo correcto
 
     # Contar los valores faltantes
     num_missing = count(ismissing.(X))
 
-    println("Número total de valores faltantes en X_train: ", num_missing)
+    @info "Número total de valores faltantes en X_train: ", num_missing
 
     # Convertir valores faltantes en y a 0
     y = replace(y, missing => 0)  # Cambia a 0 para que y sea un vector de enteros o booleanos
@@ -80,7 +80,7 @@ function entrenar(modelo, X, y, hiperparametros)
     # Entrenar el modelo
     try
         @info "Entrenando el modelo..."
-        fit!(modelo, X, y)
+        fit!(modelo, X, y, verbosity = -1)
     catch e
         println("Error durante el entrenamiento: ", e)
     end
@@ -137,7 +137,6 @@ println("El tipo de y_train es: ", typeof(y_train))
 
 println("Dimensiones de X_train: ", size(X_train))
 println("Dimensiones de y_train: ", size(y_train))
-
 
 predic = select(predic_data, Not(:clase_ternaria)) |> Matrix
 

@@ -25,7 +25,7 @@ param_local = Dict(
         "boost_from_average" => true,
         "feature_pre_filter" => false,
         "force_row_wise" => true,
-        "verbosity" => -100,
+        "verbosity" => -1, #catedra pone -100 pero cambio para ocultar msj Warning
         "max_depth" => -1,
         "min_gain_to_split" => 0.0,
         "min_sum_hessian_in_leaf" => 0.001,
@@ -44,8 +44,8 @@ param_local = Dict(
         "extra_trees" => false,
         "learning_rate" => 0.02,#, 0.3],
         "feature_fraction" => 0.5,# 0.9],
-        "num_leaves" => 2048, #8,
-        "min_data_in_leaf" => 100#, 10000]
+        "num_leaves" => 200, #8,
+        "min_data_in_leaf" => 1000#, 10000]
     )
 )
 
