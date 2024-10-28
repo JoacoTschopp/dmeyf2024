@@ -91,43 +91,18 @@ future = param_local["future"]
 training = param_local["final_train"]["training"]
 
 # Filtrar los datos para `X_train` y `predic`
-#X_train_data = dataset[dataset[!, :foto_mes].∈training, :]
-println(size(dataset))                    # Tamaño del DataFrame original
-
-
-# Realizar el filtrado de `X_train_data` y `predic_data` usando Dagger
-@info "Iniciando filtrado de datos para entrenamiento"
-filter_tasks = [
-    Dagger.@spawn filter(row -> row.foto_mes in training_months, chunk) for chunk in eachslice(dataset, 100000)
-]
-
-# Concatenar los resultados obtenidos de cada partición
-X_train_data = vcat(fetch.(filter_tasks)...)
-
-# Mostrar el tamaño del resultado
-@info "Tamaño de X_train_data", size(X_train_data)
+X_train_data = filter(row -> row.foto_mes in training, dataset)
+println(size(X_train_data))  # Tamaño del DataFrame filtrado
 
 # Filtrado para `predic_data`
 @info "Iniciando filtrado de datos para predicción"
-future_filter_tasks = [
-    Dagger.@spawn filter(row -> row.foto_mes == future_month, chunk) for chunk in eachslice(dataset, 100000)
-]
-
-# Concatenar los resultados para `predic_data`
-predic_data = vcat(fetch.(future_filter_tasks)...)
+predic_data = filter(row -> row.foto_mes == future, dataset)
 
 # Mostrar el tamaño de los datos de predicción
 @info "Tamaño de predic_data", size(predic_data)
 
 # Seleccionar `X` y `y` para el entrenamiento
 X_train = select(X_train_data, Not(:clase_ternaria)) |> Matrix
-#println(names(X_train_data))
-# Seleccionar todas las columnas excepto `clase_ternaria`
-#X_train_data_filtered = select(X_train_data, Not(:clase_ternaria))
-
-# Convertir a matriz solo si la selección es correcta
-X_train = Matrix(X_train_data_filtered)
-
 y_train = map(x -> x in ["BAJA+1", "BAJA+2"] ? 1 : 0, X_train_data.clase_ternaria)
 
 # Crear `predic`
