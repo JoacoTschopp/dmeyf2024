@@ -62,7 +62,7 @@ function entrenar(modelo, X, y, hiperparametros)
     X = replace(X, missing => 0.0)  # Cambia a 0.0 para asegurarte de que sea del tipo correcto
 
     # Contar los valores faltantes
-    num_missing = count(ismissing.(X_train))
+    num_missing = count(ismissing.(X))
 
     println("Número total de valores faltantes en X_train: ", num_missing)
 
