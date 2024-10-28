@@ -74,7 +74,7 @@ function entrenar(modelo, X, y, hiperparametros)
         throw(ArgumentError("Las dimensiones de X y y no coinciden después de reemplazar valores faltantes."))
     end
 
-    y = collect(y)
+    y = Vector(y)
 
     # Entrenar el modelo
     try
@@ -95,7 +95,7 @@ end
 #  ACA empieza el programa
 
 # Definir el modelo
-modelo = LGBMClassification(n_classes=2)
+modelo = LGBMClassification()
 
 # Definir el dataset
 @info "Comienza carga de Dataset - $(now())"
