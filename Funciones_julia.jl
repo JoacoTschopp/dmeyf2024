@@ -3,112 +3,140 @@ using CSV
 using DataFrames
 using BayesianOptimization
 
-#######################################################################################
-#  BO
-#######################################################################################
-# Funciond e ganancia de la BO
+# Definir la función de entrenamiento
+function entrenar(modelo, X, y)
+    # Cargar los hiperparámetros en el modelo
+    modelo.boosting = param_local["lgb_param"]["boosting"]
+    modelo.objective = param_local["lgb_param"]["objective"]
+    modelo.metric = param_local["lgb_param"]["metric"]
+    #modelo.first_metric_only = param_local["lgb_param"]["first_metric_only"]
+    modelo.boost_from_average = param_local["lgb_param"]["boost_from_average"]
+    modelo.feature_pre_filter = param_local["lgb_param"]["feature_pre_filter"]
+    modelo.force_row_wise = param_local["lgb_param"]["force_row_wise"]
+    modelo.max_depth = param_local["lgb_param"]["max_depth"]
+    modelo.min_gain_to_split = param_local["lgb_param"]["min_gain_to_split"]
+    modelo.min_sum_hessian_in_leaf = param_local["lgb_param"]["min_sum_hessian_in_leaf"]
+    modelo.lambda_l1 = param_local["lgb_param"]["lambda_l1"]
+    modelo.lambda_l2 = param_local["lgb_param"]["lambda_l2"]
+    modelo.max_bin = param_local["lgb_param"]["max_bin"]
+    modelo.num_iterations = param_local["lgb_param"]["num_iterations"]
+    modelo.bagging_fraction = param_local["lgb_param"]["bagging_fraction"]
+    modelo.pos_bagging_fraction = param_local["lgb_param"]["pos_bagging_fraction"]
+    modelo.neg_bagging_fraction = param_local["lgb_param"]["neg_bagging_fraction"]
+    modelo.is_unbalance = param_local["lgb_param"]["is_unbalance"]
+    modelo.scale_pos_weight = param_local["lgb_param"]["scale_pos_weight"]
+    modelo.drop_rate = param_local["lgb_param"]["drop_rate"]
+    modelo.max_drop = param_local["lgb_param"]["max_drop"]
+    modelo.skip_drop = param_local["lgb_param"]["skip_drop"]
+    modelo.extra_trees = param_local["lgb_param"]["extra_trees"]
+    modelo.learning_rate = param_local["lgb_param"]["learning_rate"]
+    modelo.feature_fraction = param_local["lgb_param"]["feature_fraction"]
+    modelo.num_leaves = param_local["lgb_param"]["num_leaves"]
+    modelo.min_data_in_leaf = param_local["lgb_param"]["min_data_in_leaf"]
+    modelo.num_class = 1
 
-function ganancia(df_predicciones::DataFrame, y_val)
-    # Asegúrate de que `df_predicciones` tenga las columnas necesarias
-    if !haskey(df_predicciones, :Predicted)
-        error("La columna Predicted no se encontró en df_predicciones")
+    # Convertir valores faltantes en X a 0
+    X = replace(X, missing => 0.0)  
+
+    # Contar los valores faltantes
+    num_missing = count(ismissing.(X))
+
+    @info "Número total de valores faltantes en X_train: ", num_missing
+
+    # Convertir valores faltantes en y a 0
+    y = replace(y, missing => 0)  # Cambia a 0 para que y sea un vector de enteros o booleanos
+
+    # Asegúrate de que `y` y `X` sean compatibles
+    if size(X, 1) != length(y)
+        throw(ArgumentError("Las dimensiones de X y y no coinciden después de reemplazar valores faltantes."))
     end
 
-    # Comparar las predicciones con los valores reales
-    score = mean((y_val .- df_predicciones.Predicted).^2)  # Por ejemplo, error cuadrático medio
-    return -score  # Retornamos el score negativo como ganancia positiva
-end
+    y = Vector(y)
 
-
-# Función de optimización
-"""
-function optimizar_lightgbm(X_train, y_train, X_val, y_val, X_test, y_test, HP_fijos, HP_optimizar)
-    # Archivos CSV para los logs
-    log_file = "logs_lightgbm.csv"
-    best_file = "mejores_resultados_lightgbm.csv"
-    
-    # Encabezado del archivo de logs
-    CSV.write(log_file, DataFrame(Iteración=Int[], Ganancia=Float64[], Hiperparámetros=String[]), append=false)
-    
-    # Definir la función objetivo para optimización
-    function objective(hp)
-        # Combinar los hiperparámetros fijos y los optimizados
-        params = merge(HP_fijos, hp)
-
-        # Entrenar el modelo con LightGBM y los hiperparámetros actuales
-        modelo = LGBMClassification(params...)
-        fit!(modelo, X_train, y_train, verbosity = -1)
-        
-        # Obtener las predicciones del modelo en el conjunto de validación
-        preds_val = predict(modelo, X_val)
-        
-        # Calcular la ganancia
-        df_pred = DataFrame(numero_de_cliente = X_val[:, :numero_de_cliente], Predicted = preds_val)
-        score_val = ganancia(df_pred, y_val)  # Llamada a la función ganancia
-
-        # Guardar cada iteración en el archivo CSV
-        new_row = DataFrame(Iteración=[hp[:iter]], Ganancia=[score_val], Hiperparámetros=[string(params)])
-        CSV.write(log_file, new_row, append=true)
-        
-        return score_val  # La ganancia ya está en formato positivo
+    # Entrenar el modelo
+    try
+        @info "Entrenando el modelo  - $(now())"
+        fit!(modelo, X, y, verbosity = -1)
+    catch e
+        println("Error durante el entrenamiento: ", e)
     end
-
-    # Configuración para la optimización bayesiana
-    opt_params = Dict(:num_samples => 50, :maximize => true)
-    results = bayesopt(objective, HP_optimizar, Opts(; opt_params...))
-
-    # Obtener el mejor resultado del log y guardarlo
-    logs = CSV.read(log_file, DataFrame)
-    mejor_resultado = logs[findmax(logs.Ganancia)[2], :]
-    CSV.write(best_file, mejor_resultado)
-
-    return mejor_resultado
 end
 
-"""
+# Definir la función de predicción
+function predecir(modelo, X)
+    X = replace(X, missing => 0.0)
+    return predict(modelo, X)
+end
+
 #######################################################################################
 ## Cargar Archivos a Kaggle
+function convertir_df(submissions_output)
+    # Divide la salida en líneas
+    lines = split(submissions_output, "\n")
+
+    # Ignora las primeras 3 líneas (encabezado)
+    lines = lines[3:11]
+
+    # Crea un vector de NamedTuples para almacenar los datos
+    submissions = []
+
+    # Itera sobre las líneas y extrae los datos
+    for line in lines
+        # Divide la línea en campos
+        campos = split(line, r"\s+")
+
+        # Extrae los datos
+        fileName = campos[1]
+        date_time = join(campos[2:3], " ")
+        date_time = DateTime(date_time, "yyyy-mm-dd HH:MM:SS")
+        
+        # Busca el campo "complete" y el valor de publicScore
+        status_index = findfirst(x -> x == "complete", campos)
+        if status_index !== nothing
+            status = campos[status_index]
+            publicScore = parse(Float64, campos[status_index + 1])
+        else
+            status = missing
+            publicScore = missing
+        end
+        
+        # Agrega el registro al vector
+        push!(submissions, (fileName, date_time, status, publicScore))
+    end
+
+    # Crea un DataFrame a partir del vector
+    df = DataFrame(submissions,  [:fileName, :date_time, :status, :publicScore])
+    return df
+end
 
 function cargar_y_obtener_ganancia(filepath::String, competition::String)
     # Enviar el archivo a Kaggle y obtener el submissionId
     submit_command = `kaggle competitions submit -c $competition -f $filepath -m "Carga automática desde Julia"`
     submit_output = read(submit_command, String)
     
-    # Extraer submissionId del resultado
-    match = match(r"Successfully submitted to .+ with id (\d+)", submit_output)
-    if match === nothing
-        println("Error: No se pudo obtener el submissionId.")
-        return nothing
-    end
-    submission_id = match.captures[1]
-    println("Envío exitoso. ID de submission: $submission_id")
-
     # Esperar unos segundos antes de consultar la puntuación
-    sleep(15)  # Espera inicial de 15 segundos; ajusta según sea necesario
+    sleep(15)
 
-    # Intentar obtener la ganancia varias veces
-    for i in 1:10
-        score_command = `kaggle competitions submissions -c $competition`
-        submissions_output = read(score_command, String)
-
-        # Buscar el score de la submission más reciente
-        lines = split(submissions_output, '\n')
-        for line in lines
-            if occursin(submission_id, line)
-                match_score = match(r"([0-9]+\.[0-9]+)", line)
-                if match_score !== nothing
-                    score = match_score.match
-                    println("Ganancia obtenida: $score")
-                    return score
-                end
-            end
-        end
-        println("Ganancia no disponible aún. Reintentando...")
-        sleep(10)  # Esperar antes de intentar nuevamente
+    # Obtener todos los envíos de la competencia
+    score_command = `kaggle competitions submissions -c $competition`
+    submissions_output = read(score_command, String)
+   
+    # Convertir a DataFrame
+    submissions = convertir_df(submissions_output)
+    
+    # Verificar que el DataFrame no esté vacío
+    if nrow(submissions) == 0
+       println("No se encontraron envíos en la competencia.")
+       return nothing
     end
 
-    println("Error: No se pudo obtener la ganancia después de varios intentos.")
-    return nothing
+    sort!(submissions, :date_time, rev=true)
+
+    # Obtener el puntaje del envío más reciente
+    latest_submission = submissions[1, :]
+    publicScore = latest_submission.publicScore
+
+    return publicScore
 end
 
 
@@ -118,12 +146,12 @@ end
 
 function generar_csv_cortes(predicciones::DataFrame)
     # Verificar que el DataFrame `predicciones` tenga las columnas requeridas
-    @info "Tamaño de predic_data", size(predicciones)
+    @info "Tamaño de predicciones", size(predicciones)
     @info "Tipo de archivo", typeof(predicciones)
-    first(predicciones, 5)  # Imprime las primeras 5 filas del DataFrame
+    println(first(predicciones, 5))  # Imprime las primeras 5 filas del DataFrame
 
     if !all(in(["numero_de_cliente", "Predicted"], names(predicciones)))
-        error("El DataFrame debe contener las columnas `numero_de_cliente` y `Predicted`.")
+        @info("El DataFrame debe contener las columnas `numero_de_cliente` y `Predicted`.")
     end
 
     @info "Ordenado de Predicciones"
@@ -157,7 +185,7 @@ function generar_csv_cortes(predicciones::DataFrame)
         println("Archivo generado: $nombre_archivo")
         
         @info "Carga de Archivo a Kaggle", corte
-        ganancia = cargar_y_obtener_ganancia(nombre_archivo, "dm-ey-f-2024-segunda")
+        ganancia = cargar_y_obtener_ganancia(nombre_archivo, param_local["competencia_kaggle"])
         println("Ganancia del submit: ", ganancia)
 
     end

@@ -271,14 +271,12 @@ TS_strategy_base6 <- function( pinputexps )
 
   param_local$final_train$undersampling <- 1.0
   param_local$final_train$clase_minoritaria <- c( "BAJA+1", "BAJA+2")
-  param_local$final_train$training <- c(202104, 202103, 202102,
-    202101, 202012, 202011)
+  param_local$final_train$training <- c(202104, 202103, 202102, 202101, 202012, 202011)
 
 
-  param_local$train$training <- c(202102, 202101, 202012,
-    202111, 202010, 202009)
-  param_local$train$validation <- c(202103)
-  param_local$train$testing <- c(202104)
+  param_local$train$training <- c(202104, 202103, 202102, 202101, 202012, 202111)
+  param_local$train$validation <- c(202105)
+  param_local$train$testing <- c(202105)
 
   # Atencion  0.2  de  undersampling de la clase mayoritaria,  los CONTINUA
   # 1.0 significa NO undersampling
@@ -424,7 +422,7 @@ EV_evaluate_conclase_gan <- function( pinputexps )
 # Este es el  Workflow Baseline
 # Que predice 202106 donde SI hay clase completa
 
-wf_junio <- function( pnombrewf )
+wf_Exp_stacking_w1 <- function( pnombrewf )
 {
   param_local <- exp_wf_init( pnombrewf ) # linea workflow inicial fija
 
@@ -432,16 +430,16 @@ wf_junio <- function( pnombrewf )
   DT_incorporar_dataset( "~/buckets/b1/datasets/competencia_02_ct.csv.gz")
 
   # Etapas preprocesamiento
-  CA_catastrophe_base( metodo="MachineLearning")
-  FEintra_manual_base()
-  DR_drifting_base(metodo="rank_cero_fijo")
-  FEhist_base()
+  CA_catastrophe_base( metodo="EstadisticaClasica")
+  #FEintra_manual_base()  Variables manuales importantes en el contecto de los datos.
+  #DR_drifting_base(metodo="rank_cero_fijo") ##Drifting
+  #FEhist_base()  ##Lags
 
-  FErf_attributes_base( arbolitos= 20,
-    hojas_por_arbol= 16,
-    datos_por_hoja= 1000,
-    mtry_ratio= 0.2
-  )
+  #FErf_attributes_base( arbolitos= 20,
+  #  hojas_por_arbol= 16,
+  #  datos_por_hoja= 1000,
+  #  mtry_ratio= 0.2
+  #)
 
   #CN_canaritos_asesinos_base(ratio=0.2, desvio=4.0)
 
@@ -450,7 +448,7 @@ wf_junio <- function( pnombrewf )
   ht <- HT_tuning_base( bo_iteraciones = 40 )  # iteraciones inteligentes
 
   # Etapas finales
-  fm <- FM_final_models_lightgbm( c(ht, ts6), ranks=c(1), qsemillas=5 )
+  fm <- FM_final_models_lightgbm( c(ht, ts6), ranks=c(1), qsemillas=10 )
   SC_scoring( c(fm, ts6) )
   EV_evaluate_conclase_gan() # evaluacion contra mes CON clase
 
@@ -461,5 +459,5 @@ wf_junio <- function( pnombrewf )
 # Aqui comienza el programa
 
 # llamo al workflow con future = 202106
-wf_junio()
+wf_Exp_stacking_w1()
 
