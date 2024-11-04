@@ -106,7 +106,7 @@ FEintra_manual_base <- function( pinputexps )
   if( -1 == (param_local <- exp_init())$resultado ) return( 0 ) # linea fija
 
 
-  param_local$meta$script <- "/src/wf-etapas/z1301_FE_intrames_manual.r"
+  param_local$meta$script <- "/src/wf-etapas/1301_FE_intrames_manual.r"
 
   param_local$semilla <- NULL  # no usa semilla, es deterministico
 
@@ -247,7 +247,7 @@ CN_canaritos_asesinos_base <- function( pinputexps, ratio, desvio)
   # Parametros de un LightGBM que se genera para estimar la column importance
   param_local$train$clase01_valor1 <- c( "BAJA+2", "BAJA+1")
   param_local$train$positivos <- c( "BAJA+2")
-  param_local$train$training <- c(202005, 202006, 202007, 202008, 202009, 202010, 202011, 202012, 202101, 202102, 202103, 202104)
+  param_local$train$training <- c(202011, 202012, 202101, 202102, 202103, 202104)
   param_local$train$validation <- c( 202106 )
   param_local$train$undersampling <- 0.1
   param_local$train$gan1 <- 273000
@@ -279,17 +279,19 @@ TS_strategy_base8 <- function( pinputexps )
   param_local$final_train$undersampling <- 1.0
   param_local$final_train$clase_minoritaria <- c( "BAJA+1", "BAJA+2")
   param_local$final_train$training <- c(202106, 202105, 202104, 202103, 202102, 202101, 
-    202005, 202006, 202007, 202008, 202009, 202010, 202011, 202012)
+    202001, 202002, 202003, 202010, 202011, 202012,
+    201912, 201911, 201910, 201909, 201908, 201907, 201906, 201905, 201904, 201903, 201902, 201901)
 
 
   param_local$train$training <- c(202104, 202103, 202102, 202101, 
-    202012, 202011, 202005, 202006, 202007, 202008, 202009, 202010)
+    202012, 202011, 202010, 202003, 202002, 202001,
+    201912, 201911, 201910, 201909, 201908, 201907, 201906, 201905, 201904, 201903, 201902, 201901)#202009, 202008, 202007, 202006, 202005, 202004
   param_local$train$validation <- c(202105)
   param_local$train$testing <- c(202106)
 
   # Atencion  0.2  de  undersampling de la clase mayoritaria,  los CONTINUA
   # 1.0 significa NO undersampling
-  param_local$train$undersampling <- 0.75
+  param_local$train$undersampling <- 0.15
   param_local$train$clase_minoritaria <- c( "BAJA+1", "BAJA+2")
 
   return( exp_correr_script( param_local ) ) # linea fija
@@ -427,7 +429,7 @@ KA_evaluate_kaggle <- function( pinputexps )
 # Este es el  Workflow Baseline
 # Que predice 202108 donde NO conozco la clase
 
-wf_Kaggle02 <- function( pnombrewf )
+wf_Kaggle02_Tschopp_03_1 <- function( pnombrewf )
 {
   param_local <- exp_wf_init( pnombrewf ) # linea workflow inicial fija
 
@@ -436,10 +438,12 @@ wf_Kaggle02 <- function( pnombrewf )
 
   # Etapas preprocesamiento
   CA_catastrophe_base( metodo="EstadisticaClasica")# MachineLearning
+
   FEintra_manual_base()
   DR_drifting_base(metodo="UVA") #DRIFTING rank_cero_fijo
   FEhist_base()
-  CN_canaritos_asesinos_base(ratio=0.5, desvio=4.0)
+
+  CN_canaritos_asesinos_base(ratio=0.5, desvio=2.0)
   
   FErf_attributes_base( arbolitos= 20,
     hojas_por_arbol= 16,
@@ -447,16 +451,16 @@ wf_Kaggle02 <- function( pnombrewf )
     mtry_ratio= 0.2
   )
 
-  CN_canaritos_asesinos_base(ratio=0.5, desvio=4.0)
+  CN_canaritos_asesinos_base(ratio=0.5, desvio=2.0)
 
   # Etapas modelado
   ts8 <- TS_strategy_base8()
-  ht <- HT_tuning_base( bo_iteraciones = 42 )  # iteraciones inteligentes
+  ht <- HT_tuning_base( bo_iteraciones = 50 )  # iteraciones inteligentes
 
   # Etapas finales
   fm <- FM_final_models_lightgbm( c(ht, ts8), ranks=c(1), qsemillas=10 )
   SC_scoring( c(fm, ts8) )
-  KA_evaluate_kaggle()  # genera archivos para Kaggle
+  #KA_evaluate_kaggle()  # genera archivos para Kaggle
 
   return( exp_wf_end() ) # linea workflow final fija
 }
@@ -465,5 +469,5 @@ wf_Kaggle02 <- function( pnombrewf )
 # Aqui comienza el programa
 
 # llamo al workflow con future = 202108
-wf_Kaggle02()
+wf_Kaggle02_Tschopp_03_1()
 
