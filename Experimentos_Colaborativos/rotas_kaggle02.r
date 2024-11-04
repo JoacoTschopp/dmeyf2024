@@ -7,8 +7,12 @@ library(gridExtra)
 file_path <- "~/buckets/b1/datasets/competencia_02_ct.csv.gz"
 
 # Cargar el dataset en un data.table
-cat("Cargando el dataset, esto puede llevar algo de tiempo...\n")
+cat("Cargando el dataset, esto puede llevar algo de tiempo...
+")
 dataset <- fread(file_path)
+
+# Eliminar las columnas que no sean numéricas, excepto 'foto_mes'
+dataset <- dataset[, .SD, .SDcols = c('foto_mes', names(dataset)[sapply(dataset, is.numeric)])]
 
 # Listar la cantidad de atributos (columnas) 
 cantidad_atributos <- ncol(dataset)
@@ -22,9 +26,9 @@ cantidad_clientes_por_mes <- dataset[, .N, by = foto_mes]
 print(cantidad_clientes_por_mes)
 
 # Calcular la media por cada atributo y cada foto_mes
-cat("Calculando la media por cada atributo y cada foto_mes...\n")
-numeric_cols <- names(dataset)[sapply(dataset, is.numeric)]
-medias_por_mes <- dataset[, lapply(.SD, mean, na.rm = TRUE), by = foto_mes, .SDcols = numeric_cols]
+cat("Calculando la media por cada atributo y cada foto_mes...
+")
+medias_por_mes <- dataset[, lapply(.SD, mean, na.rm = TRUE), by = foto_mes]
 
 # Transponer el data.table para tener 'foto_mes' como columnas y atributos como filas
 medias_por_mes_transpuesta <- melt(medias_por_mes, id.vars = "foto_mes")
