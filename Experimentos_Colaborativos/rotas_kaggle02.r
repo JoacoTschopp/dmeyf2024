@@ -4,7 +4,7 @@ library(ggplot2)
 library(gridExtra)
 
 # Especificar la ruta del archivo
-file_path <- "~/bukets/b1/datasets/competencia_02_ct.csv.gz"
+file_path <- "~/buckets/b1/datasets/competencia_02_ct.csv.gz"
 
 # Cargar el dataset en un data.table
 cat("Cargando el dataset, esto puede llevar algo de tiempo...\n")
