@@ -56,7 +56,9 @@ for (i in 1:nrow(resultado_df)) {
     ggtitle(paste("Tendencia del atributo:", atributo)) +
     xlab("Mes") +
     ylab("Media del atributo") +
-    theme_minimal()
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    scale_x_discrete(breaks = levels(df_grafico$foto_mes)[seq(1, length(levels(df_grafico$foto_mes)), by = 6)])
   
   # Dibujar el gráfico en el PDF
   print(p)
@@ -66,4 +68,5 @@ for (i in 1:nrow(resultado_df)) {
 dev.off()
 
 cat("Gráficos de tendencia guardados en:", output_pdf, "\n")
+
 
