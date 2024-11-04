@@ -38,7 +38,8 @@ resultado_df <- dcast(medias_por_mes_transpuesta, variable ~ foto_mes, value.var
 print(resultado_df)
 
 # Crear gráficos de tendencia por cada atributo y guardarlos en un PDF
-cat("Generando gráficos de tendencia para cada atributo...\n")
+cat("Generando gráficos de tendencia para cada atributo...
+")
 output_pdf <- "~/buckets/b1/exp/tendencia_Kaggle02.pdf"
 pdf(output_pdf)
 
@@ -67,6 +68,39 @@ for (i in 1:nrow(resultado_df)) {
 # Cerrar el archivo PDF
 dev.off()
 
+cat("Gráficos de tendencia guardados en:", output_pdf, "
+")
+
+# Crear gráficos de líneas facetados y guardarlos en un nuevo PDF
+cat("Generando gráficos facetados de línea para cada atributo...
+")
+output_facet_pdf <- "~/buckets/b1/exp/FacetedLine_Kaggle02.pdf"
+pdf(output_facet_pdf)
+
+# Transformar el dataset de medias para usar en gráficos facetados
+medias_por_mes_long <- melt(medias_por_mes, id.vars = "foto_mes", variable.name = "atributo", value.name = "media")
+
+# Crear el gráfico facetado
+p_facet <- ggplot(medias_por_mes_long, aes(x = as.factor(foto_mes), y = media, group = atributo, color = atributo)) +
+  geom_line() +
+  facet_wrap(~ atributo, scales = "free_y", ncol = 3) +
+  xlab("Mes") +
+  ylab("Media del atributo") +
+  ggtitle("Tendencia de los atributos a lo largo del tiempo") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_x_discrete(breaks = levels(as.factor(medias_por_mes_long$foto_mes))[seq(1, length(levels(as.factor(medias_por_mes_long$foto_mes))), by = 6)])
+
+# Dibujar el gráfico en el PDF
+print(p_facet)
+
+# Cerrar el archivo PDF
+dev.off()
+
+cat("Gráficos facetados guardados en:", output_facet_pdf, "
+")
+
 cat("Gráficos de tendencia guardados en:", output_pdf, "\n")
+
 
 
