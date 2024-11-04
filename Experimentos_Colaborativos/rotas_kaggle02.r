@@ -23,7 +23,8 @@ print(cantidad_clientes_por_mes)
 
 # Calcular la media por cada atributo y cada foto_mes
 cat("Calculando la media por cada atributo y cada foto_mes...\n")
-medias_por_mes <- dataset[, lapply(.SD, mean, na.rm = TRUE), by = foto_mes, .SDcols = setdiff(names(dataset), "foto_mes")]
+numeric_cols <- names(dataset)[sapply(dataset, is.numeric)]
+medias_por_mes <- dataset[, lapply(.SD, mean, na.rm = TRUE), by = foto_mes, .SDcols = numeric_cols]
 
 # Transponer el data.table para tener 'foto_mes' como columnas y atributos como filas
 medias_por_mes_transpuesta <- melt(medias_por_mes, id.vars = "foto_mes")
