@@ -49,8 +49,8 @@ for (i in 1:nrow(resultado_df)) {
   foto_mes <- colnames(resultado_df)[-1]
   
   # Crear el gráfico de tendencia
-  df_grafico <- data.frame(foto_mes = as.numeric(foto_mes), valor = valores)
-  p <- ggplot(df_grafico, aes(x = foto_mes, y = valor)) +
+  df_grafico <- data.frame(foto_mes = as.factor(foto_mes), valor = valores)
+  p <- ggplot(df_grafico, aes(x = foto_mes, y = valor, group = 1)) +
     geom_line(color = "blue") +
     geom_point() +
     ggtitle(paste("Tendencia del atributo:", atributo)) +
@@ -66,3 +66,4 @@ for (i in 1:nrow(resultado_df)) {
 dev.off()
 
 cat("Gráficos de tendencia guardados en:", output_pdf, "\n")
+
