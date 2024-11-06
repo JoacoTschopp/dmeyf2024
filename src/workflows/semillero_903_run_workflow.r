@@ -1,4 +1,4 @@
-require("rlang")
+require("rlang", quietly=TRUE) 
 
 # workflow que voy a correr
 PARAM <- "src/workflows/semillero_918_workflow_base_f202108.r"
