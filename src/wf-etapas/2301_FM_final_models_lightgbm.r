@@ -21,7 +21,6 @@ require("yaml", quietly=TRUE)
 require("primes", quietly=TRUE)
 
 require("lightgbm", quietly=TRUE)
-library(pryr)
       
 #cargo la libreria
 # args <- c( "~/labo2024ba" )
@@ -206,7 +205,7 @@ for (modelo_rank in envg$PARAM$modelos_rank) {
               sep ="\t"
             )
       
-      cat("Tamaño del modelo en memoria: ", object_size(modelo_final), "\n")
+      #cat("Tamaño del modelo en memoria: ", object_size(modelo_final), "\n")
       # Liberar la memoria del modelo
       rm(modelo_final)
       gc()
