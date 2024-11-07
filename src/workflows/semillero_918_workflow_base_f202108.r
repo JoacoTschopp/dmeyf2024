@@ -361,7 +361,7 @@ FM_final_models_lightgbm <- function( pinputexps, ranks, qsemillas )
 {
   if( -1 == (param_local <- exp_init())$resultado ) return( 0 )# linea fija
 
-  param_local$meta$script <- "/src/wf-etapas/z2301_FM_final_models_lightgbm.r"
+  param_local$meta$script <- "/src/wf-etapas/2301_FM_final_models_lightgbm.r"
 
   # Que modelos quiero, segun su posicion en el ranking de la Bayesian Optimizacion, ordenado por metrica descendente
   param_local$modelos_rank <- ranks

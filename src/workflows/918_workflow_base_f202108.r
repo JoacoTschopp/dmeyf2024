@@ -370,7 +370,7 @@ FM_final_models_lightgbm <- function( pinputexps, ranks, qsemillas )
 {
   if( -1 == (param_local <- exp_init())$resultado ) return( 0 )# linea fija
 
-  param_local$meta$script <- "/src/wf-etapas/2301_FM_final_models_lightgbm.r"
+  param_local$meta$script <- "/src/wf-etapas/z2301_FM_final_models_lightgbm.r"
 
   # Que modelos quiero, segun su posicion en el ranking de la Bayesian Optimizacion, ordenado por metrica descendente
   param_local$modelos_rank <- ranks
@@ -429,7 +429,7 @@ KA_evaluate_kaggle <- function( pinputexps )
 # Este es el  Workflow Baseline
 # Que predice 202108 donde NO conozco la clase
 
-wf_Kaggle02_Tschopp_semillero <- function( pnombrewf )
+wf_Kaggle02_Tschopp_03_1 <- function( pnombrewf )
 {
   param_local <- exp_wf_init( pnombrewf ) # linea workflow inicial fija
 
@@ -469,5 +469,5 @@ wf_Kaggle02_Tschopp_semillero <- function( pnombrewf )
 # Aqui comienza el programa
 
 # llamo al workflow con future = 202108
-wf_Kaggle02_Tschopp_semillero()
+wf_Kaggle02_Tschopp_03_1()
 
