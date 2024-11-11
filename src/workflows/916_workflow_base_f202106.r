@@ -422,13 +422,13 @@ EV_evaluate_conclase_gan <- function( pinputexps )
 # Este es el  Workflow Baseline
 # Que predice 202106 donde SI hay clase completa
 
-#w6: Dirfting "UVA" +  Lags1-2 y Delta1-2
-wf_Exp_stacking_w6 <- function( pnombrewf )
+#S1: CodCliente + foto_mes + P1+ … + P10 + clase_ternaria
+wf_Exp_stacking_s1 <- function( pnombrewf )
 {
   param_local <- exp_wf_init( pnombrewf ) # linea workflow inicial fija
 
   # Etapa especificacion dataset de la Segunda Competencia Kaggle
-  DT_incorporar_dataset( "~/buckets/b1/datasets/competencia_02_ct.csv.gz")
+  DT_incorporar_dataset( "~/buckets/b1/datasets/predicciones_input.csv")
 
   # Etapas preprocesamiento
   #CA_catastrophe_base( metodo="EstadisticaClasica")
@@ -460,5 +460,5 @@ wf_Exp_stacking_w6 <- function( pnombrewf )
 # Aqui comienza el programa
 
 # llamo al workflow con future = 202106
-wf_Exp_stacking_w6()
+wf_Exp_stacking_s1()
 
