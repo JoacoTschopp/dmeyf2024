@@ -24,7 +24,7 @@ function generar_dataframe(file_name::String)
     nivel = m !== nothing ? m.match : ""
 
     # Renombrar las columnas agregando el nivel extraído, excepto si la columna es "numero_de_cliente"
-    renamed_columns = Symbol.([col == "numero_de_cliente" ? col : string(col, "_", nivel) for col in names(df)])
+    renamed_columns = Symbol.([col in ["numero_de_cliente", "foto_mes"] ? col : string(col, "_", nivel) for col in names(df)])
     rename!(df, renamed_columns)
 
     # Mostrar las dimensiones del DataFrame
@@ -39,7 +39,7 @@ function join_dataframes(df_original::DataFrame, df_nuevo::DataFrame)
     if isempty(df_original)
         return df_nuevo
     else
-        return outerjoin(df_original, df_nuevo, on=:numero_de_cliente, makeunique=true)
+        return outerjoin(df_original, df_nuevo, on=[:numero_de_cliente, :foto_mes], makeunique=true)
     end
 end
 

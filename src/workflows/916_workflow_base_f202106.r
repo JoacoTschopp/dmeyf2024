@@ -431,10 +431,10 @@ wf_Exp_stacking_w6 <- function( pnombrewf )
   DT_incorporar_dataset( "~/buckets/b1/datasets/competencia_02_ct.csv.gz")
 
   # Etapas preprocesamiento
-  CA_catastrophe_base( metodo="EstadisticaClasica")
+  #CA_catastrophe_base( metodo="EstadisticaClasica")
   #FEintra_manual_base()  Variables manuales importantes en el contecto de los datos.
-  DR_drifting_base(metodo="UVA") ##Drifting
-  FEhist_base()  ##Lags
+  #DR_drifting_base(metodo="UVA") ##Drifting
+  #FEhist_base()  ##Lags
 
   #FErf_attributes_base( arbolitos= 20,
   #  hojas_por_arbol= 16,
