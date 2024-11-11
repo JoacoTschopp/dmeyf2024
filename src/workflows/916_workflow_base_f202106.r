@@ -423,7 +423,8 @@ EV_evaluate_conclase_gan <- function( pinputexps )
 # Que predice 202106 donde SI hay clase completa
 
 #S1: CodCliente + foto_mes + P1+ … + P10 + clase_ternaria
-wf_Exp_stacking_s1 <- function( pnombrewf )
+#S2: Dirfting "UVA" + Dataset Original + P1+ … + P10
+wf_Exp_stacking_s2 <- function( pnombrewf )
 {
   param_local <- exp_wf_init( pnombrewf ) # linea workflow inicial fija
 
@@ -431,9 +432,9 @@ wf_Exp_stacking_s1 <- function( pnombrewf )
   DT_incorporar_dataset( "~/buckets/b1/datasets/predicciones_input.csv")
 
   # Etapas preprocesamiento
-  #CA_catastrophe_base( metodo="EstadisticaClasica")
+  CA_catastrophe_base( metodo="EstadisticaClasica")
   #FEintra_manual_base()  Variables manuales importantes en el contecto de los datos.
-  #DR_drifting_base(metodo="UVA") ##Drifting
+  DR_drifting_base(metodo="UVA") ##Drifting
   #FEhist_base()  ##Lags
 
   #FErf_attributes_base( arbolitos= 20,
@@ -460,5 +461,5 @@ wf_Exp_stacking_s1 <- function( pnombrewf )
 # Aqui comienza el programa
 
 # llamo al workflow con future = 202106
-wf_Exp_stacking_s1()
+wf_Exp_stacking_s2()
 
