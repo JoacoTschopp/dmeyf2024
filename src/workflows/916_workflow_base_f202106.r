@@ -267,7 +267,8 @@ TS_strategy_base6 <- function( pinputexps )
   param_local$meta$script <- "/src/wf-etapas/z2101_TS_training_strategy.r"
 
 
-  param_local$future <- c(202106)
+
+  param_local$future <- c(202106, 202105, 202104, 202103, 202102, 202101, 202012, 202011, 202010, 202009, 202008, 202007,202006)
 
   param_local$final_train$undersampling <- 1.0
   param_local$final_train$clase_minoritaria <- c( "BAJA+1", "BAJA+2")
@@ -424,17 +425,29 @@ EV_evaluate_conclase_gan <- function( pinputexps )
 
 #S1: CodCliente + foto_mes + P1+ … + P10 + clase_ternaria
 #S2: Dirfting "UVA" + Dataset Original + P1+ … + P10
-wf_Exp_stacking_s2 <- function( pnombrewf )
+
+#w1: Solo entrenamos como se presentan los datos.
+#w2: Dirfting "rank_cero_fijo" +  Lags1 y Delta1
+#w3: Dirfting "UVA" +  Lags1 y Delta1
+#w4: Dirfting "rank_cero_fijo" +  Lags1 y Delta1 + RF + Canaritos
+#w5: Dirfting "UVA" +  Lags1 y Delta1 + RF + Canaritos 
+#w6: Dirfting "UVA" +  Lags1-2 y Delta1-2
+#w7: Dirfting "UVA" +  Lags1-2 y Delta1-2 + RF + Canaritos 
+#w8: Dirfting "UVA" +  Lags1-2-3 y Delta1-2-3 + Canaritos
+#w9: Dirfting "UVA" +  Lags1-2-3 y Delta1-2-3 + Canaritos + RF + Canaritos 
+#w10: Dirfting "UVA" +  Lags1-2-3 y Delta1-2-3 + Tendencia1 + Canaritos + RF  + Canaritos  
+
+wf_Exp_stacking_w1 <- function( pnombrewf )
 {
   param_local <- exp_wf_init( pnombrewf ) # linea workflow inicial fija
 
   # Etapa especificacion dataset de la Segunda Competencia Kaggle
-  DT_incorporar_dataset( "~/buckets/b1/datasets/predicciones_input.csv")
+  DT_incorporar_dataset( "~/buckets/b1/datasets/competencia_02_ct.csv.gz")
 
   # Etapas preprocesamiento
   CA_catastrophe_base( metodo="EstadisticaClasica")
   #FEintra_manual_base()  Variables manuales importantes en el contecto de los datos.
-  DR_drifting_base(metodo="UVA") ##Drifting
+  #DR_drifting_base(metodo="UVA") ##Drifting
   #FEhist_base()  ##Lags
 
   #FErf_attributes_base( arbolitos= 20,
@@ -450,7 +463,7 @@ wf_Exp_stacking_s2 <- function( pnombrewf )
   ht <- HT_tuning_base( bo_iteraciones = 40 )  # iteraciones inteligentes
 
   # Etapas finales
-  fm <- FM_final_models_lightgbm( c(ht, ts6), ranks=c(1), qsemillas=10 )
+  fm <- FM_final_models_lightgbm( c(ht, ts6), ranks=c(1), qsemillas=5 )
   SC_scoring( c(fm, ts6) )
   EV_evaluate_conclase_gan() # evaluacion contra mes CON clase
 
@@ -461,5 +474,5 @@ wf_Exp_stacking_s2 <- function( pnombrewf )
 # Aqui comienza el programa
 
 # llamo al workflow con future = 202106
-wf_Exp_stacking_s2()
+wf_Exp_stacking_w1()
 
