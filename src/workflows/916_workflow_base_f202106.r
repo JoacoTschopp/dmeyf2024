@@ -136,7 +136,7 @@ FEhist_base <- function( pinputexps)
 
   param_local$lag1 <- TRUE
   param_local$lag2 <- TRUE # no me engraso con los lags de orden 2
-  param_local$lag3 <- TRUE # no me engraso con los lags de orden 3
+  param_local$lag3 <- FALSE # no me engraso con los lags de orden 3
 
   # no me engraso las manos con las tendencias
   param_local$Tendencias1$run <- FALSE  # FALSE, no corre nada de lo que sigue
@@ -437,7 +437,7 @@ EV_evaluate_conclase_gan <- function( pinputexps )
 #w9: Dirfting "UVA" +  Lags1-2-3 y Delta1-2-3 + Canaritos + RF + Canaritos 
 #w10: Dirfting "UVA" +  Lags1-2-3 y Delta1-2-3 + Tendencia1 + Canaritos + RF  + Canaritos  
 
-wf_Exp_stacking_w9 <- function( pnombrewf )
+wf_Exp_stacking_w7 <- function( pnombrewf )
 {
   param_local <- exp_wf_init( pnombrewf ) # linea workflow inicial fija
 
@@ -450,7 +450,7 @@ wf_Exp_stacking_w9 <- function( pnombrewf )
   DR_drifting_base(metodo="UVA") ##Drifting
   FEhist_base()  ##Lags
 
-  CN_canaritos_asesinos_base(ratio=0.2, desvio=4.0)
+  #CN_canaritos_asesinos_base(ratio=0.2, desvio=4.0)
 
   FErf_attributes_base( arbolitos= 20,
     hojas_por_arbol= 16,
@@ -476,5 +476,5 @@ wf_Exp_stacking_w9 <- function( pnombrewf )
 # Aqui comienza el programa
 
 # llamo al workflow con future = 202106
-wf_Exp_stacking_w9()
+wf_Exp_stacking_w7()
 
