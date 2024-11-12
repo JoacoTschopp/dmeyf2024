@@ -63,7 +63,7 @@ end
 # Recoger las predicciones y agregarlas al DataFrame
 df_predictions = copy(df_predictions)
 for (key, handle) in predictions_dict
-    df_predictions[!, Symbol(key)] = fetch(handle)
+    df_predictions[!, Symbol(key)] = fetch(handle).result
 end
 
 
