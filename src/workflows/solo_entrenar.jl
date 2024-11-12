@@ -4,8 +4,10 @@ using CSV
 using Glob
 using FilePaths
 using LightGBM
+using Distributed
 
 # Listar y guardar los archivos *.model
+println("Cargar los modelos de LGBM:")
 modelos_path = "~/buckets/b1/expw/FM-0005/*.model"
 model_files = glob("*.model", modelos_path)
 
@@ -19,6 +21,7 @@ for model_file in model_files
     if match_result !== nothing
         semilla = match_result.match
         push!(model_info, (model_file, semilla))
+        println(semilla)
     end
 end
 
@@ -34,25 +37,32 @@ df_predictions = DataFrame(
     clase_ternaria=df_dataset.clase_ternaria
 )
 
-# Realizar predicciones con cada modelo para cada fila del dataset
-for row in eachrow(df_dataset)
-    for model_row in eachrow(model_info)
-        model_file = model_row.modelo
-        semilla = model_row.semilla
-
-        # Cargar el modelo LightGBM
-        booster = Booster(model_file)
-
-        # Preparar la fila para la predicción
+# Distribuir la carga de trabajo para predicciones con múltiples modelos
+@everywhere function predict_for_model(df_dataset, model_file, semilla)
+    booster = Booster(model_file)
+    predictions = Float64[]
+    for row in eachrow(df_dataset)
         input_data = DataFrame(row)[:, Not([:numero_de_cliente, :foto_mes, :clase_ternaria])]
         input_matrix = convert(Matrix{Float64}, input_data)
-
-        # Realizar la predicción
-        prediccion = predict(booster, input_matrix)
-
-        # Agregar la predicción al DataFrame con un nombre específico
-        df_predictions[!, Symbol("w1_s$semilla")] = prediccion[1]
+        push!(predictions, predict(booster, input_matrix)[1])
     end
+    return predictions
+end
+
+# Crear un diccionario para almacenar predicciones por cada modelo
+predictions_dict = Dict()
+
+# Distribuir la predicción entre varios workers si es posible
+for model_row in eachrow(model_info)
+    model_file = model_row.modelo
+    semilla = model_row.semilla
+    predictions_dict["w1_s$semilla"] = @spawn predict_for_model(df_dataset, model_file, semilla)
+end
+
+# Recoger las predicciones y agregarlas al DataFrame
+df_predictions = copy(df_predictions)
+for (key, handle) in predictions_dict
+    df_predictions[!, Symbol(key)] = fetch(handle)
 end
 
 # Guardar el DataFrame resultante en un archivo de texto
