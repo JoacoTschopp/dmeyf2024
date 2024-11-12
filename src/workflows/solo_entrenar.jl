@@ -56,7 +56,7 @@ for row in eachrow(df_dataset)
 end
 
 # Guardar el DataFrame resultante en un archivo de texto
-output_path = "~/buckets/b1/expw/estructura_de_nivel1_w1.txt"
+output_path = "~/buckets/b1/stacking/estructura_de_nivel1_w1.csv.gz"
 CSV.write(output_path, df_predictions, delim=",")
 
 # Mostrar mensaje de finalización
