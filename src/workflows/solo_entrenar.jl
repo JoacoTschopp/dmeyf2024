@@ -9,7 +9,7 @@ using Distributed
 
 # Listar y guardar los archivos *.model
 println("Cargar los modelos de LGBM:")
-modelos_path = "/home/joaquintschopp/buckets/b1/expw/FM-0005/*.model"
+modelos_path = "/home/joaquintschopp/buckets/b1/expw/FM-0005/"
 model_files = glob("*.model", modelos_path)
 println(model_files)
 # Crear un DataFrame para almacenar los nombres de archivos y las semillas
