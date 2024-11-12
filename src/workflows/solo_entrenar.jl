@@ -18,7 +18,7 @@ model_info = DataFrame(modelo=String[], semilla=String[])
 # Extraer la semilla del nombre del modelo y guardar en el DataFrame
 for model_file in model_files
     # Extraer la semilla, que se encuentra entre "s" y ".model" y tiene 6 dígitos
-    match_result = match(r"s(\d{6})\.model", model_file)
+    match_result = match(r".*s(\d{6})\.model", model_file)
     if match_result !== nothing
         semilla = match_result.match
         push!(model_info, (model_file, semilla))
