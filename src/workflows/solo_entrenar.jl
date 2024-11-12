@@ -53,23 +53,25 @@ end
 # Crear un diccionario para almacenar predicciones por cada modelo
 predictions_dict = Dict()
 
-# Distribuir la predicción entre varios workers si es posible
+# Utilizar `@async` para realizar las predicciones en paralelo dentro del mismo proceso
 for model_row in eachrow(model_info)
     model_file = model_row.modelo
     semilla = model_row.semilla
-    predictions_dict["w1_s$semilla"] = fetch(@spawn predict_for_model(df_dataset, model_file, semilla))
+    predictions_dict["w1_s$semilla"] = @async predict_for_model(df_dataset, model_file, semilla)
 end
 
 # Recoger las predicciones y agregarlas al DataFrame
 df_predictions = copy(df_predictions)
 for (key, handle) in predictions_dict
-    pred = fetch(handle)
+    # Usar `wait()` para esperar a que la tarea asíncrona termine y obtener el resultado
+    pred = fetch(wait(handle))
     if isa(pred, Vector)
         df_predictions[!, Symbol(key)] = pred
     else
         error("La predicción no es del tipo esperado: ", typeof(pred))
     end
 end
+
 
 
 # Guardar el DataFrame resultante en un archivo de texto
