@@ -57,14 +57,15 @@ predictions_dict = Dict()
 for model_row in eachrow(model_info)
     model_file = model_row.modelo
     semilla = model_row.semilla
-    predictions_dict["w1_s$semilla"] = @spawn predict_for_model(df_dataset, model_file, semilla)
+    predictions_dict["w1_s$semilla"] = fetch(@spawn predict_for_model(df_dataset, model_file, semilla))
 end
 
 # Recoger las predicciones y agregarlas al DataFrame
 df_predictions = copy(df_predictions)
 for (key, handle) in predictions_dict
-    df_predictions[!, Symbol(key)] .= fetch(handle)
+    df_predictions[!, Symbol(key)] = fetch(handle)
 end
+
 
 # Guardar el DataFrame resultante en un archivo de texto
 output_path = "/home/joaquintschopp/buckets/b1/stacking/estructura_de_nivel1_w1.csv.gz"
