@@ -63,7 +63,12 @@ end
 # Recoger las predicciones y agregarlas al DataFrame
 df_predictions = copy(df_predictions)
 for (key, handle) in predictions_dict
-    df_predictions[!, Symbol(key)] = fetch(handle).result
+    pred = fetch(handle)
+    if isa(pred, Vector)
+        df_predictions[!, Symbol(key)] = pred
+    else
+        error("La predicción no es del tipo esperado: ", typeof(pred))
+    end
 end
 
 
