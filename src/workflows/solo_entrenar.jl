@@ -9,7 +9,7 @@ using Distributed
 
 # Listar y guardar los archivos *.model
 println("Cargar los modelos de LGBM:")
-modelos_path = "~/buckets/b1/expw/FM-0005/*.model"
+modelos_path = "/home/joaquintschopp/buckets/b1/expw/FM-0005/*.model"
 model_files = glob("*.model", modelos_path)
 
 # Crear un DataFrame para almacenar los nombres de archivos y las semillas
@@ -27,8 +27,8 @@ for model_file in model_files
 end
 
 # Cargar el dataset
-println("Cargando dataset desde: ~/buckets/b1/datasets/competencia_02_ct.csv.gz")
-dataset_path = "~/buckets/b1/datasets/competencia_02_ct.csv.gz"
+println("Cargando dataset desde: /home/joaquintschopp/buckets/b1/datasets/competencia_02_ct.csv.gz")
+dataset_path = "/home/joaquintschopp/buckets/b1/datasets/competencia_02_ct.csv.gz"
 df_dataset = DataFrame(CSV.File(dataset_path))
 
 # Crear un DataFrame para almacenar las predicciones
@@ -67,7 +67,7 @@ for (key, handle) in predictions_dict
 end
 
 # Guardar el DataFrame resultante en un archivo de texto
-output_path = "~/buckets/b1/stacking/estructura_de_nivel1_w1.csv.gz"
+output_path = "/home/joaquintschopp/buckets/b1/stacking/estructura_de_nivel1_w1.csv.gz"
 CSV.write(output_path, df_predictions, delim=",")
 
 # Mostrar mensaje de finalización
