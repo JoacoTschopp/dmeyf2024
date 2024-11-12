@@ -1,4 +1,5 @@
 # Cargar las librerías necesarias
+using CodecZlib
 using DataFrames
 using CSV
 using Glob
