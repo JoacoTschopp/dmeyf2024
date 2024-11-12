@@ -11,7 +11,7 @@ using Distributed
 println("Cargar los modelos de LGBM:")
 modelos_path = "/home/joaquintschopp/buckets/b1/expw/FM-0005/"
 model_files = glob("*.model", modelos_path)
-println(model_files)
+
 # Crear un DataFrame para almacenar los nombres de archivos y las semillas
 model_info = DataFrame(modelo=String[], semilla=String[])
 
@@ -20,7 +20,7 @@ for model_file in model_files
     # Extraer la semilla, que se encuentra entre "s" y ".model" y tiene 6 dígitos
     match_result = match(r".*s(\d{6})\.model", model_file)
     if match_result !== nothing
-        semilla = match_result.match
+        semilla = match_result.captures[1]
         push!(model_info, (model_file, semilla))
         println(semilla)
     end
