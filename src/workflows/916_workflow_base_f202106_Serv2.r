@@ -409,7 +409,7 @@ EV_evaluate_conclase_gan <- function( pinputexps )
   param_local$train$meseta <- 2001
 
   # para graficar
-  param_local$graficar$envios_desde <-   8000L
+  param_local$graficar$envios_desde <-   1000L
   param_local$graficar$envios_hasta <-  16000L
   param_local$graficar$ventana_suavizado <- 2001L
 
