@@ -135,7 +135,7 @@ FEhist_base <- function( pinputexps)
   param_local$meta$script <- "/src/wf-etapas/z1501_FE_historia.r"
 
   param_local$lag1 <- TRUE
-  param_local$lag2 <- TRUE # no me engraso con los lags de orden 2
+  param_local$lag2 <- FALSE # no me engraso con los lags de orden 2
   param_local$lag3 <- FALSE # no me engraso con los lags de orden 3
 
   # no me engraso las manos con las tendencias
@@ -437,7 +437,7 @@ EV_evaluate_conclase_gan <- function( pinputexps )
 #w9: Dirfting "UVA" +  Lags1-2-3 y Delta1-2-3 + Canaritos + RF + Canaritos 
 #w10: Dirfting "UVA" +  Lags1-2-3 y Delta1-2-3 + Tendencia1 + Canaritos + RF  + Canaritos  
 
-wf_Exp_stacking_w7 <- function( pnombrewf )
+wf_Exp_stacking_w4 <- function( pnombrewf )
 {
   param_local <- exp_wf_init( pnombrewf ) # linea workflow inicial fija
 
@@ -447,7 +447,7 @@ wf_Exp_stacking_w7 <- function( pnombrewf )
   # Etapas preprocesamiento
   CA_catastrophe_base( metodo="EstadisticaClasica")
   #FEintra_manual_base()  Variables manuales importantes en el contecto de los datos.
-  DR_drifting_base(metodo="UVA") ##Drifting
+  DR_drifting_base(metodo="rank_cero_fijo") ##Drifting
   FEhist_base()  ##Lags
 
   #CN_canaritos_asesinos_base(ratio=0.2, desvio=4.0)
@@ -476,5 +476,5 @@ wf_Exp_stacking_w7 <- function( pnombrewf )
 # Aqui comienza el programa
 
 # llamo al workflow con future = 202106
-wf_Exp_stacking_w7()
+wf_Exp_stacking_w4()
 
