@@ -427,17 +427,17 @@ EV_evaluate_conclase_gan <- function( pinputexps )
 #S2: Dirfting "UVA" + Dataset Original + P1+ … + P10
 
 
-wf_Exp_stacking_s1 <- function( pnombrewf )
+wf_Exp_stacking_s2 <- function( pnombrewf )
 {
   param_local <- exp_wf_init( pnombrewf ) # linea workflow inicial fija
 
   # Etapa especificacion dataset de la Segunda Competencia Kaggle
-  DT_incorporar_dataset( "~/buckets/b1/datasets/predicciones_input.csv.gz")
+  DT_incorporar_dataset( "~/buckets/b1/datasets/experimento_stacking_02.csv.gz")
 
   # Etapas preprocesamiento
   CA_catastrophe_base( metodo="EstadisticaClasica")
   #FEintra_manual_base()  Variables manuales importantes en el contecto de los datos.
-  #DR_drifting_base(metodo="UVA") ##Drifting
+  DR_drifting_base(metodo="UVA") ##Drifting
   #FEhist_base()  ##Lags
 
   #CN_canaritos_asesinos_base(ratio=0.2, desvio=4.0)
@@ -466,5 +466,5 @@ wf_Exp_stacking_s1 <- function( pnombrewf )
 # Aqui comienza el programa
 
 # llamo al workflow con future = 202106
-wf_Exp_stacking_s1()
+wf_Exp_stacking_s2()
 
