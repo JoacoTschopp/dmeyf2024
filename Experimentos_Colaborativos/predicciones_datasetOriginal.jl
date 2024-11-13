@@ -3,8 +3,8 @@ using DataFrames
 using CSV
 
 # Definir las rutas de los archivos de los datasets
-path_df_predict = "\\home\\tschopp_joaquin333\\buckets\\b1\\dataset\\predicciones_input.csv.gz"
-path_df_kaggle02 = "\\home\\tschopp_joaquin333\\buckets\\b1\\dataset\\competencia_02_ct.csv.gz"
+path_df_predict = "\\home\\tschopp_joaquin333\\buckets\\b1\\datasets\\predicciones_input.csv.gz"
+path_df_kaggle02 = "\\home\\tschopp_joaquin333\\buckets\\b1\\datasets\\competencia_02_ct.csv.gz"
 
 ##################################################################################
 
@@ -48,6 +48,6 @@ dimension_experimento = size(df_experimento)
 println("Dimensiones del dataset combinado df_experimento: ", dimension_experimento)
 
 # Guardar el DataFrame combinado en un archivo CSV comprimido en la carpeta especificada
-output_path = "\\home\\tschopp_joaquin333\\buckets\\b1\\dataset\\experimento_stacking_02.csv.gz"
+output_path = "\\home\\tschopp_joaquin333\\buckets\\b1\\datasets\\experimento_stacking_02.csv.gz"
 println("Guardando df_experimento en: ", output_path)
 CSV.write(output_path, df_experimento)
