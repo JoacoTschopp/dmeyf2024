@@ -135,8 +135,8 @@ FEhist_base <- function( pinputexps)
   param_local$meta$script <- "/src/wf-etapas/z1501_FE_historia.r"
 
   param_local$lag1 <- TRUE
-  param_local$lag2 <- FALSE # no me engraso con los lags de orden 2
-  param_local$lag3 <- FALSE # no me engraso con los lags de orden 3
+  param_local$lag2 <- TRUE # no me engraso con los lags de orden 2
+  param_local$lag3 <- TRUE # no me engraso con los lags de orden 3
 
   # no me engraso las manos con las tendencias
   param_local$Tendencias1$run <- FALSE  # FALSE, no corre nada de lo que sigue
@@ -281,7 +281,7 @@ TS_strategy_base6 <- function( pinputexps )
 
   # Atencion  0.2  de  undersampling de la clase mayoritaria,  los CONTINUA
   # 1.0 significa NO undersampling
-  param_local$train$undersampling <- 0.2
+  param_local$train$undersampling <- 1.0
   param_local$train$clase_minoritaria <- c( "BAJA+1", "BAJA+2")
 
   return( exp_correr_script( param_local ) ) # linea fija
@@ -425,30 +425,31 @@ EV_evaluate_conclase_gan <- function( pinputexps )
 
 #S1: CodCliente + foto_mes + P1+ … + P10 + clase_ternaria
 #S2: Dirfting "UVA" + Dataset Original + P1+ … + P10
+#S3: S2  + Lags1 y Delta1 + RF + Canaritos
+#S5: S2  + Lags1-2-3 y Delta1-2-3 + RF + Canaritos
 
-
-wf_Exp_stacking_s2 <- function( pnombrewf )
+wf_Exp_stacking_s5 <- function( pnombrewf )
 {
   param_local <- exp_wf_init( pnombrewf ) # linea workflow inicial fija
 
   # Etapa especificacion dataset de la Segunda Competencia Kaggle
-  DT_incorporar_dataset( "~/buckets/b1/datasets/experimento_stacking_02.csv.gz")
+  DT_incorporar_dataset( "~/buckets/b1/datasets/experimento_stacking_02new.csv.gz")
 
   # Etapas preprocesamiento
   CA_catastrophe_base( metodo="EstadisticaClasica")
   #FEintra_manual_base()  Variables manuales importantes en el contecto de los datos.
   DR_drifting_base(metodo="UVA") ##Drifting
-  #FEhist_base()  ##Lags
+  FEhist_base()  ##Lags
 
   #CN_canaritos_asesinos_base(ratio=0.2, desvio=4.0)
 
-  #FErf_attributes_base( arbolitos= 20,
-  #  hojas_por_arbol= 16,
-  #  datos_por_hoja= 1000,
-  #  mtry_ratio= 0.2
-  #)
+  FErf_attributes_base( arbolitos= 20,
+    hojas_por_arbol= 16,
+    datos_por_hoja= 1000,
+    mtry_ratio= 0.2
+  )
 
-  #CN_canaritos_asesinos_base(ratio=0.2, desvio=4.0)
+  CN_canaritos_asesinos_base(ratio=0.2, desvio=4.0)
 
   # Etapas modelado
   ts6 <- TS_strategy_base6()
