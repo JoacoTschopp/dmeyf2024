@@ -325,7 +325,7 @@ HT_tuning_base <- function( pinputexps, bo_iteraciones, bypass=FALSE)
     min_sum_hessian_in_leaf = 0.001, #  min_sum_hessian_in_leaf >= 0.0
     lambda_l1 = 0.0, # lambda_l1 >= 0.0
     lambda_l2 = 0.0, # lambda_l2 >= 0.0
-    max_bin = 31L, # lo debo dejar fijo, no participa de la BO
+    max_bin = 255L, # lo debo dejar fijo, no participa de la BO
     num_iterations = 9999, # un numero muy grande, lo limita early_stopping_rounds
 
     bagging_fraction = 1.0, # 0.0 < bagging_fraction <= 1.0
@@ -428,28 +428,28 @@ EV_evaluate_conclase_gan <- function( pinputexps )
 #S3: S2  + Lags1 y Delta1 + RF + Canaritos
 #S5: S2  + Lags1-2-3 y Delta1-2-3 + RF + Canaritos
 
-wf_Exp_stacking_s5 <- function( pnombrewf )
+wf_Exp_stacking_s1_bins255 <- function( pnombrewf )
 {
   param_local <- exp_wf_init( pnombrewf ) # linea workflow inicial fija
 
   # Etapa especificacion dataset de la Segunda Competencia Kaggle
-  DT_incorporar_dataset( "~/buckets/b1/datasets/experimento_stacking_02new.csv.gz")
+  DT_incorporar_dataset( "~/buckets/b1/datasets/predicciones_input.csv.gz")
 
   # Etapas preprocesamiento
   CA_catastrophe_base( metodo="EstadisticaClasica")
   #FEintra_manual_base()  Variables manuales importantes en el contecto de los datos.
-  DR_drifting_base(metodo="UVA") ##Drifting
-  FEhist_base()  ##Lags
+  #DR_drifting_base(metodo="UVA") ##Drifting
+  #FEhist_base()  ##Lags
 
   #CN_canaritos_asesinos_base(ratio=0.2, desvio=4.0)
 
-  FErf_attributes_base( arbolitos= 20,
-    hojas_por_arbol= 16,
-    datos_por_hoja= 1000,
-    mtry_ratio= 0.2
-  )
+  #FErf_attributes_base( arbolitos= 20,
+  #  hojas_por_arbol= 16,
+  #  datos_por_hoja= 1000,
+  #  mtry_ratio= 0.2
+  #)
 
-  CN_canaritos_asesinos_base(ratio=0.2, desvio=4.0)
+  #CN_canaritos_asesinos_base(ratio=0.2, desvio=4.0)
 
   # Etapas modelado
   ts6 <- TS_strategy_base6()
@@ -467,5 +467,5 @@ wf_Exp_stacking_s5 <- function( pnombrewf )
 # Aqui comienza el programa
 
 # llamo al workflow con future = 202106
-wf_Exp_stacking_s2()
+wf_Exp_stacking_s1_bins255()
 
