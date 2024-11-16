@@ -269,16 +269,14 @@ TS_strategy_base6 <- function( pinputexps )
 
   param_local$meta$script <- "/src/wf-etapas/z2101_TS_training_strategy.r"
 
-
-
   param_local$future <- c(202106)
 
   param_local$final_train$undersampling <- 1.0
   param_local$final_train$clase_minoritaria <- c( "BAJA+1", "BAJA+2")
-  param_local$final_train$training <- c(202104, 202103, 202102, 202101, 202012, 202011)
+  param_local$final_train$training <- c(202104, 202103, 202102)
 
 
-  param_local$train$training <- c(202102, 202101, 202012, 202011, 202010, 202009)
+  param_local$train$training <- c(202102, 202101, 202012)
   param_local$train$validation <- c(202103)
   param_local$train$testing <- c(202104)
 
@@ -441,7 +439,11 @@ EV_evaluate_conclase_gan <- function( pinputexps )
 #     param_local$train$training <- c(202102, 202101, 202012, 202011, 202010, 202009)
 #     param_local$train$undersampling <- 0.25
 
-wf_Exp_stacking_w1.1 <- function( pnombrewf )
+#w2.1:param_local$final_train$training <- c(202104, 202103, 202102)
+#     param_local$train$training <- c(202102, 202101, 202012)
+#     param_local$train$undersampling <- 0.25
+
+wf_Exp_stacking_w2.1 <- function( pnombrewf )
 {
   param_local <- exp_wf_init( pnombrewf ) # linea workflow inicial fija
 
@@ -450,7 +452,7 @@ wf_Exp_stacking_w1.1 <- function( pnombrewf )
 
   # Etapas preprocesamiento
   CA_catastrophe_base( metodo="EstadisticaClasica")
-  FEintra_manual_base()  Variables manuales importantes en el contecto de los datos.
+  FEintra_manual_base()  #Variables manuales importantes en el contecto de los datos.
   DR_drifting_base(metodo="rank_cero_fijo") ##Drifting
   FEhist_base()  ##Lags
 
@@ -480,5 +482,5 @@ wf_Exp_stacking_w1.1 <- function( pnombrewf )
 # Aqui comienza el programa
 
 # llamo al workflow con future = 202106
-wf_Exp_stacking_w1.1()
+wf_Exp_stacking_w2.1()
 

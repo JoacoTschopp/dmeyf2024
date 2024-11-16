@@ -93,8 +93,7 @@ CA_catastrophe_base <- function( pinputexps, metodo )
   #"ccajas_depositos" todos ceros para 202105/06 no hay forma de arreglarlo
   #"Visa_Finiciomora" todos los meses NAs no tiene sentido dejarlo se ajustaria a ese dato si hay unos pocos. 
   #dataset <- dataset[, -c("cprestamos_personales", "mprestamos_personales", "datcplazo_fijo", "Visa_Finiciomora")]
-  param_local$atributos_eliminar <- c("cprestamos_personales", "mprestamos_personales", "datcplazo_fijo", "Visa_Finiciomora", "tmobile_app", "cmobile_app_trx" )
-
+  
   return( exp_correr_script( param_local ) ) # linea fija}
 }
 #------------------------------------------------------------------------------
@@ -106,7 +105,7 @@ FEintra_manual_base <- function( pinputexps )
   if( -1 == (param_local <- exp_init())$resultado ) return( 0 ) # linea fija
 
 
-  param_local$meta$script <- "/src/wf-etapas/1301_FE_intrames_manual.r"
+  param_local$meta$script <- "/src/wf-etapas/z1301_FE_intrames_manual.r"
 
   param_local$semilla <- NULL  # no usa semilla, es deterministico
 
@@ -143,7 +142,7 @@ FEhist_base <- function( pinputexps)
 
   param_local$lag1 <- TRUE
   param_local$lag2 <- TRUE # no me engraso con los lags de orden 2
-  param_local$lag3 <- TRUE # no me engraso con los lags de orden 3
+  param_local$lag3 <- FALSE # no me engraso con los lags de orden 3
 
   # no me engraso las manos con las tendencias
   param_local$Tendencias1$run <- TRUE  # FALSE, no corre nada de lo que sigue
@@ -156,7 +155,7 @@ FEhist_base <- function( pinputexps)
   param_local$Tendencias1$ratiomax <- FALSE
 
   # no me engraso las manos con las tendencias de segundo orden
-  param_local$Tendencias2$run <- TRUE
+  param_local$Tendencias2$run <- FALSE
   param_local$Tendencias2$ventana <- 12
   param_local$Tendencias2$tendencia <- FALSE
   param_local$Tendencias2$minimo <- FALSE
@@ -183,8 +182,7 @@ FErf_attributes_base <- function( pinputexps,
 {
   if( -1 == (param_local <- exp_init())$resultado ) return( 0 )# linea fija
 
-
-  param_local$meta$script <- "/src/wf-etapas/z1311_FE_rfatributes.r"
+  param_local$meta$script <- "/src/wf-etapas/1311_FE_rfatributes.r"
 
   # Parametros de un LightGBM que se genera para estimar la column importance
   param_local$train$clase01_valor1 <- c( "BAJA+2", "BAJA+1")
@@ -291,7 +289,7 @@ TS_strategy_base8 <- function( pinputexps )
 
   # Atencion  0.2  de  undersampling de la clase mayoritaria,  los CONTINUA
   # 1.0 significa NO undersampling
-  param_local$train$undersampling <- 0.15
+  param_local$train$undersampling <- 0.25
   param_local$train$clase_minoritaria <- c( "BAJA+1", "BAJA+2")
 
   return( exp_correr_script( param_local ) ) # linea fija
