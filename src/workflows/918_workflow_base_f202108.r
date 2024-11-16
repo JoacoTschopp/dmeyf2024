@@ -240,7 +240,7 @@ CN_canaritos_asesinos_base <- function( pinputexps, ratio, desvio)
   if( -1 == (param_local <- exp_init())$resultado ) return( 0 )# linea fija
 
 
-  param_local$meta$script <- "/src/wf-etapas/z1601_CN_canaritos_asesinos.r"
+  param_local$meta$script <- "/src/wf-etapas/1601_CN_canaritos_asesinos.r"
 
   # Parametros de un LightGBM que se genera para estimar la column importance
   param_local$train$clase01_valor1 <- c( "BAJA+2", "BAJA+1")
@@ -271,19 +271,39 @@ TS_strategy_base8 <- function( pinputexps )
 
   param_local$meta$script <- "/src/wf-etapas/z2101_TS_training_strategy.r"
 
+  #Elimino Meses donde se ven muchos atributos rotos:
+  #202006: 57
+  #201910: 9
+  #201905: 8
+
+  #cmobile_app_trx Se rompe a partir de unos meses antes del objketivo dejando de tener relevancia.
+
+  #cpayrroll_trx y mpayrroll  se rompe o dispara cada 6 meses? aginaldos?
+
+  #202106 cliente_vip poner a 0
+
+  #201904 y 202104 Master_mfinanciacion_limite porner a 0
+  #201904 Visa_mfinanciacion_limite porner a 0
+
+  #201912 Master_mpagado poner a 0
+
 
   param_local$future <- c(202108)
 
   param_local$final_train$undersampling <- 1.0
   param_local$final_train$clase_minoritaria <- c( "BAJA+1", "BAJA+2")
-  param_local$final_train$training <- c(202106, 202105, 202104, 202103, 202102, 202101, 
-    202001, 202002, 202003, 202010, 202011, 202012,
-    201912, 201911, 201910, 201909, 201908, 201907, 201906, 201905, 201904, 201903, 201902, 201901)
+  param_local$final_train$training <- c(202106, 202105, 202104, 202103, 202102, 202101, 202012, 202011,
+                                 202010, 202009, 202008, 202007, 202006, 202005,
+                                 202004, 202003, 202002, 202001, 201912, 201911, 
+                                 201910, 201909, 201908, 201907, 201906, 201905, 
+                                 201904, 201903, 201902, 201901)
 
 
-  param_local$train$training <- c(202104, 202103, 202102, 202101, 
-    202012, 202011, 202010, 202003, 202002, 202001,
-    201912, 201911, 201910, 201909, 201908, 201907, 201906, 201905, 201904, 201903, 201902, 201901)#202009, 202008, 202007, 202006, 202005, 202004
+  param_local$train$training <- c(202104, 202103, 202102, 202101, 202012, 202011,
+                                 202010, 202009, 202008, 202007, 202006, 202005,
+                                 202004, 202003, 202002, 202001, 201912, 201911, 
+                                 201910, 201909, 201908, 201907, 201906, 201905, 
+                                 201904, 201903, 201902, 201901)
   param_local$train$validation <- c(202105)
   param_local$train$testing <- c(202106)
 
@@ -441,7 +461,7 @@ wf_Kaggle02_Tschopp_03_1 <- function( pnombrewf )
   DR_drifting_base(metodo="UVA") #DRIFTING rank_cero_fijo
   FEhist_base()
 
-  CN_canaritos_asesinos_base(ratio=0.5, desvio=2.0)
+  CN_canaritos_asesinos_base(ratio=0.6, desvio=0)
   
   FErf_attributes_base( arbolitos= 20,
     hojas_por_arbol= 16,
@@ -449,7 +469,7 @@ wf_Kaggle02_Tschopp_03_1 <- function( pnombrewf )
     mtry_ratio= 0.2
   )
 
-  CN_canaritos_asesinos_base(ratio=0.5, desvio=2.0)
+  CN_canaritos_asesinos_base(ratio=1, desvio=0)
 
   # Etapas modelado
   ts8 <- TS_strategy_base8()

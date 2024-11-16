@@ -101,8 +101,8 @@ FEintra_manual_base <- function( pinputexps )
 {
   if( -1 == (param_local <- exp_init())$resultado ) return( 0 ) # linea fija
 
-
-  param_local$meta$script <- "/src/wf-etapas/z1301_FE_intrames_manual.r"
+  #Saco a partir del w3.1  las variables con Concept-Drifting
+  param_local$meta$script <- "/src/wf-etapas/exp1301_FE_intrames_manual.r"
 
   param_local$semilla <- NULL  # no usa semilla, es deterministico
 
@@ -273,10 +273,9 @@ TS_strategy_base6 <- function( pinputexps )
 
   param_local$final_train$undersampling <- 1.0
   param_local$final_train$clase_minoritaria <- c( "BAJA+1", "BAJA+2")
-  param_local$final_train$training <- c(202104, 202103, 202102)
-
-
-  param_local$train$training <- c(202102, 202101, 202012)
+  param_local$final_train$training <- c(202104, 202103, 202102, 202101, 202012, 202011)
+  
+  param_local$train$training <- c(202102, 202101, 202012, 202011, 202010, 202009)
   param_local$train$validation <- c(202103)
   param_local$train$testing <- c(202104)
 
@@ -443,7 +442,15 @@ EV_evaluate_conclase_gan <- function( pinputexps )
 #     param_local$train$training <- c(202102, 202101, 202012)
 #     param_local$train$undersampling <- 0.25
 
-wf_Exp_stacking_w2.1 <- function( pnombrewf )
+#w3.1:param_local$final_train$training <- c(202104, 202103, 202102, 202101, 202012, 202011)
+#     param_local$train$training <- c(202102, 202101, 202012, 202011, 202010, 202009)
+#     param_local$train$undersampling <- 0.25
+#No es el mismo dado que saque variables con Concept-Drifting tambien apra sacarnos la duda de la ganancia.
+
+#w2.1:param_local$final_train$training <- c(202104, 202103, 202102)
+#     param_local$train$training <- c(202102, 202101, 202012)
+#     param_local$train$undersampling <- 0.25
+wf_Exp_stacking_w3.1 <- function( pnombrewf )
 {
   param_local <- exp_wf_init( pnombrewf ) # linea workflow inicial fija
 
@@ -482,5 +489,5 @@ wf_Exp_stacking_w2.1 <- function( pnombrewf )
 # Aqui comienza el programa
 
 # llamo al workflow con future = 202106
-wf_Exp_stacking_w2.1()
+wf_Exp_stacking_w3.1()
 

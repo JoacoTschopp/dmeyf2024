@@ -1,5 +1,5 @@
 #!/usr/bin/env Rscript
-cat( "ETAPA  z1301_FE_intrames_manual.r  INIT\n")
+cat( "ETAPA  exp1301_FE_intrames_manual.r  INIT\n")
 
 # Workflow  Feature Engineering intrames manual artesanal
 
@@ -268,6 +268,10 @@ dataset <- fread(envg$PARAM$dataset)
 cat( "Finalizada lectura del dataset\n" )
 
 GrabarOutput()
+
+#Tienen concept Drifting
+dataset[, cprestamos_personales := NULL ]
+dataset[, mprestamos_personales := NULL ]
 
 # Agrego las variables manuales
 cat( "variables intra mest\n")
