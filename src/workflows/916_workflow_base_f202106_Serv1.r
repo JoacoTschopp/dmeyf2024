@@ -12,8 +12,8 @@ if( !exists("envg") ) envg <- env()  # global environment
 
 envg$EXPENV <- list()
 envg$EXPENV$bucket_dir <- "~/buckets/b1"
-envg$EXPENV$exp_dir <- "~/buckets/b1/expw/"
-envg$EXPENV$wf_dir <- "~/buckets/b1/flow/"
+envg$EXPENV$exp_dir <- "~/buckets/b1/expw_expe/"
+envg$EXPENV$wf_dir <- "~/buckets/b1/flow_expe/"
 envg$EXPENV$repo_dir <- "~/dmeyf2024/"
 envg$EXPENV$datasets_dir <- "~/buckets/b1/datasets/"
 envg$EXPENV$messenger <- "~/install/zulip_enviar.sh"
@@ -88,6 +88,9 @@ CA_catastrophe_base <- function( pinputexps, metodo )
   param_local$metodo <- metodo
   param_local$semilla <- NULL  # no usa semilla, es deterministico
 
+  #Concept Dirfting
+  param_local$atributos_eliminar <- c("cprestamos_personales", "mprestamos_personales")
+ 
   return( exp_correr_script( param_local ) ) # linea fija}
 }
 #------------------------------------------------------------------------------
@@ -268,20 +271,20 @@ TS_strategy_base6 <- function( pinputexps )
 
 
 
-  param_local$future <- c(202106, 202105, 202104, 202103, 202102, 202101, 202012, 202011, 202010, 202009, 202008, 202007,202006)
+  param_local$future <- c(202106)
 
   param_local$final_train$undersampling <- 1.0
   param_local$final_train$clase_minoritaria <- c( "BAJA+1", "BAJA+2")
   param_local$final_train$training <- c(202104, 202103, 202102, 202101, 202012, 202011)
 
 
-  param_local$train$training <- c(202102, 202101, 202012, 202111, 202010, 202009)
+  param_local$train$training <- c(202102, 202101, 202012, 202011, 202010, 202009)
   param_local$train$validation <- c(202103)
   param_local$train$testing <- c(202104)
 
   # Atencion  0.2  de  undersampling de la clase mayoritaria,  los CONTINUA
   # 1.0 significa NO undersampling
-  param_local$train$undersampling <- 0.2
+  param_local$train$undersampling <- 0.25
   param_local$train$clase_minoritaria <- c( "BAJA+1", "BAJA+2")
 
   return( exp_correr_script( param_local ) ) # linea fija
@@ -338,12 +341,12 @@ HT_tuning_base <- function( pinputexps, bo_iteraciones, bypass=FALSE)
     max_drop = 50, # <=0 means no limit
     skip_drop = 0.5, # 0.0 <= skip_drop <= 1.0
 
-    extra_trees = FALSE,
+    extra_trees = TRUE,
     # Parte variable
     learning_rate = c( 0.02, 0.3 ),
-    feature_fraction = c( 0.5, 0.9 ),
-    num_leaves = c( 8L, 2048L,  "integer" ),
-    min_data_in_leaf = c( 100L, 10000L, "integer" )
+    feature_fraction = c( 0.01, 0.9 ),
+    num_leaves = c( 8L, 4096L,  "integer" ),
+    min_data_in_leaf = c( 10L, 50000L, "integer" )
   )
 
 
@@ -426,18 +429,19 @@ EV_evaluate_conclase_gan <- function( pinputexps )
 #S1: CodCliente + foto_mes + P1+ … + P10 + clase_ternaria
 #S2: Dirfting "UVA" + Dataset Original + P1+ … + P10
 
-#w1: Solo entrenamos como se presentan los datos.
-#w2: Dirfting "rank_cero_fijo" +  Lags1 y Delta1
-#w3: Dirfting "UVA" +  Lags1 y Delta1
-#w4: Dirfting "rank_cero_fijo" +  Lags1 y Delta1 + RF + Canaritos
-#w5: Dirfting "UVA" +  Lags1 y Delta1 + RF + Canaritos 
-#w6: Dirfting "UVA" +  Lags1-2 y Delta1-2
-#w7: Dirfting "UVA" +  Lags1-2 y Delta1-2 + RF + Canaritos 
-#w8: Dirfting "UVA" +  Lags1-2-3 y Delta1-2-3 + Canaritos
-#w9: Dirfting "UVA" +  Lags1-2-3 y Delta1-2-3 + Canaritos + RF + Canaritos 
-#w10: Dirfting "UVA" +  Lags1-2-3 y Delta1-2-3 + Tendencia1 + Canaritos + RF  + Canaritos  
+#W mantengo drifting, lags 1,2 (exsperiemtno anterior), tratamiento de catastrofe, intra mes: todas las propuesta y elimino los Concept drifting.
+# Canaritos #1 para reducir dimension: pero con canaritos mas agresivos 
+# RF Muy positivo para agregar atributos importantes.
+# Canaritos #1 para reducir dimension: pero con canaritos mas permisivos
 
-wf_Exp_stacking_w6 <- function( pnombrewf )
+
+
+# Vario meses en cantidad y ubicacion en el tiempo.
+#w1.1:param_local$final_train$training <- c(202104, 202103, 202102, 202101, 202012, 202011)
+#     param_local$train$training <- c(202102, 202101, 202012, 202011, 202010, 202009)
+#     param_local$train$undersampling <- 0.25
+
+wf_Exp_stacking_w1.1 <- function( pnombrewf )
 {
   param_local <- exp_wf_init( pnombrewf ) # linea workflow inicial fija
 
@@ -446,26 +450,26 @@ wf_Exp_stacking_w6 <- function( pnombrewf )
 
   # Etapas preprocesamiento
   CA_catastrophe_base( metodo="EstadisticaClasica")
-  #FEintra_manual_base()  Variables manuales importantes en el contecto de los datos.
-  DR_drifting_base(metodo="UVA") ##Drifting
+  FEintra_manual_base()  Variables manuales importantes en el contecto de los datos.
+  DR_drifting_base(metodo="rank_cero_fijo") ##Drifting
   FEhist_base()  ##Lags
 
-  #CN_canaritos_asesinos_base(ratio=0.2, desvio=4.0)
+  CN_canaritos_asesinos_base(ratio=0.2, desvio=0.0)
 
-  #FErf_attributes_base( arbolitos= 20,
-  #  hojas_por_arbol= 16,
-  #  datos_por_hoja= 1000,
-  #  mtry_ratio= 0.2
-  #)
+  FErf_attributes_base( arbolitos= 20,
+    hojas_por_arbol= 16,
+    datos_por_hoja= 1000,
+    mtry_ratio= 0.2
+  )
 
-  #CN_canaritos_asesinos_base(ratio=0.2, desvio=4.0)
+  CN_canaritos_asesinos_base(ratio=0.4, desvio=2.0)
 
   # Etapas modelado
   ts6 <- TS_strategy_base6()
-  ht <- HT_tuning_base( bo_iteraciones = 40 )  # iteraciones inteligentes
+  ht <- HT_tuning_base( bo_iteraciones = 30 )  # iteraciones inteligentes
 
   # Etapas finales
-  fm <- FM_final_models_lightgbm( c(ht, ts6), ranks=c(1), qsemillas=10 )
+  fm <- FM_final_models_lightgbm( c(ht, ts6), ranks=c(1), qsemillas=20 )
   SC_scoring( c(fm, ts6) )
   EV_evaluate_conclase_gan() # evaluacion contra mes CON clase
 
@@ -476,5 +480,5 @@ wf_Exp_stacking_w6 <- function( pnombrewf )
 # Aqui comienza el programa
 
 # llamo al workflow con future = 202106
-wf_Exp_stacking_w6()
+wf_Exp_stacking_w1.1()
 
