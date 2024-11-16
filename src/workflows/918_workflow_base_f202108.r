@@ -82,7 +82,9 @@ CA_catastrophe_base <- function( pinputexps, metodo )
 {
   if( -1 == (param_local <- exp_init())$resultado ) return( 0 ) # linea fija
 
-  param_local$meta$script <- "/src/wf-etapas/z1201_CA_reparar_dataset.r"
+  #Antes de reparar el dataset, rompo algunas variables que se comportan erroneamente en meses aprticulares
+  #Saco algunos atributos
+  param_local$meta$script <- "/src/wf-etapas/1201_CA_reparar_dataset.r"
 
   # Opciones MachineLearning EstadisticaClasica Ninguno MICE
   param_local$metodo <- metodo
@@ -104,8 +106,8 @@ FEintra_manual_base <- function( pinputexps )
 {
   if( -1 == (param_local <- exp_init())$resultado ) return( 0 ) # linea fija
 
-
-  param_local$meta$script <- "/src/wf-etapas/z1301_FE_intrames_manual.r"
+  
+  param_local$meta$script <- "/src/wf-etapas/1301_FE_intrames_manual.r"
 
   param_local$semilla <- NULL  # no usa semilla, es deterministico
 
@@ -271,39 +273,22 @@ TS_strategy_base8 <- function( pinputexps )
 
   param_local$meta$script <- "/src/wf-etapas/z2101_TS_training_strategy.r"
 
-  #Elimino Meses donde se ven muchos atributos rotos:
-  #202006: 57
-  #201910: 9
-  #201905: 8
-
-  #cmobile_app_trx Se rompe a partir de unos meses antes del objketivo dejando de tener relevancia.
-
-  #cpayrroll_trx y mpayrroll  se rompe o dispara cada 6 meses? aginaldos?
-
-  #202106 cliente_vip poner a 0
-
-  #201904 y 202104 Master_mfinanciacion_limite porner a 0
-  #201904 Visa_mfinanciacion_limite porner a 0
-
-  #201912 Master_mpagado poner a 0
-
-
   param_local$future <- c(202108)
 
   param_local$final_train$undersampling <- 1.0
   param_local$final_train$clase_minoritaria <- c( "BAJA+1", "BAJA+2")
-  param_local$final_train$training <- c(202106, 202105, 202104, 202103, 202102, 202101, 202012, 202011,
-                                 202010, 202009, 202008, 202007, 202006, 202005,
-                                 202004, 202003, 202002, 202001, 201912, 201911, 
-                                 201910, 201909, 201908, 201907, 201906, 201905, 
-                                 201904, 201903, 201902, 201901)
+  param_local$final_train$training <- c(202106, 202105, 202104, 202103, 202102, 202101,
+                                       202012, 202011, 202010, 202009, 202008, 202007)
+                                       #202005, 202004, 202003, 202002, 202001, 201912, 
+                                       #201911, 201910, 201909, 201908, 201907, 201906, 
+                                       #201905, 201904, 201903, 201902, 201901)
 
 
   param_local$train$training <- c(202104, 202103, 202102, 202101, 202012, 202011,
-                                 202010, 202009, 202008, 202007, 202006, 202005,
-                                 202004, 202003, 202002, 202001, 201912, 201911, 
-                                 201910, 201909, 201908, 201907, 201906, 201905, 
-                                 201904, 201903, 201902, 201901)
+                                 202010, 202009, 202008, 202007, 202005)
+                                 #202004, 202003, 202002, 202001, 201912, 201911, 
+                                 #201910, 201909, 201908, 201907, 201906, 201905, 
+                                 #201904, 201903, 201902, 201901)
   param_local$train$validation <- c(202105)
   param_local$train$testing <- c(202106)
 
@@ -447,7 +432,7 @@ KA_evaluate_kaggle <- function( pinputexps )
 # Este es el  Workflow Baseline
 # Que predice 202108 donde NO conozco la clase
 
-wf_Kaggle02_Tschopp_03_1 <- function( pnombrewf )
+wf_Kaggle02_Tschopp_16_1 <- function( pnombrewf )
 {
   param_local <- exp_wf_init( pnombrewf ) # linea workflow inicial fija
 
@@ -487,5 +472,22 @@ wf_Kaggle02_Tschopp_03_1 <- function( pnombrewf )
 # Aqui comienza el programa
 
 # llamo al workflow con future = 202108
-wf_Kaggle02_Tschopp_03_1()
+wf_Kaggle02_Tschopp_16_1()
 
+
+
+
+
+#Elimino Meses donde se ven muchos atributos rotos:
+  #202006: 57
+  #201910: 9
+  #201905: 8
+
+  #cmobile_app_trx Se rompe a partir de unos meses antes del objketivo dejando de tener relevancia.
+  
+  #cpayrroll_trx y mpayrroll  se rompe o dispara cada 6 meses? aginaldos?
+  
+  #202106 cliente_vip poner a 0
+  #201904 y 202104 Master_mfinanciacion_limite porner a 0
+  #201904 Visa_mfinanciacion_limite porner a 0
+  #201912 Master_mpagado poner a 0

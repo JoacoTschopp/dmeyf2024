@@ -212,43 +212,6 @@ AgregarVariables_IntraMes <- function(dataset) {
 
   # valvula de seguridad para evitar valores infinitos
   # paso los infinitos a NULOS
-  #infinitos <- lapply(
-  #  names(dataset),
-  #  function(.name) dataset[, sum(is.infinite(get(.name)))]
-  #)
-
-  #infinitos_qty <- sum(unlist(infinitos))
-  #if (infinitos_qty > 0) {
-  #  cat(
-  #    "ATENCION, hay", infinitos_qty,
-  #    "valores infinitos en tu dataset. Seran pasados a NA\n"
-  #  )
-  #  dataset[mapply(is.infinite, dataset)] <<- NA
-  #}
-
-
-  # valvula de seguridad para evitar valores NaN  que es 0/0
-  # paso los NaN a 0 , decision polemica si las hay
-  # se invita a asignar un valor razonable segun la semantica del campo creado
-  #nans <- lapply(
-  #  names(dataset),
-  #  function(.name) dataset[, sum(is.nan(get(.name)))]
-  #)
-
-  #nans_qty <- sum(unlist(nans))
-  #if (nans_qty > 0) {
-  #  cat(
-  #    "ATENCION, hay", nans_qty,
-  #    "valores NaN 0/0 en tu dataset. Seran pasados arbitrariamente a 0\n"
-  #  )
-
-  #  cat("Si no te gusta la decision, modifica a gusto el programa!\n\n")
-  #  dataset[mapply(is.nan, dataset)] <<- 0
-  #}
-
-  ###Decision mia eliminar todos los que den infinitos o 0
-  # valvula de seguridad para evitar valores infinitos
-  # elimino las columnas con valores infinitos
   infinitos <- lapply(
     names(dataset),
     function(.name) dataset[, sum(is.infinite(get(.name)))]
@@ -258,14 +221,15 @@ AgregarVariables_IntraMes <- function(dataset) {
   if (infinitos_qty > 0) {
     cat(
       "ATENCION, hay", infinitos_qty,
-      "valores infinitos en tu dataset. Las columnas correspondientes seran eliminadas\n"
+      "valores infinitos en tu dataset. Seran pasados a NA\n"
     )
-    columnas_infinitas <- names(dataset)[unlist(infinitos) > 0]
-    dataset <- dataset[, !(names(dataset) %in% columnas_infinitas), with = FALSE]
+    dataset[mapply(is.infinite, dataset)] <<- NA
   }
 
-  # valvula de seguridad para evitar valores NaN que es 0/0
-  # elimino las columnas con valores NaN
+
+  # valvula de seguridad para evitar valores NaN  que es 0/0
+  # paso los NaN a 0 , decision polemica si las hay
+  # se invita a asignar un valor razonable segun la semantica del campo creado
   nans <- lapply(
     names(dataset),
     function(.name) dataset[, sum(is.nan(get(.name)))]
@@ -275,11 +239,13 @@ AgregarVariables_IntraMes <- function(dataset) {
   if (nans_qty > 0) {
     cat(
       "ATENCION, hay", nans_qty,
-      "valores NaN 0/0 en tu dataset. Las columnas correspondientes seran eliminadas\n"
+      "valores NaN 0/0 en tu dataset. Seran pasados arbitrariamente a 0\n"
     )
-    columnas_nan <- names(dataset)[unlist(nans) > 0]
-    dataset <- dataset[, !(names(dataset) %in% columnas_nan), with = FALSE]
+
+    cat("Si no te gusta la decision, modifica a gusto el programa!\n\n")
+    dataset[mapply(is.nan, dataset)] <<- 0
   }
+
   cat( "fin AgregarVariables_IntraMes()\n")
 }
 #------------------------------------------------------------------------------
