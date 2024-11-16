@@ -463,7 +463,7 @@ wf_Exp_stacking_w3.1 <- function( pnombrewf )
   DR_drifting_base(metodo="rank_cero_fijo") ##Drifting
   FEhist_base()  ##Lags
 
-  CN_canaritos_asesinos_base(ratio=0.2, desvio=0.0)
+  #CN_canaritos_asesinos_base(ratio=0.2, desvio=0.0)
 
   FErf_attributes_base( arbolitos= 20,
     hojas_por_arbol= 16,
@@ -471,7 +471,7 @@ wf_Exp_stacking_w3.1 <- function( pnombrewf )
     mtry_ratio= 0.2
   )
 
-  CN_canaritos_asesinos_base(ratio=0.4, desvio=2.0)
+  #CN_canaritos_asesinos_base(ratio=0.4, desvio=2.0)
 
   # Etapas modelado
   ts6 <- TS_strategy_base6()
