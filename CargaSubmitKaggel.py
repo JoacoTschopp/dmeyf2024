@@ -1,6 +1,7 @@
 import os
 from kaggle.api.kaggle_api_extended import KaggleApi
 import pandas as pd
+import time
 
 os.environ['KAGGLE_CONFIG_DIR'] = '/home/joaquintschopp/buckets/b1'
 # Configura la ID de la competencia y la lista de archivos con sus descripciones
@@ -8,9 +9,9 @@ competition = 'dm-ey-f-2024-primera'
 scores_dir = '/home/joaquintschopp/buckets/b1/scores'
 experiment_name = 'KA7250SA12.8'
 
-files_dir = '/home/joaquintschopp/buckets/b1/exp/' + experiment_name
+files_dir = '/home/joaquintschopp/buckets/b1/expw/KA-0006' + experiment_name
 
-submission_description = 'DESCIPCION: Experimento 12.8'
+submission_description = 'DESCIPCION: Kaggle github 16.1'
 
 # Inicializar la API usando las credenciales de kaggle.json
 api = KaggleApi()
@@ -19,15 +20,24 @@ api.authenticate()
 files = os.listdir(files_dir)
 files = [f for f in files if f.endswith('.csv')]
 
-# ordenar files por el numero antes de .csv
-files = sorted(files, key=lambda x: int(x.split('_')[-1].split('.')[0]))
+# Ordenar los archivos por el número después de "s" y luego por el número antes de ".csv"
+files = sorted(files, key=lambda x: (
+    int(x.split('_')[-2][1:]),  # Número después de 's'
+    int(x.split('_')[-1].split('.')[0])  # Número antes de '.csv'
+))
 
 # Lista de archivos a subir
 submissions = [{'file': f'{files_dir}/{f}',
                 'description': f'{submission_description}'} for f in files]
 
-submissions = sorted(submissions, key=lambda x: int(
-    x['file'].split('/')[-1].split('_')[-1].split('.')[0]))
+# Ordenar nuevamente por el mismo criterio en caso de necesitarlo
+submissions = sorted(submissions, key=lambda x: (
+    int(x['file'].split('/')[-1].split('_')[-2][1:]),  # Número después de 's'
+    int(x['file'].split('/')[-1].split('_')
+        [-1].split('.')[0])  # Número antes de '.csv'
+))
+
+
 # Subir los archivos a la competencia
 for submission in submissions:
     file_path = submission['file']
@@ -48,6 +58,9 @@ for submission in submissions:
                 error = False
 
         print(f'{file_path} subido con éxito.')
+
+        # Pausa de 25 segundos entre cargas
+        time.sleep(30)
     else:
         print(f'El archivo {file_path} no existe.')
 
