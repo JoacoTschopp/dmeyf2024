@@ -445,7 +445,6 @@ EV_evaluate_conclase_gan <- function( pinputexps )
 #w3.1:param_local$final_train$training <- c(202104, 202103, 202102, 202101, 202012, 202011)
 #     param_local$train$training <- c(202102, 202101, 202012, 202011, 202010, 202009)
 #     param_local$train$undersampling <- 0.25
-#sin Canaritos ni RF
 #No es el mismo dado que saque variables con Concept-Drifting tambien apra sacarnos la duda de la ganancia.
 
 #w2.1:param_local$final_train$training <- c(202104, 202103, 202102)
@@ -464,15 +463,15 @@ wf_Exp_stacking_w3.1 <- function( pnombrewf )
   DR_drifting_base(metodo="rank_cero_fijo") ##Drifting
   FEhist_base()  ##Lags
 
-  #CN_canaritos_asesinos_base(ratio=0.2, desvio=0.0)
+  CN_canaritos_asesinos_base(ratio=0.2, desvio=0.0)
 
-  #FErf_attributes_base( arbolitos= 20,
-  #  hojas_por_arbol= 16,
-  #  datos_por_hoja= 1000,
-  #  mtry_ratio= 0.2
-  #)
+  FErf_attributes_base( arbolitos= 20,
+    hojas_por_arbol= 16,
+    datos_por_hoja= 1000,
+    mtry_ratio= 0.2
+  )
 
-  #CN_canaritos_asesinos_base(ratio=0.4, desvio=2.0)
+  CN_canaritos_asesinos_base(ratio=0.4, desvio=2.0)
 
   # Etapas modelado
   ts6 <- TS_strategy_base6()

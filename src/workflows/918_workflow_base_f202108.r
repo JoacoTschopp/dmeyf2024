@@ -463,7 +463,7 @@ wf_Kaggle02_Tschopp_16_1 <- function( pnombrewf )
   # Etapas finales
   fm <- FM_final_models_lightgbm( c(ht, ts8), ranks=c(1), qsemillas=10 )
   SC_scoring( c(fm, ts8) )
-  KA_evaluate_kaggle()  # genera archivos para Kaggle
+  #KA_evaluate_kaggle()  # genera archivos para Kaggle
 
   return( exp_wf_end() ) # linea workflow final fija
 }
