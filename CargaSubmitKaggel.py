@@ -5,9 +5,9 @@ import time
 
 os.environ['KAGGLE_CONFIG_DIR'] = '/home/joaquintschopp/buckets/b1'
 # Configura la ID de la competencia y la lista de archivos con sus descripciones
-competition = 'dm-ey-f-2024-primera'
+competition = 'dm-ey-f-2024-segunda'
 scores_dir = '/home/joaquintschopp/buckets/b1/scores'
-experiment_name = 'KA7250SA12.8'
+experiment_name = 'Kaggle02_16.1'
 
 files_dir = '/home/joaquintschopp/buckets/b1/expw/KA-0006'
 
