@@ -432,7 +432,7 @@ KA_evaluate_kaggle <- function( pinputexps )
 # Este es el  Workflow Baseline
 # Que predice 202108 donde NO conozco la clase
 
-wf_Kaggle02_Tschopp_16_1 <- function( pnombrewf )
+wf_Kaggle02_Tschopp_17_1 <- function( pnombrewf )
 {
   param_local <- exp_wf_init( pnombrewf ) # linea workflow inicial fija
 
@@ -440,13 +440,13 @@ wf_Kaggle02_Tschopp_16_1 <- function( pnombrewf )
   DT_incorporar_dataset( "~/buckets/b1/datasets/competencia_02_ct.csv.gz")
 
   # Etapas preprocesamiento
-  CA_catastrophe_base( metodo="EstadisticaClasica")# MachineLearning
+  CA_catastrophe_base( metodo="MachineLearning")# MachineLearning
 
   FEintra_manual_base()
-  DR_drifting_base(metodo="UVA") #DRIFTING rank_cero_fijo
+  DR_drifting_base(metodo="rank_cero_fijo") #DRIFTING rank_cero_fijo
   FEhist_base()
 
-  CN_canaritos_asesinos_base(ratio=0.6, desvio=0)
+  #CN_canaritos_asesinos_base(ratio=0.6, desvio=0)
   
   FErf_attributes_base( arbolitos= 20,
     hojas_por_arbol= 16,
@@ -458,7 +458,7 @@ wf_Kaggle02_Tschopp_16_1 <- function( pnombrewf )
 
   # Etapas modelado
   ts8 <- TS_strategy_base8()
-  ht <- HT_tuning_base( bo_iteraciones = 50 )  # iteraciones inteligentes
+  ht <- HT_tuning_base( bo_iteraciones = 30 )  # iteraciones inteligentes
 
   # Etapas finales
   fm <- FM_final_models_lightgbm( c(ht, ts8), ranks=c(1), qsemillas=10 )
@@ -472,7 +472,7 @@ wf_Kaggle02_Tschopp_16_1 <- function( pnombrewf )
 # Aqui comienza el programa
 
 # llamo al workflow con future = 202108
-wf_Kaggle02_Tschopp_16_1()
+wf_Kaggle02_Tschopp_17_1()
 
 
 
