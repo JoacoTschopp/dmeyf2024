@@ -9,7 +9,7 @@ competition = 'dm-ey-f-2024-primera'
 scores_dir = '/home/joaquintschopp/buckets/b1/scores'
 experiment_name = 'KA7250SA12.8'
 
-files_dir = '/home/joaquintschopp/buckets/b1/expw/KA-0006' + experiment_name
+files_dir = '/home/joaquintschopp/buckets/b1/expw/KA-0006'
 
 submission_description = 'DESCIPCION: Kaggle github 16.1'
 
