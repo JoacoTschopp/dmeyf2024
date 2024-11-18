@@ -273,15 +273,15 @@ TS_strategy_base6 <- function( pinputexps )
 
   param_local$final_train$undersampling <- 1.0
   param_local$final_train$clase_minoritaria <- c( "BAJA+1", "BAJA+2")
-  param_local$final_train$training <- c(202104, 202103, 202102)
-  
-  param_local$train$training <- c(202102, 202101, 202012)
+  param_local$final_train$training <- c(202004, 202003, 202002)
+
+  param_local$train$training <- c(202002, 202001, 201912)
   param_local$train$validation <- c(202103)
   param_local$train$testing <- c(202104)
 
   # Atencion  0.2  de  undersampling de la clase mayoritaria,  los CONTINUA
   # 1.0 significa NO undersampling
-  param_local$train$undersampling <- 0.25
+  param_local$train$undersampling <- 0.20
   param_local$train$clase_minoritaria <- c( "BAJA+1", "BAJA+2")
 
   return( exp_correr_script( param_local ) ) # linea fija
@@ -454,7 +454,15 @@ EV_evaluate_conclase_gan <- function( pinputexps )
 #sin Canaritos ni RF
 #No es el mismo dado que saque variables con Concept-Drifting tambien apra sacarnos la duda de la ganancia.
 
-wf_Exp_stacking_w4.1 <- function( pnombrewf )
+#w5.1:param_local$final_train$training <- c(202104, 202102, 202012)
+#     param_local$train$training <- c(202102, 202012, 202010)
+#     param_local$train$undersampling <- 0.20
+
+#w6.1:param_local$final_train$training <- c(202004, 202003, 202002)
+#     param_local$train$training <- c(202002, 202001, 201912)
+#     param_local$train$undersampling <- 0.20
+
+wf_Exp_stacking_w6.1 <- function( pnombrewf )
 {
   param_local <- exp_wf_init( pnombrewf ) # linea workflow inicial fija
 
@@ -491,5 +499,5 @@ wf_Exp_stacking_w4.1 <- function( pnombrewf )
 # Aqui comienza el programa
 
 # llamo al workflow con future = 202106
-wf_Exp_stacking_w4.1()
+wf_Exp_stacking_w6.1()
 
