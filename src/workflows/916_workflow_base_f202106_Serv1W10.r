@@ -12,8 +12,8 @@ if( !exists("envg") ) envg <- env()  # global environment
 
 envg$EXPENV <- list()
 envg$EXPENV$bucket_dir <- "~/buckets/b1"
-envg$EXPENV$exp_dir <- "~/buckets/b1/expw_expe/"
-envg$EXPENV$wf_dir <- "~/buckets/b1/flow_expe/"
+envg$EXPENV$exp_dir <- "~/buckets/b1/expw_expeW10/"
+envg$EXPENV$wf_dir <- "~/buckets/b1/flow_expeW10/"
 envg$EXPENV$repo_dir <- "~/dmeyf2024/"
 envg$EXPENV$datasets_dir <- "~/buckets/b1/datasets/"
 envg$EXPENV$messenger <- "~/install/zulip_enviar.sh"
@@ -269,11 +269,13 @@ TS_strategy_base6 <- function( pinputexps )
 
   param_local$meta$script <- "/src/wf-etapas/z2101_TS_training_strategy.r"
 
-  param_local$future <- c(202106)
+  param_local$future <- c(202104)
+  #202106
+  #202104, 202103, 202102, 202101, 202012, 202011, 202010, 202009
 
-  param_local$final_train$undersampling <- 0.02
+  param_local$final_train$undersampling <- 0.20
   param_local$final_train$clase_minoritaria <- c( "BAJA+1", "BAJA+2")
-  param_local$final_train$training <- c(202104, 202103, 202102, 202101, 202012, 202011)
+  param_local$final_train$training <- c(202103, 202102, 202101, 202012, 202011, 202010)
   
   param_local$train$training <- c(202102, 202101, 202012, 202011, 202010, 202009)
   param_local$train$validation <- c(202103)
@@ -281,7 +283,7 @@ TS_strategy_base6 <- function( pinputexps )
 
   # Atencion  0.2  de  undersampling de la clase mayoritaria,  los CONTINUA
   # 1.0 significa NO undersampling
-  param_local$train$undersampling <- 0.02
+  param_local$train$undersampling <- 0.20
   param_local$train$clase_minoritaria <- c( "BAJA+1", "BAJA+2")
 
   return( exp_correr_script( param_local ) ) # linea fija
@@ -484,10 +486,11 @@ EV_evaluate_conclase_gan <- function( pinputexps )
 #     param_local$train$testing <- c(201904)
 #     param_local$train$undersampling <- 0.20
 
-#w9.1: param_local$final_train$training <- c(202104, 202103, 202102, 202101, 202012, 202011)
+#w10.1: param_local$final_train$training <- c(202104, 202103, 202102, 202101, 202012, 202011)
 #     param_local$train$training <- c(202102, 202101, 202012, 202011, 202010, 202009)
-# undersampling 0,02
-wf_Exp_stacking_w10.1 <- function( pnombrewf )
+# undersampling 0,20 y RF
+
+wf_Exp_stacking_w10.202104 <- function( pnombrewf )
 {
   param_local <- exp_wf_init( pnombrewf ) # linea workflow inicial fija
 
@@ -500,17 +503,17 @@ wf_Exp_stacking_w10.1 <- function( pnombrewf )
   DR_drifting_base(metodo="rank_cero_fijo") ##Drifting
   FEhist_base()  ##Lags
 
-  #FErf_attributes_base( arbolitos= 20,
-  #  hojas_por_arbol= 16,
-  #  datos_por_hoja= 1000,
-  #  mtry_ratio= 0.2
-  #)
+  FErf_attributes_base( arbolitos= 20,
+    hojas_por_arbol= 16,
+    datos_por_hoja= 1000,
+    mtry_ratio= 0.2
+  )
 
   #CN_canaritos_asesinos_base(ratio=1, desvio=0)
 
   # Etapas modelado
   ts6 <- TS_strategy_base6()
-  ht <- HT_tuning_base( bo_iteraciones = 30 )  # iteraciones inteligentes
+  ht <- HT_tuning_base( bo_iteraciones = 10 )  # iteraciones inteligentes
 
   # Etapas finales
   fm <- FM_final_models_lightgbm( c(ht, ts6), ranks=c(1), qsemillas=50 )
@@ -524,5 +527,5 @@ wf_Exp_stacking_w10.1 <- function( pnombrewf )
 # Aqui comienza el programa
 
 # llamo al workflow con future = 202106
-wf_Exp_stacking_w10.1()
+wf_Exp_stacking_w10.202104()
 

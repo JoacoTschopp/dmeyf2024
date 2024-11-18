@@ -83,7 +83,7 @@ CA_catastrophe_base <- function( pinputexps, metodo )
 {
   if( -1 == (param_local <- exp_init())$resultado ) return( 0 ) # linea fija
 
-  param_local$meta$script <- "/src/wf-etapas/z1201_CA_reparar_dataset.r"
+  param_local$meta$script <- "/src/wf-etapas/1201_CA_reparar_dataset.r"
 
   # Opciones MachineLearning EstadisticaClasica Ninguno MICE
   param_local$metodo <- metodo
@@ -101,7 +101,7 @@ FEintra_manual_base <- function( pinputexps )
   if( -1 == (param_local <- exp_init())$resultado ) return( 0 ) # linea fija
 
 
-  param_local$meta$script <- "/src/wf-etapas/z1301_FE_intrames_manual.r"
+  param_local$meta$script <- "/src/wf-etapas/1301_FE_intrames_manual.r"
 
   param_local$semilla <- NULL  # no usa semilla, es deterministico
 
@@ -174,7 +174,7 @@ FErf_attributes_base <- function( pinputexps, ratio, desvio)
   if( -1 == (param_local <- exp_init())$resultado ) return( 0 )# linea fija
 
 
-  param_local$meta$script <- "/src/wf-etapas/z1311_FE_rfatributes.r"
+  param_local$meta$script <- "/src/wf-etapas/1311_FE_rfatributes.r"
 
   # Parametros de un LightGBM que se genera para estimar la column importance
   param_local$train$clase01_valor1 <- c( "BAJA+2", "BAJA+1")
@@ -232,7 +232,7 @@ CN_canaritos_asesinos_base <- function( pinputexps, ratio, desvio)
   if( -1 == (param_local <- exp_init())$resultado ) return( 0 )# linea fija
 
 
-  param_local$meta$script <- "/src/wf-etapas/z1601_CN_canaritos_asesinos.r"
+  param_local$meta$script <- "/src/wf-etapas/1601_CN_canaritos_asesinos.r"
 
   # Parametros de un LightGBM que se genera para estimar la column importance
   param_local$train$clase01_valor1 <- c( "BAJA+2", "BAJA+1")
