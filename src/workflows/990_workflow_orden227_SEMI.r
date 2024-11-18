@@ -476,7 +476,7 @@ KA_evaluate_kaggle_semillerio <- function( pinputexps )
 # Que predice 202107 donde conozco la clase
 # y ya genera graficos
 
-wf_SEMI_JT_baseline<- function( pnombrewf )
+wf_SEMI_JT_18.1<- function( pnombrewf )
 {
   param_local <- exp_wf_init( pnombrewf ) # linea fija
 
@@ -494,15 +494,15 @@ wf_SEMI_JT_baseline<- function( pnombrewf )
 
   # la Bayesian Optimization con el semillerio dentro
   ht <- HT_tuning_semillerio(
-    semillerio = 50, # semillerio dentro de la Bayesian Optim
-    bo_iteraciones = 10  # iteraciones inteligentes, apenas 10
+    semillerio = 100, # semillerio dentro de la Bayesian Optim
+    bo_iteraciones = 30  # iteraciones inteligentes, apenas 10
   )
 
 
   fm <- FM_final_models_lightgbm_semillerio( 
     c(ht, ts8), # los inputs
     ranks = c(1), # 1 = el mejor de la bayesian optimization
-    semillerio = 50,   # cantidad de semillas finales
+    semillerio = 100,   # cantidad de semillas finales
     repeticiones_exp = 1  # cantidad de repeticiones del semillerio
   )
 
@@ -517,6 +517,6 @@ wf_SEMI_JT_baseline<- function( pnombrewf )
 # Aqui comienza el programa
 
 # llamo al workflow con future = 202108
-wf_SEMI_JT_baseline()
+wf_SEMI_JT_18.1()
 
 
