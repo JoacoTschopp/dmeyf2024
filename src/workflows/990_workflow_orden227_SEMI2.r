@@ -461,8 +461,8 @@ KA_evaluate_kaggle_semillerio <- function( pinputexps )
 
   param_local$irepes_submit <- 1:20 # misterioso parametro, no preguntar
 
-  param_local$envios_desde <- 10500L
-  param_local$envios_hasta <- 12050L
+  param_local$envios_desde <- 8000L
+  param_local$envios_hasta <- 13050L
   param_local$envios_salto <-   500L
   param_local$competition <- "dm-ey-f-2024-segunda"
 
@@ -503,7 +503,7 @@ wf_SEMI_JT_19.1<- function( pnombrewf )
     c(ht, ts8), # los inputs
     ranks = c(1), # 1 = el mejor de la bayesian optimization
     semillerio = 100,   # cantidad de semillas finales
-    repeticiones_exp = 1  # cantidad de repeticiones del semillerio
+    repeticiones_exp = 2  # cantidad de repeticiones del semillerio
   )
 
   SC_scoring_semillerio( c(fm, ts8) )
