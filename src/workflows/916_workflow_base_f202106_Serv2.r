@@ -428,12 +428,12 @@ EV_evaluate_conclase_gan <- function( pinputexps )
 #S3: S2  + Lags1 y Delta1 + RF + Canaritos
 #S5: S2  + Lags1-2-3 y Delta1-2-3 + RF + Canaritos
 
-wf_Exp_stacking_s1_bins255 <- function( pnombrewf )
+wf_Exp_stacking02_s1 <- function( pnombrewf )
 {
   param_local <- exp_wf_init( pnombrewf ) # linea workflow inicial fija
 
   # Etapa especificacion dataset de la Segunda Competencia Kaggle
-  DT_incorporar_dataset( "~/buckets/b1/datasets/predicciones_input.csv.gz")
+  DT_incorporar_dataset( "~/buckets/b1/datasets/dataset_stacking02.csv.gz")
 
   # Etapas preprocesamiento
   CA_catastrophe_base( metodo="EstadisticaClasica")
@@ -453,10 +453,10 @@ wf_Exp_stacking_s1_bins255 <- function( pnombrewf )
 
   # Etapas modelado
   ts6 <- TS_strategy_base6()
-  ht <- HT_tuning_base( bo_iteraciones = 40 )  # iteraciones inteligentes
+  ht <- HT_tuning_base( bo_iteraciones = 30 )  # iteraciones inteligentes
 
   # Etapas finales
-  fm <- FM_final_models_lightgbm( c(ht, ts6), ranks=c(1), qsemillas=10 )
+  fm <- FM_final_models_lightgbm( c(ht, ts6), ranks=c(1), qsemillas=20 )
   SC_scoring( c(fm, ts6) )
   EV_evaluate_conclase_gan() # evaluacion contra mes CON clase
 
@@ -467,5 +467,5 @@ wf_Exp_stacking_s1_bins255 <- function( pnombrewf )
 # Aqui comienza el programa
 
 # llamo al workflow con future = 202106
-wf_Exp_stacking_s1_bins255()
+wf_Exp_stacking02_s1()
 
