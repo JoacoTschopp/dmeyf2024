@@ -284,7 +284,7 @@ AgregarVariables_IntraMes <- function(dataset) {
   dataset[, (top_vars_cols) := lapply(.SD, function(x) ifelse(is.na(x), 0, x)), .SDcols = top_vars_cols]
 
   cat( "y AHORA, COMO VAS AHSTA ACA()\n")
-  feature_names <- as.vector(top_vars$Feature)
+  #feature_names <- as.vector(top_vars$Feature)
 
   # Generamos las sumas entre las variables originales de top_vars, cada una sumada contra las demás
   #for (i in seq_along(feature_names)) {
