@@ -210,22 +210,22 @@ CanaritosAsesinos <- function(
   feature_names <- as.vector(top_vars$Feature)
 
   # Generamos las sumas entre las variables originales de top_vars, cada una sumada contra las demás
-  for (i in seq_along(feature_names)) {
-    for (j in (i+1):length(feature_names)) {
-      var1 <- feature_names[i]
-      var2 <- feature_names[j]
+  #for (i in seq_along(feature_names)) {
+  #  for (j in (i+1):length(feature_names)) {
+  #    var1 <- feature_names[i]
+  #    var2 <- feature_names[j]
 
-      new_col_name <- paste0(var1, "_plus_", var2)
+  #    new_col_name <- paste0(var1, "_plus_", var2)
     
       # Verificamos que ambas columnas tengan datos antes de realizar la suma
-      if (all(!is.na(dataset[[var1]])) && all(!is.na(dataset[[var2]]))) {
-        dataset[[new_col_name]] <- dataset[[var1]] + dataset[[var2]]
-        dataset[[new_col_name]][is.nan(dataset[[new_col_name]])] <- 0
-      } else {
-        dataset[[new_col_name]] <- 0  # Si alguna de las columnas tiene NA, asignamos 0
-      }
-    }
-  }
+  #    if (all(!is.na(dataset[[var1]])) && all(!is.na(dataset[[var2]]))) {
+  #      dataset[[new_col_name]] <- dataset[[var1]] + dataset[[var2]]
+  #      dataset[[new_col_name]][is.nan(dataset[[new_col_name]])] <- 0
+  #    } else {
+  #      dataset[[new_col_name]] <- 0  # Si alguna de las columnas tiene NA, asignamos 0
+  #    }
+  #  }
+  #}
 
   cat( "TERMINE, COMO VAS AHSTA ACA()\n")
   ## Fin Nuevas Variable  
