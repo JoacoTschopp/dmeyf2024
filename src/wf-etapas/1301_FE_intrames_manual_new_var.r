@@ -350,8 +350,9 @@ if (nans_qty > 0) {
   dataset[, (names(dataset)) := lapply(.SD, function(x) ifelse(is.nan(x), 0, x)), .SDcols = names(dataset)]
 }
 
-cat("fin AgregarVariables_IntraMes()\n")
 
+cat("fin AgregarVariables_IntraMes()\n")
+}
 #------------------------------------------------------------------------------
 #------------------------------------------------------------------------------
 # Aqui comienza el programa
