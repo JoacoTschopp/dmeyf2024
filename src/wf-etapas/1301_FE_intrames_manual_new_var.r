@@ -329,19 +329,29 @@ dataset[, (top_vars_cols) := lapply(.SD, function(x) ifelse(is.na(x), 0, x)), .S
     function(.name) dataset[, sum(is.nan(get(.name)))]
   )
 
-  nans_qty <- sum(unlist(nans))
-  if (nans_qty > 0) {
-    cat(
-      "ATENCION, hay", nans_qty,
-      "valores NaN 0/0 en tu dataset. Seran pasados arbitrariamente a 0\n"
-    )
+#  nans_qty <- sum(unlist(nans))
+#  if (nans_qty > 0) {
+#    cat(
+#      "ATENCION, hay", nans_qty,
+#      "valores NaN 0/0 en tu dataset. Seran pasados arbitrariamente a 0\n"
+#    )
 
-    cat("Si no te gusta la decision, modifica a gusto el programa!\n\n")
-    dataset[mapply(is.nan, dataset)] <<- 0
-  }
+#    cat("Si no te gusta la decision, modifica a gusto el programa!\n\n")
+#    dataset[mapply(is.nan, dataset)] <<- 0
+#  }
 
-  cat( "fin AgregarVariables_IntraMes()\n")
+#  cat( "fin AgregarVariables_IntraMes()\n")
+#}
+# Reemplazamos todos los valores NaN en el dataset por 0
+nans_qty <- dataset[, sum(is.nan(as.matrix(.SD))), .SDcols = names(dataset)]
+if (nans_qty > 0) {
+  cat("ATENCIÓN, hay", nans_qty, "valores NaN en tu dataset. Serán pasados arbitrariamente a 0\n")
+  cat("Si no te gusta la decisión, modifica a gusto el programa!\n\n")
+  dataset[, (names(dataset)) := lapply(.SD, function(x) ifelse(is.nan(x), 0, x)), .SDcols = names(dataset)]
 }
+
+cat("fin AgregarVariables_IntraMes()\n")
+
 #------------------------------------------------------------------------------
 #------------------------------------------------------------------------------
 # Aqui comienza el programa
