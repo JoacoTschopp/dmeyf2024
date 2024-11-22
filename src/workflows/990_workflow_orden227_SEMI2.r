@@ -101,7 +101,7 @@ FEintra_manual_base <- function( pinputexps )
   if( -1 == (param_local <- exp_init())$resultado ) return( 0 ) # linea fija
 
 
-  param_local$meta$script <- "/src/wf-etapas/z1301_FE_intrames_manual.r"
+  param_local$meta$script <- "/src/wf-etapas/1301_FE_intrames_manual_new_var.r"
 
   param_local$semilla <- NULL  # no usa semilla, es deterministico
 
@@ -183,7 +183,7 @@ FErf_attributes_base <- function( pinputexps, ratio, desvio)
   # parametros para que LightGBM se comporte como Random Forest
   param_local$lgb_param <- list(
     # parametros que se pueden cambiar
-    num_iterations = 20,
+    num_iterations = 25, ###UNICO CAMBIO SUGERIDO POR LOS EXPERIMENTADORES.....
     num_leaves  = 16,
     min_data_in_leaf = 1000,
     feature_fraction_bynode  = 0.2,
@@ -254,36 +254,7 @@ CN_canaritos_asesinos_base <- function( pinputexps, ratio, desvio)
 }
 #------------------------------------------------------------------------------
 #------------------------------------------------------------------------------
-# Canaritos Asesinos   Baseline
-#  azaroso, utiliza semilla
 
-CN_canaritos_new_var<- function( pinputexps, ratio, desvio)
-{
-  if( -1 == (param_local <- exp_init())$resultado ) return( 0 )# linea fija
-
-
-  param_local$meta$script <- "/src/wf-etapas/1601_CN_new_var.r"
-
-  # Parametros de un LightGBM que se genera para estimar la column importance
-  param_local$train$clase01_valor1 <- c( "BAJA+2", "BAJA+1")
-  param_local$train$positivos <- c( "BAJA+2")
-  param_local$train$training <- c( 202101, 202102, 202103)
-  param_local$train$validation <- c( 202105 )
-  param_local$train$undersampling <- 0.2
-  param_local$train$gan1 <- 273000
-  param_local$train$gan0 <-  -7000
-
-
-  # ratio varia de 0.0 a 2.0
-  # desvio varia de -4.0 a 4.0
-  param_local$CanaritosAsesinos$ratio <- ratio
-  # desvios estandar de la media, para el cutoff
-  param_local$CanaritosAsesinos$desvios <- desvio
-
-  return( exp_correr_script( param_local ) ) # linea fija
-}
-#------------------------------------------------------------------------------
-#------------------------------------------------------------------------------
 # Training Strategy  Baseline
 #  azaroso, utiliza semilla
 
@@ -516,10 +487,9 @@ wf_SEMI_JT_22.1<- function( pnombrewf )
   CA_catastrophe_base( metodo="MachineLearning")
   FEintra_manual_base()
   DR_drifting_base(metodo="rank_cero_fijo")
-  CN_canaritos_new_var(ratio=0.2, desvio=2) ##Genero nuevas variables a partir de las iniciales 20 mejores.
   FEhist_base()
   ultimo <- FErf_attributes_base()
-  CN_canaritos_asesinos_base(ratio=0.2, desvio=2) #Meto la mitad de canaritos y corto en el total, lo mismo que 1 y 0
+  CN_canaritos_asesinos_base(ratio=1, desvio=0) #Meto la mitad de canaritos y corto en el total, lo mismo que 1 y 0
 
   ts8 <- TS_strategy_base8()
 
