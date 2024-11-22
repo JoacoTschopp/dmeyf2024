@@ -176,18 +176,22 @@ CanaritosAsesinos <- function(
     }
   }
  
-  # Agrupamos por numero_de_cliente y calculamos la suma y el promedio para cada variable en top_vars y los agregamos al dataset
-  aggregated_data <- dataset[, c(lapply(.SD, sum, na.rm = TRUE), lapply(.SD, mean, na.rm = TRUE)),
-                          by = numero_de_cliente, .SDcols = top_vars$Feature]
+  # Agrupamos por numero_de_cliente y calculamos la suma para cada variable en top_vars
+  aggregated_sum <- dataset[, lapply(.SD, sum, na.rm = TRUE), by = numero_de_cliente, .SDcols = top_vars$Feature]
+  setnames(aggregated_sum, old = names(aggregated_sum)[-1], new = paste0(top_vars$Feature, "_sum"))
 
-  # Renombramos las columnas para diferenciar suma y promedio
-  setnames(aggregated_data, old = names(aggregated_data)[-1],
-         new = c(paste0(top_vars$Feature, "_sum"), paste0(top_vars$Feature, "_mean")))
+  #  Agrupamos por numero_de_cliente y calculamos el promedio para cada variable en top_vars
+  aggregated_mean <- dataset[, lapply(.SD, mean, na.rm = TRUE), by = numero_de_cliente, .SDcols = top_vars$Feature]
+  setnames(aggregated_mean, old = names(aggregated_mean)[-1], new = paste0(top_vars$Feature, "_mean"))
 
   # Unimos los resultados agregados al dataset original
   setkey(dataset, numero_de_cliente)
-  setkey(aggregated_data, numero_de_cliente)
-  dataset <- aggregated_data[dataset]
+  setkey(aggregated_sum, numero_de_cliente)
+  setkey(aggregated_mean, numero_de_cliente)
+
+  # Unimos sumas y promedios al dataset
+  dataset <- aggregated_sum[dataset]
+  dataset <- aggregated_mean[dataset]
 
   # Generamos las sumas entre las variables originales de top_vars, cada una sumada contra las demás
   for (i in seq_along(top_vars$Feature)) {
