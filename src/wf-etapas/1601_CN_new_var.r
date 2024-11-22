@@ -153,8 +153,17 @@ CanaritosAsesinos <- function(
   #New Variables
   #####################################################################################
   #aca tomo las 20 mas importantes.
-  top_vars <- head(tb_importancia[order(-tb_importancia$Gain)], 20)
+  #top_vars <- head(tb_importancia[order(-tb_importancia$Gain)], 20)
   
+  # Asignamos manualmente los nombres de las características en feature_names
+  feature_names <- c(
+    "ctrx_quarter_normalizado", "ctrx_quarter", "mprestamos_personales_rank", "mcaja_ahorro_rank", 
+    "cpayroll_trx", "mpayroll_sobre_edad_rank", "mcuentas_saldo_rank", "mtarjeta_visa_consumo_rank", 
+    "mrentabilidad_annual_rank", "mpasivos_margen_rank", "mcuenta_corriente_rank", "mactivos_margen_rank", 
+    "mcomisiones_mantenimiento_rank", "vm_mpagominimo_rank", "mrentabilidad_rank", 
+    "mcuenta_debitos_automaticos_rank"
+  )
+
   # Recorremos top_vars y generamos nuevas columnas con las transformaciones
   for (var in top_vars$Feature) {
   # Logaritmo natural (agregar 1 para evitar log(0))
