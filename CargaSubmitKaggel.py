@@ -7,11 +7,11 @@ os.environ['KAGGLE_CONFIG_DIR'] = '/home/joaquintschopp/buckets/b1'
 # Configura la ID de la competencia y la lista de archivos con sus descripciones
 competition = 'dm-ey-f-2024-segunda'
 scores_dir = '/home/joaquintschopp/buckets/b1/scores'
-experiment_name = 'Kaggle02_16.1'
+experiment_name = 'Kaggle02_20.2'
 
-files_dir = '/home/joaquintschopp/buckets/b1/expw/KA-0006'
+files_dir = '/home/joaquintschopp/buckets/b1/exp/Cortes'
 
-submission_description = 'DESCIPCION: Kaggle github 16.1'
+submission_description = 'DESCIPCION: Semillero 20.2'
 
 # Inicializar la API usando las credenciales de kaggle.json
 api = KaggleApi()
@@ -20,21 +20,20 @@ api.authenticate()
 files = os.listdir(files_dir)
 files = [f for f in files if f.endswith('.csv')]
 
-# Ordenar los archivos por el número después de "s" y luego por el número antes de ".csv"
+# Ordenar los archivos por el número después de "sem_" y luego por el número después de "corte"
 files = sorted(files, key=lambda x: (
-    int(x.split('_')[-2][1:]),  # Número después de 's'
-    int(x.split('_')[-1].split('.')[0])  # Número antes de '.csv'
+    int(x.split('_')[3]),  # Número del semestre después de 'sem_'
+    int(x.split('_')[5][5:])  # Número después de 'corte'
 ))
 
 # Lista de archivos a subir
-submissions = [{'file': f'{files_dir}/{f}',
-                'description': f'{submission_description}'} for f in files]
+submissions = [{'file': os.path.join(files_dir, f),
+                'description': submission_description} for f in files]
 
 # Ordenar nuevamente por el mismo criterio en caso de necesitarlo
 submissions = sorted(submissions, key=lambda x: (
-    int(x['file'].split('/')[-1].split('_')[-2][1:]),  # Número después de 's'
-    int(x['file'].split('/')[-1].split('_')
-        [-1].split('.')[0])  # Número antes de '.csv'
+    int(x['file'].split('/')[-1].split('_')[3]),  # Número del semestre después de 'sem_'
+    int(x['file'].split('/')[-1].split('_')[5][5:])  # Número después de 'corte'
 ))
 
 
@@ -60,7 +59,7 @@ for submission in submissions:
         print(f'{file_path} subido con éxito.')
 
         # Pausa de 25 segundos entre cargas
-        time.sleep(30)
+        time.sleep(25)
     else:
         print(f'El archivo {file_path} no existe.')
 
@@ -86,12 +85,12 @@ df = pd.DataFrame(submission_list)
 
 # Optionally, save the scores to a CSV file
 df.to_csv(
-    '/home/joaquintschopp/buckets/b1/scores/my_kaggle_submissions.csv', index=False)
+    '/home/joaquintschopp/buckets/b1/scores/my_kaggle_submissions20.2.csv', index=False)
 
-print("Submission scores saved to 'my_kaggle_submissions.csv'")
+print("Submission scores saved to 'my_kaggle_submissions20.2.csv'")
 
 df = pd.read_csv(
-    '/home/joaquintschopp/buckets/b1/scores/my_kaggle_submissions.csv')
+    '/home/joaquintschopp/buckets/b1/scores/my_kaggle_submissions20.2.csv')
 df.head()
 
 # extract the number of sends from the file name
