@@ -83,11 +83,11 @@ CA_catastrophe_base <- function( pinputexps, metodo )
 {
   if( -1 == (param_local <- exp_init())$resultado ) return( 0 ) # linea fija
 
-  param_local$meta$script <- "/src/wf-etapas/1201_CA_reparar_dataset.r"
+  param_local$meta$script <- "/src/wf-etapas/z1201_CA_reparar_dataset.r"
 
   # Opciones MachineLearning EstadisticaClasica Ninguno MICE
   param_local$metodo <- metodo
-  param_local$atributos_eliminar <- c( "tmobile_app", "cmobile_app_trx") #, "Visa_mlimitecompra" )
+  param_local$atributos_eliminar <- c( "tmobile_app", "cmobile_app_trx", "cmobile_app_trx", "Visa_mlimitecompra" )
   param_local$semilla <- NULL  # no usa semilla, es deterministico
 
   return( exp_correr_script( param_local ) ) # linea fija}
@@ -138,17 +138,17 @@ FEhist_base <- function( pinputexps)
 
   param_local$lag1 <- TRUE
   param_local$lag2 <- TRUE # no me engraso con los lags de orden 2
-  param_local$lag3 <- FALSE # no me engraso con los lags de orden 3
+  param_local$lag3 <- TRUE # no me engraso con los lags de orden 3
 
   # no me engraso las manos con las tendencias
   param_local$Tendencias1$run <- TRUE  # FALSE, no corre nada de lo que sigue
   param_local$Tendencias1$ventana <- 6
   param_local$Tendencias1$tendencia <- TRUE
-  param_local$Tendencias1$minimo <- FALSE
-  param_local$Tendencias1$maximo <- FALSE
-  param_local$Tendencias1$promedio <- FALSE
-  param_local$Tendencias1$ratioavg <- FALSE
-  param_local$Tendencias1$ratiomax <- FALSE
+  param_local$Tendencias1$minimo <- TRUE
+  param_local$Tendencias1$maximo <- TRUE
+  param_local$Tendencias1$promedio <- TRUE
+  param_local$Tendencias1$ratioavg <- TRUE
+  param_local$Tendencias1$ratiomax <- TRUE
 
   # no me engraso las manos con las tendencias de segundo orden
   param_local$Tendencias2$run <- FALSE
@@ -174,16 +174,16 @@ FErf_attributes_base <- function( pinputexps, ratio, desvio)
   if( -1 == (param_local <- exp_init())$resultado ) return( 0 )# linea fija
 
 
-  param_local$meta$script <- "/src/wf-etapas/1311_FE_rfatributes.r"
+  param_local$meta$script <- "/src/wf-etapas/z1311_FE_rfatributes.r"
 
   # Parametros de un LightGBM que se genera para estimar la column importance
   param_local$train$clase01_valor1 <- c( "BAJA+2", "BAJA+1")
-  param_local$train$training <- c( 202101, 202102, 202103)
+  param_local$train$training <- c( 202101, 202102, 202103, 202104)
 
   # parametros para que LightGBM se comporte como Random Forest
   param_local$lgb_param <- list(
     # parametros que se pueden cambiar
-    num_iterations = 20,
+    num_iterations = 26,
     num_leaves  = 16,
     min_data_in_leaf = 1000,
     feature_fraction_bynode  = 0.2,
@@ -239,7 +239,7 @@ CN_canaritos_asesinos_base <- function( pinputexps, ratio, desvio)
   param_local$train$positivos <- c( "BAJA+2")
   param_local$train$training <- c( 202101, 202102, 202103)
   param_local$train$validation <- c( 202105 )
-  param_local$train$undersampling <- 0.1
+  param_local$train$undersampling <- 0.2
   param_local$train$gan1 <- 273000
   param_local$train$gan0 <-  -7000
 
@@ -257,33 +257,7 @@ CN_canaritos_asesinos_base <- function( pinputexps, ratio, desvio)
 # Training Strategy  Baseline
 #  azaroso, utiliza semilla
 
-TS_strategy_base8 <- function( pinputexps )
-{
-  if( -1 == (param_local <- exp_init())$resultado ) return( 0 )# linea fija
 
-  param_local$meta$script <- "/src/wf-etapas/z2101_TS_training_strategy.r"
-
-  param_local$future <- c(202108)
-
-  param_local$final_train$undersampling <- 1.0
-  param_local$final_train$clase_minoritaria <- c( "BAJA+1", "BAJA+2")
-  param_local$final_train$training <- c(202106, 202105, 202104,
-    202103, 202102, 202101)
-
-
-  param_local$train$training <- c(202104, 202103, 202102,
-    202101, 202012, 202011)
-  param_local$train$validation <- c(202105)
-  param_local$train$testing <- c(202106)
-
-
-  # Atencion  0.2  de  undersampling de la clase mayoritaria,  los CONTINUA
-  # 1.0 significa NO undersampling
-  param_local$train$undersampling <- 0.2
-  param_local$train$clase_minoritaria <- c( "BAJA+1", "BAJA+2")
-
-  return( exp_correr_script( param_local ) ) # linea fija
-}
 #------------------------------------------------------------------------------
 # Atencion, el undersampling es de 0.02
 #  tanto para entrenamineto como para  Final train$clase01_valor1
@@ -296,7 +270,7 @@ TS_strategy_base8 <- function( pinputexps )
 
   param_local$future <- c(202108)
 
-  param_local$final_train$undersampling <- 0.02
+  param_local$final_train$undersampling <- 0.20
   param_local$final_train$clase_minoritaria <- c( "BAJA+1", "BAJA+2")
   param_local$final_train$training <- c(
     202106, 202105, 202104, 202103, 202102, 202101, 
@@ -329,7 +303,7 @@ TS_strategy_base8 <- function( pinputexps )
 
   # Atencion  0.2  de  undersampling de la clase mayoritaria,  los CONTINUA
   # 1.0 significa NO undersampling
-  param_local$train$undersampling <- 0.02
+  param_local$train$undersampling <- 0.05
   param_local$train$clase_minoritaria <- c( "BAJA+1", "BAJA+2")
 
   return( exp_correr_script( param_local ) ) # linea fija
@@ -461,8 +435,8 @@ KA_evaluate_kaggle_semillerio <- function( pinputexps )
 
   param_local$irepes_submit <- 1:20 # misterioso parametro, no preguntar
 
-  param_local$envios_desde <- 10500L
-  param_local$envios_hasta <- 12050L
+  param_local$envios_desde <- 9500L
+  param_local$envios_hasta <- 13550L
   param_local$envios_salto <-   500L
   param_local$competition <- "dm-ey-f-2024-segunda"
 
@@ -476,7 +450,7 @@ KA_evaluate_kaggle_semillerio <- function( pinputexps )
 # Que predice 202107 donde conozco la clase
 # y ya genera graficos
 
-wf_SEMI_JT_18.1<- function( pnombrewf )
+wf_SEMI_JT_22.3<- function( pnombrewf )
 {
   param_local <- exp_wf_init( pnombrewf ) # linea fija
 
@@ -488,14 +462,14 @@ wf_SEMI_JT_18.1<- function( pnombrewf )
   DR_drifting_base(metodo="rank_cero_fijo")
   FEhist_base()
   ultimo <- FErf_attributes_base()
-  #CN_canaritos_asesinos_base(ratio=0.2, desvio=4.0)
+  CN_canaritos_asesinos_base(ratio=1, desvio=0)
 
   ts8 <- TS_strategy_base8()
 
   # la Bayesian Optimization con el semillerio dentro
   ht <- HT_tuning_semillerio(
     semillerio = 100, # semillerio dentro de la Bayesian Optim
-    bo_iteraciones = 30  # iteraciones inteligentes, apenas 10
+    bo_iteraciones = 40  # iteraciones inteligentes, apenas 10
   )
 
 
@@ -517,6 +491,6 @@ wf_SEMI_JT_18.1<- function( pnombrewf )
 # Aqui comienza el programa
 
 # llamo al workflow con future = 202108
-wf_SEMI_JT_18.1()
+wf_SEMI_JT_22.3()
 
 
