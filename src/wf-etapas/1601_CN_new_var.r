@@ -207,12 +207,14 @@ CanaritosAsesinos <- function(
   dataset[, (top_vars_cols) := lapply(.SD, function(x) ifelse(is.na(x), 0, x)), .SDcols = top_vars_cols]
 
   cat( "y AHORA, COMO VAS AHSTA ACA()\n")
+  feature_names <- as.vector(top_vars$Feature)
 
   # Generamos las sumas entre las variables originales de top_vars, cada una sumada contra las demás
-  for (i in seq_along(top_vars$Feature)) {
-    for (j in (i+1):length(top_vars$Feature)) {
-      var1 <- top_vars$Feature[i]
-      var2 <- top_vars$Feature[j]
+  for (i in seq_along(feature_names)) {
+    for (j in (i+1):length(feature_names)) {
+      var1 <- feature_names[i]
+      var2 <- feature_names[j]
+
       new_col_name <- paste0(var1, "_plus_", var2)
     
       # Verificamos que ambas columnas tengan datos antes de realizar la suma
@@ -225,7 +227,7 @@ CanaritosAsesinos <- function(
     }
   }
 
-
+  cat( "TERMINE, COMO VAS AHSTA ACA()\n")
   ## Fin Nuevas Variable  
   ###########################################################################################################
   fwrite(tb_importancia,
