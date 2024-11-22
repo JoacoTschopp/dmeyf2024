@@ -226,79 +226,57 @@ AgregarVariables_IntraMes <- function(dataset) {
     "mcuenta_debitos_automaticos"
   )
 
-# Recorremos top_vars y generamos nuevas columnas con las transformaciones
+# Realizamos transformaciones no lineales a las variables seleccionadas en top_vars
+
+# Supongamos que "dataset" es el nombre del dataset con las variables
+
+# Asignamos manualmente los nombres de las características en feature_names
+feature_names <- c(
+  "ctrx_quarter_normalizado", "ctrx_quarter", "mprestamos_personales_rank", "mcaja_ahorro_rank", 
+  "cpayroll_trx", "mpayroll_sobre_edad_rank", "mcuentas_saldo_rank", "mtarjeta_visa_consumo_rank", 
+  "mrentabilidad_annual_rank", "mpasivos_margen_rank", "mcuenta_corriente_rank", "mactivos_margen_rank", 
+  "mcomisiones_mantenimiento_rank", "vm_mpagominimo_rank", "mrentabilidad_rank", 
+  "mcuenta_debitos_automaticos_rank"
+)
+
+# Definimos una función para verificar si los atributos están presentes en el dataset
+atributos_presentes <- function(vars) {
+  all(vars %in% names(dataset))
+}
+
+# Recorremos las variables en feature_names y generamos las nuevas variables
 for (var in feature_names) {
-  if (!all(is.na(dataset[[var]]))) {  # Verificamos que la columna no sea completamente NA
-    # Logaritmo natural (agregar 1 para evitar log(0))
+  # Logaritmo natural (agregar 1 para evitar log(0))
+  if (atributos_presentes(c(var))) {
     dataset[, paste0(var, "_log") := log(get(var) + 1)]
-    dataset[is.infinite(get(paste0(var, "_log"))) | is.nan(get(paste0(var, "_log"))), paste0(var, "_log") := 0]
-    
-    # Raíz cuadrada
-    dataset[, paste0(var, "_sqrt") := sqrt(pmax(get(var), 0))]  # Evitar valores negativos
-    dataset[is.nan(get(paste0(var, "_sqrt"))), paste0(var, "_sqrt") := 0]
-    
-    # Potencia al cuadrado
+  }
+
+  # Potencia al cuadrado
+  if (atributos_presentes(c(var))) {
     dataset[, paste0(var, "_squared") := get(var)^2]
-    dataset[is.nan(get(paste0(var, "_squared"))), paste0(var, "_squared") := 0]
-    
-    # Ratio entre la variable y otra importante (ejemplo: dividimos entre la primera variable de top_vars)
-    if (var != feature_names[1]) {
-      dataset[, paste0(var, "_ratio_", feature_names[1]) := get(var) / (get(feature_names[1]) + 1e-6)]
-      dataset[is.nan(get(paste0(var, "_ratio_", feature_names[1]))) | is.infinite(get(paste0(var, "_ratio_", feature_names[1]))), paste0(var, "_ratio_", feature_names[1]) := 0]
-    }
-    
-    # Diferencia absoluta respecto a la primera variable de top_vars
-    if (var != feature_names[1]) {
-      dataset[, paste0(var, "_diff_", feature_names[1]) := abs(get(var) - get(feature_names[1]))]
-      dataset[is.nan(get(paste0(var, "_diff_", feature_names[1]))), paste0(var, "_diff_", feature_names[1]) := 0]
-    }
+  }
+
+  # Ratio respecto a la primera variable en feature_names
+  if (atributos_presentes(c(var, feature_names[1])) && var != feature_names[1]) {
+    dataset[, paste0(var, "_ratio_", feature_names[1]) := get(var) / (get(feature_names[1]) + 1e-6)]
+  }
+
+  # Diferencia absoluta respecto a la primera variable en feature_names
+  if (atributos_presentes(c(var, feature_names[1])) && var != feature_names[1]) {
+    dataset[, paste0(var, "_diff_", feature_names[1]) := abs(get(var) - get(feature_names[1]))]
   }
 }
 
-# Recorremos top_vars y generamos la suma y promedio para cada cliente identificado por "numero_de_cliente" usando data.table
-library(data.table)
+# Reemplazamos todos los valores NaN en el dataset por 0
+nans_qty <- dataset[, sum(is.nan(as.matrix(.SD))), .SDcols = names(dataset)]
+if (nans_qty > 0) {
+  cat("ATENCIÓN, hay", nans_qty, "valores NaN en tu dataset. Serán pasados arbitrariamente a 0\n")
+  cat("Si no te gusta la decisión, modifica a gusto el programa!\n\n")
+  dataset[, (names(dataset)) := lapply(.SD, function(x) ifelse(is.nan(x), 0, x)), .SDcols = names(dataset)]
+}
 
-# Agrupamos por numero_de_cliente y calculamos la suma para cada variable en top_vars
-aggregated_sum <- dataset[, lapply(.SD, sum, na.rm = TRUE), by = numero_de_cliente, .SDcols = feature_names]
-setnames(aggregated_sum, old = names(aggregated_sum)[-1], new = paste0(feature_names, "_sum"))
+cat("fin AgregarVariables_IntraMes()\n")
 
-# Agrupamos por numero_de_cliente y calculamos el promedio para cada variable en top_vars
-aggregated_mean <- dataset[, lapply(.SD, mean, na.rm = TRUE), by = numero_de_cliente, .SDcols = feature_names]
-setnames(aggregated_mean, old = names(aggregated_mean)[-1], new = paste0(feature_names, "_mean"))
-
-# Unimos los resultados agregados al dataset original usando merge para evitar perder filas
-setkey(dataset, numero_de_cliente)
-setkey(aggregated_sum, numero_de_cliente)
-setkey(aggregated_mean, numero_de_cliente)
-
-# Unimos sumas y promedios al dataset asegurando que no se pierdan registros
-dataset <- merge(dataset, aggregated_sum, by = "numero_de_cliente", all.x = TRUE)
-dataset <- merge(dataset, aggregated_mean, by = "numero_de_cliente", all.x = TRUE)
-
-# Reemplazamos los posibles NA resultantes de las fusiones con 0, solo en las columnas correspondientes a top_vars
-top_vars_cols <- c(paste0(feature_names, "_sum"), paste0(feature_names, "_mean"))
-dataset[, (top_vars_cols) := lapply(.SD, function(x) ifelse(is.na(x), 0, x)), .SDcols = top_vars_cols]
-
-  cat( "y AHORA, COMO VAS AHSTA ACA()\n")
-  #feature_names <- as.vector(top_vars$Feature)
-
-  # Generamos las sumas entre las variables originales de top_vars, cada una sumada contra las demás
-  #for (i in seq_along(feature_names)) {
-  #  for (j in (i+1):length(feature_names)) {
-  #    var1 <- feature_names[i]
-  #    var2 <- feature_names[j]
-
-  #    new_col_name <- paste0(var1, "_plus_", var2)
-    
-      # Verificamos que ambas columnas tengan datos antes de realizar la suma
-  #    if (all(!is.na(dataset[[var1]])) && all(!is.na(dataset[[var2]]))) {
-  #      dataset[[new_col_name]] <- dataset[[var1]] + dataset[[var2]]
-  #      dataset[[new_col_name]][is.nan(dataset[[new_col_name]])] <- 0
-  #    } else {
-  #      dataset[[new_col_name]] <- 0  # Si alguna de las columnas tiene NA, asignamos 0
-  #    }
-  #  }
-  #}
 
   cat( "TERMINE, COMO VAS AHSTA ACA()\n")
   ## Fin Nuevas Variable  
