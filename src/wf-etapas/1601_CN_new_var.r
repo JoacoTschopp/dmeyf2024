@@ -181,7 +181,7 @@ CanaritosAsesinos <- function(
       dataset[[paste0(var, "_diff_", top_vars$Feature[1])]][is.nan(dataset[[paste0(var, "_diff_", top_vars$Feature[1])]])] <- 0
     }
   }
-
+  cat( "COMO VAS AHSTA ACA()\n")
 # Recorremos top_vars y generamos la suma y promedio para cada cliente identificado por "numero_de_cliente" usando data.table
 
 # Agrupamos por numero_de_cliente y calculamos la suma para cada variable en top_vars
@@ -206,6 +206,7 @@ CanaritosAsesinos <- function(
   top_vars_cols <- c(paste0(top_vars$Feature, "_sum"), paste0(top_vars$Feature, "_mean"))
   dataset[, (top_vars_cols) := lapply(.SD, function(x) ifelse(is.na(x), 0, x)), .SDcols = top_vars_cols]
 
+  cat( "y AHORA, COMO VAS AHSTA ACA()\n")
 
   # Generamos las sumas entre las variables originales de top_vars, cada una sumada contra las demás
   for (i in seq_along(top_vars$Feature)) {
