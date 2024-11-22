@@ -201,17 +201,26 @@ CanaritosAsesinos <- function(
   dataset <- merge(dataset, aggregated_sum, by = "numero_de_cliente", all.x = TRUE)
   dataset <- merge(dataset, aggregated_mean, by = "numero_de_cliente", all.x = TRUE)
 
-# Revisión rápida de las nuevas columnas agregadas
-  dataset[, head(.SD, 5)]
+# Reemplazamos los posibles NA resultantes de las fusiones con 0
+  # Reemplazamos los posibles NA resultantes de las fusiones con 0, solo en las columnas correspondientes a top_vars
+  top_vars_cols <- c(paste0(top_vars$Feature, "_sum"), paste0(top_vars$Feature, "_mean"))
+  dataset[, (top_vars_cols) := lapply(.SD, function(x) ifelse(is.na(x), 0, x)), .SDcols = top_vars_cols]
 
-  # Generamos las sumas entre las variables originales de top_vars, cada una sumada contra las demás 
+
+  # Generamos las sumas entre las variables originales de top_vars, cada una sumada contra las demás
   for (i in seq_along(top_vars$Feature)) {
     for (j in (i+1):length(top_vars$Feature)) {
       var1 <- top_vars$Feature[i]
       var2 <- top_vars$Feature[j]
       new_col_name <- paste0(var1, "_plus_", var2)
-      dataset[[new_col_name]] <- dataset[[var1]] + dataset[[var2]]
-      dataset[[new_col_name]][is.nan(dataset[[new_col_name]])] <- 0
+    
+      # Verificamos que ambas columnas tengan datos antes de realizar la suma
+      if (all(!is.na(dataset[[var1]])) && all(!is.na(dataset[[var2]]))) {
+        dataset[[new_col_name]] <- dataset[[var1]] + dataset[[var2]]
+        dataset[[new_col_name]][is.nan(dataset[[new_col_name]])] <- 0
+      } else {
+        dataset[[new_col_name]] <- 0  # Si alguna de las columnas tiene NA, asignamos 0
+      }
     }
   }
 
