@@ -226,39 +226,58 @@ AgregarVariables_IntraMes <- function(dataset) {
     "mcuenta_debitos_automaticos"
   )
 
-  # Recorremos top_vars y generamos nuevas columnas con las transformaciones
-  for (var in feature_names) {
-    if (!all(is.na(dataset[[var]]))) {  # Verificamos que la columna no sea completamente NA
-      # Logaritmo natural (agregar 1 para evitar log(0))
-      new_log <- log(dataset[[var]] + 1)
-      new_log[is.infinite(new_log) | is.nan(new_log)] <- 0
-      dataset[[paste0(var, "_log")]] <- new_log
+# Recorremos top_vars y generamos nuevas columnas con las transformaciones
+for (var in feature_names) {
+  if (!all(is.na(dataset[[var]]))) {  # Verificamos que la columna no sea completamente NA
+    # Logaritmo natural (agregar 1 para evitar log(0))
+    dataset[, paste0(var, "_log") := log(get(var) + 1)]
+    dataset[is.infinite(get(paste0(var, "_log"))) | is.nan(get(paste0(var, "_log"))), paste0(var, "_log") := 0]
     
-      # Raíz cuadrada
-      new_sqrt <- sqrt(pmax(dataset[[var]], 0))  # Evitar valores negativos
-      new_sqrt[is.nan(new_sqrt)] <- 0
-      dataset[[paste0(var, "_sqrt")]] <- new_sqrt
+    # Raíz cuadrada
+    dataset[, paste0(var, "_sqrt") := sqrt(pmax(get(var), 0))]  # Evitar valores negativos
+    dataset[is.nan(get(paste0(var, "_sqrt"))), paste0(var, "_sqrt") := 0]
     
-      # Potencia al cuadrado
-      new_squared <- dataset[[var]]^2
-      new_squared[is.nan(new_squared)] <- 0
-      dataset[[paste0(var, "_squared")]] <- new_squared
+    # Potencia al cuadrado
+    dataset[, paste0(var, "_squared") := get(var)^2]
+    dataset[is.nan(get(paste0(var, "_squared"))), paste0(var, "_squared") := 0]
     
-      # Ratio entre la variable y otra importante (ejemplo: dividimos entre la primera variable de top_vars)
-      if (var != feature_names[1]) {
-        new_ratio <- dataset[[var]] / (dataset[[feature_names[1]]] + 1e-6)
-        new_ratio[is.nan(new_ratio) | is.infinite(new_ratio)] <- 0
-        dataset[[paste0(var, "_ratio_", feature_names[1])]] <- new_ratio
-      }
+    # Ratio entre la variable y otra importante (ejemplo: dividimos entre la primera variable de top_vars)
+    if (var != feature_names[1]) {
+      dataset[, paste0(var, "_ratio_", feature_names[1]) := get(var) / (get(feature_names[1]) + 1e-6)]
+      dataset[is.nan(get(paste0(var, "_ratio_", feature_names[1]))) | is.infinite(get(paste0(var, "_ratio_", feature_names[1]))), paste0(var, "_ratio_", feature_names[1]) := 0]
+    }
     
-      # Diferencia absoluta respecto a la primera variable de top_vars
-      if (var != feature_names[1]) {
-        new_diff <- abs(dataset[[var]] - dataset[[feature_names[1]]])
-        new_diff[is.nan(new_diff)] <- 0
-        dataset[[paste0(var, "_diff_", feature_names[1])]] <- new_diff
-      }
+    # Diferencia absoluta respecto a la primera variable de top_vars
+    if (var != feature_names[1]) {
+      dataset[, paste0(var, "_diff_", feature_names[1]) := abs(get(var) - get(feature_names[1]))]
+      dataset[is.nan(get(paste0(var, "_diff_", feature_names[1]))), paste0(var, "_diff_", feature_names[1]) := 0]
     }
   }
+}
+
+# Recorremos top_vars y generamos la suma y promedio para cada cliente identificado por "numero_de_cliente" usando data.table
+library(data.table)
+
+# Agrupamos por numero_de_cliente y calculamos la suma para cada variable en top_vars
+aggregated_sum <- dataset[, lapply(.SD, sum, na.rm = TRUE), by = numero_de_cliente, .SDcols = feature_names]
+setnames(aggregated_sum, old = names(aggregated_sum)[-1], new = paste0(feature_names, "_sum"))
+
+# Agrupamos por numero_de_cliente y calculamos el promedio para cada variable en top_vars
+aggregated_mean <- dataset[, lapply(.SD, mean, na.rm = TRUE), by = numero_de_cliente, .SDcols = feature_names]
+setnames(aggregated_mean, old = names(aggregated_mean)[-1], new = paste0(feature_names, "_mean"))
+
+# Unimos los resultados agregados al dataset original usando merge para evitar perder filas
+setkey(dataset, numero_de_cliente)
+setkey(aggregated_sum, numero_de_cliente)
+setkey(aggregated_mean, numero_de_cliente)
+
+# Unimos sumas y promedios al dataset asegurando que no se pierdan registros
+dataset <- merge(dataset, aggregated_sum, by = "numero_de_cliente", all.x = TRUE)
+dataset <- merge(dataset, aggregated_mean, by = "numero_de_cliente", all.x = TRUE)
+
+# Reemplazamos los posibles NA resultantes de las fusiones con 0, solo en las columnas correspondientes a top_vars
+top_vars_cols <- c(paste0(feature_names, "_sum"), paste0(feature_names, "_mean"))
+dataset[, (top_vars_cols) := lapply(.SD, function(x) ifelse(is.na(x), 0, x)), .SDcols = top_vars_cols]
 
   cat( "y AHORA, COMO VAS AHSTA ACA()\n")
   #feature_names <- as.vector(top_vars$Feature)
