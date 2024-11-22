@@ -228,28 +228,35 @@ AgregarVariables_IntraMes <- function(dataset) {
 
   # Recorremos top_vars y generamos nuevas columnas con las transformaciones
   for (var in feature_names) {
-    # Logaritmo natural (agregar 1 para evitar log(0))
-    dataset[[paste0(var, "_log")]] <- log(dataset[[var]] + 1)
-    dataset[[paste0(var, "_log")]][is.infinite(dataset[[paste0(var, "_log")]]) | is.nan(dataset[[paste0(var, "_log")]])] <- 0
-  
-    # Raíz cuadrada
-    dataset[[paste0(var, "_sqrt")]] <- sqrt(pmax(dataset[[var]], 0))  # Evitar valores negativos
-    dataset[[paste0(var, "_sqrt")]][is.nan(dataset[[paste0(var, "_sqrt")]])] <- 0
-  
-    # Potencia al cuadrado
-    dataset[[paste0(var, "_squared")]] <- dataset[[var]]^2
-    dataset[[paste0(var, "_squared")]][is.nan(dataset[[paste0(var, "_squared")]])] <- 0
-  
-    # Ratio entre la variable y otra importante (ejemplo: dividimos entre la primera variable de top_vars)
-    if (var != feature_names[1]) {
-      dataset[[paste0(var, "_ratio_", feature_names[1])]] <- dataset[[var]] / (dataset[[feature_names[1]]] + 1e-6)
-      dataset[[paste0(var, "_ratio_", feature_names[1])]][is.nan(dataset[[paste0(var, "_ratio_", feature_names[1])]]) | is.infinite(dataset[[paste0(var, "_ratio_", feature_names[1])]])] <- 0
-    }
-  
-    # Diferencia absoluta respecto a la primera variable de top_vars
-    if (var != feature_names[1]) {
-      dataset[[paste0(var, "_diff_", feature_names[1])]] <- abs(dataset[[var]] - dataset[[feature_names[1]]])
-      dataset[[paste0(var, "_diff_", feature_names[1])]][is.nan(dataset[[paste0(var, "_diff_", feature_names[1])]])] <- 0
+    if (!all(is.na(dataset[[var]]))) {  # Verificamos que la columna no sea completamente NA
+      # Logaritmo natural (agregar 1 para evitar log(0))
+      new_log <- log(dataset[[var]] + 1)
+      new_log[is.infinite(new_log) | is.nan(new_log)] <- 0
+      dataset[[paste0(var, "_log")]] <- new_log
+    
+      # Raíz cuadrada
+      new_sqrt <- sqrt(pmax(dataset[[var]], 0))  # Evitar valores negativos
+      new_sqrt[is.nan(new_sqrt)] <- 0
+      dataset[[paste0(var, "_sqrt")]] <- new_sqrt
+    
+      # Potencia al cuadrado
+      new_squared <- dataset[[var]]^2
+      new_squared[is.nan(new_squared)] <- 0
+      dataset[[paste0(var, "_squared")]] <- new_squared
+    
+      # Ratio entre la variable y otra importante (ejemplo: dividimos entre la primera variable de top_vars)
+      if (var != feature_names[1]) {
+        new_ratio <- dataset[[var]] / (dataset[[feature_names[1]]] + 1e-6)
+        new_ratio[is.nan(new_ratio) | is.infinite(new_ratio)] <- 0
+        dataset[[paste0(var, "_ratio_", feature_names[1])]] <- new_ratio
+      }
+    
+      # Diferencia absoluta respecto a la primera variable de top_vars
+      if (var != feature_names[1]) {
+        new_diff <- abs(dataset[[var]] - dataset[[feature_names[1]]])
+        new_diff[is.nan(new_diff)] <- 0
+        dataset[[paste0(var, "_diff_", feature_names[1])]] <- new_diff
+      }
     }
   }
 
