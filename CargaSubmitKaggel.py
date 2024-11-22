@@ -23,7 +23,7 @@ files = [f for f in files if f.endswith('.csv')]
 # Ordenar los archivos por el número después de "sem_" y luego por el número después de "corte"
 files = sorted(files, key=lambda x: (
     int(x.split('_')[3]),  # Número del semestre después de 'sem_'
-    int(x.split('_')[5][5:])  # Número después de 'corte'
+    int(x.split('_')[5].replace("corte", "").replace(".csv", ""))  # Número después de 'corte'
 ))
 
 # Lista de archivos a subir
@@ -33,7 +33,7 @@ submissions = [{'file': os.path.join(files_dir, f),
 # Ordenar nuevamente por el mismo criterio en caso de necesitarlo
 submissions = sorted(submissions, key=lambda x: (
     int(x['file'].split('/')[-1].split('_')[3]),  # Número del semestre después de 'sem_'
-    int(x['file'].split('/')[-1].split('_')[5][5:])  # Número después de 'corte'
+    int(x['file'].split('/')[-1].split('_')[5].replace("corte", "").replace(".csv", ""))  # Número después de 'corte'
 ))
 
 
