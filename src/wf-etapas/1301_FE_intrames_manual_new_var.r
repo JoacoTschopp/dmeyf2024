@@ -260,29 +260,6 @@ AgregarVariables_IntraMes <- function(dataset) {
     }
   }
 
-  # Recorremos top_vars y generamos la suma y promedio para cada cliente identificado por "numero_de_cliente" usando data.table
-
-  # Agrupamos por numero_de_cliente y calculamos la suma para cada variable en top_vars
-  aggregated_sum <- dataset[, lapply(.SD, sum, na.rm = TRUE), by = numero_de_cliente, .SDcols = feature_names]
-  setnames(aggregated_sum, old = names(aggregated_sum)[-1], new = paste0(feature_names, "_sum"))
-
-  # Agrupamos por numero_de_cliente y calculamos el promedio para cada variable en top_vars
-  aggregated_mean <- dataset[, lapply(.SD, mean, na.rm = TRUE), by = numero_de_cliente, .SDcols = feature_names]
-  setnames(aggregated_mean, old = names(aggregated_mean)[-1], new = paste0(feature_names, "_mean"))
-
-  # Unimos los resultados agregados al dataset original usando merge para evitar perder filas
-  setkey(dataset, numero_de_cliente)
-  setkey(aggregated_sum, numero_de_cliente)
-  setkey(aggregated_mean, numero_de_cliente)
-
-  # Unimos sumas y promedios al dataset asegurando que no se pierdan registros
-  dataset <- merge(dataset, aggregated_sum, by = "numero_de_cliente", all.x = TRUE)
-  dataset <- merge(dataset, aggregated_mean, by = "numero_de_cliente", all.x = TRUE)
-
-  # Reemplazamos los posibles NA resultantes de las fusiones con 0, solo en las columnas correspondientes a top_vars
-  top_vars_cols <- c(paste0(feature_names, "_sum"), paste0(feature_names, "_mean"))
-  dataset[, (top_vars_cols) := lapply(.SD, function(x) ifelse(is.na(x), 0, x)), .SDcols = top_vars_cols]
-
   cat( "y AHORA, COMO VAS AHSTA ACA()\n")
   #feature_names <- as.vector(top_vars$Feature)
 
