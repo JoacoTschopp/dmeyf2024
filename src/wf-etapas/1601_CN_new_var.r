@@ -154,52 +154,64 @@ CanaritosAsesinos <- function(
   #####################################################################################
   #aca tomo las 20 mas importantes.
   top_vars <- head(tb_importancia[order(-tb_importancia$Gain)], 20)
+  
   # Recorremos top_vars y generamos nuevas columnas con las transformaciones
   for (var in top_vars$Feature) {
-    # Logaritmo natural (agregar 1 para evitar log(0))
+  # Logaritmo natural (agregar 1 para evitar log(0))
     dataset[[paste0(var, "_log")]] <- log(dataset[[var]] + 1)
+    dataset[[paste0(var, "_log")]][is.infinite(dataset[[paste0(var, "_log")]]) | is.nan(dataset[[paste0(var, "_log")]])] <- 0
   
-    # Raíz cuadrada
-    dataset[[paste0(var, "_sqrt")]] <- sqrt(dataset[[var]])
-   
-    # Potencia al cuadrado
+  # Raíz cuadrada
+    dataset[[paste0(var, "_sqrt")]] <- sqrt(pmax(dataset[[var]], 0))  # Evitar valores negativos
+    dataset[[paste0(var, "_sqrt")]][is.nan(dataset[[paste0(var, "_sqrt")]])] <- 0
+  
+  # Potencia al cuadrado
     dataset[[paste0(var, "_squared")]] <- dataset[[var]]^2
-
-    # Ratio entre la variable y otra importante (ejemplo: dividimos entre la primera variable de top_vars)
+    dataset[[paste0(var, "_squared")]][is.nan(dataset[[paste0(var, "_squared")]])] <- 0
+  
+  # Ratio entre la variable y otra importante (ejemplo: dividimos entre la primera variable de top_vars)
     if (var != top_vars$Feature[1]) {
       dataset[[paste0(var, "_ratio_", top_vars$Feature[1])]] <- dataset[[var]] / (dataset[[top_vars$Feature[1]]] + 1e-6)
+      dataset[[paste0(var, "_ratio_", top_vars$Feature[1])]][is.nan(dataset[[paste0(var, "_ratio_", top_vars$Feature[1])]]) | is.infinite(dataset[[paste0(var, "_ratio_", top_vars$Feature[1])]])] <- 0
     }
   
-    # Diferencia absoluta respecto a la primera variable de top_vars
+  # Diferencia absoluta respecto a la primera variable de top_vars
     if (var != top_vars$Feature[1]) {
       dataset[[paste0(var, "_diff_", top_vars$Feature[1])]] <- abs(dataset[[var]] - dataset[[top_vars$Feature[1]]])
+      dataset[[paste0(var, "_diff_", top_vars$Feature[1])]][is.nan(dataset[[paste0(var, "_diff_", top_vars$Feature[1])]])] <- 0
     }
   }
- 
-  # Agrupamos por numero_de_cliente y calculamos la suma para cada variable en top_vars
+
+# Recorremos top_vars y generamos la suma y promedio para cada cliente identificado por "numero_de_cliente" usando data.table
+
+# Agrupamos por numero_de_cliente y calculamos la suma para cada variable en top_vars
   aggregated_sum <- dataset[, lapply(.SD, sum, na.rm = TRUE), by = numero_de_cliente, .SDcols = top_vars$Feature]
   setnames(aggregated_sum, old = names(aggregated_sum)[-1], new = paste0(top_vars$Feature, "_sum"))
 
-  #  Agrupamos por numero_de_cliente y calculamos el promedio para cada variable en top_vars
+# Agrupamos por numero_de_cliente y calculamos el promedio para cada variable en top_vars
   aggregated_mean <- dataset[, lapply(.SD, mean, na.rm = TRUE), by = numero_de_cliente, .SDcols = top_vars$Feature]
   setnames(aggregated_mean, old = names(aggregated_mean)[-1], new = paste0(top_vars$Feature, "_mean"))
 
-  # Unimos los resultados agregados al dataset original
+# Unimos los resultados agregados al dataset original usando merge para evitar perder filas
   setkey(dataset, numero_de_cliente)
   setkey(aggregated_sum, numero_de_cliente)
   setkey(aggregated_mean, numero_de_cliente)
 
-  # Unimos sumas y promedios al dataset
-  dataset <- aggregated_sum[dataset]
-  dataset <- aggregated_mean[dataset]
+# Unimos sumas y promedios al dataset asegurando que no se pierdan registros
+  dataset <- merge(dataset, aggregated_sum, by = "numero_de_cliente", all.x = TRUE)
+  dataset <- merge(dataset, aggregated_mean, by = "numero_de_cliente", all.x = TRUE)
 
-  # Generamos las sumas entre las variables originales de top_vars, cada una sumada contra las demás
+# Revisión rápida de las nuevas columnas agregadas
+  dataset[, head(.SD, 5)]
+
+  # Generamos las sumas entre las variables originales de top_vars, cada una sumada contra las demás 
   for (i in seq_along(top_vars$Feature)) {
     for (j in (i+1):length(top_vars$Feature)) {
       var1 <- top_vars$Feature[i]
       var2 <- top_vars$Feature[j]
       new_col_name <- paste0(var1, "_plus_", var2)
       dataset[[new_col_name]] <- dataset[[var1]] + dataset[[var2]]
+      dataset[[new_col_name]][is.nan(dataset[[new_col_name]])] <- 0
     }
   }
 
