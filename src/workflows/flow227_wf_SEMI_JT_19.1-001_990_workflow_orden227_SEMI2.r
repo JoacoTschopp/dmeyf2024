@@ -83,7 +83,7 @@ CA_catastrophe_base <- function( pinputexps, metodo )
 {
   if( -1 == (param_local <- exp_init())$resultado ) return( 0 ) # linea fija
 
-  param_local$meta$script <- "/src/wf-etapas/1201_CA_reparar_dataset.r"
+  param_local$meta$script <- "/src/wf-etapas/z1201_CA_reparar_dataset.r"
 
   # Opciones MachineLearning EstadisticaClasica Ninguno MICE
   param_local$metodo <- metodo
@@ -296,7 +296,7 @@ TS_strategy_base8 <- function( pinputexps )
 
   param_local$future <- c(202108)
 
-  param_local$final_train$undersampling <- 0.20
+  param_local$final_train$undersampling <- 0.05
   param_local$final_train$clase_minoritaria <- c( "BAJA+1", "BAJA+2")
   param_local$final_train$training <- c(
     202106, 202105, 202104, 202103, 202102, 202101, 
@@ -461,8 +461,8 @@ KA_evaluate_kaggle_semillerio <- function( pinputexps )
 
   param_local$irepes_submit <- 1:20 # misterioso parametro, no preguntar
 
-  param_local$envios_desde <- 9000L
-  param_local$envios_hasta <- 14550L
+  param_local$envios_desde <- 9500L
+  param_local$envios_hasta <- 14050L
   param_local$envios_salto <-   500L
   param_local$competition <- "dm-ey-f-2024-segunda"
 
@@ -476,7 +476,7 @@ KA_evaluate_kaggle_semillerio <- function( pinputexps )
 # Que predice 202107 donde conozco la clase
 # y ya genera graficos
 
-wf_SEMI_JT_19.mas<- function( pnombrewf )
+wf_SEMI_JT_18.mas<- function( pnombrewf )
 {
   param_local <- exp_wf_init( pnombrewf ) # linea fija
 
@@ -488,14 +488,14 @@ wf_SEMI_JT_19.mas<- function( pnombrewf )
   DR_drifting_base(metodo="rank_cero_fijo")
   FEhist_base()
   ultimo <- FErf_attributes_base()
-  #CN_canaritos_asesinos_base(ratio=0.2, desvio=4.0)
+  CN_canaritos_asesinos_base(ratio=1, desvio=0)
 
   ts8 <- TS_strategy_base8()
 
   # la Bayesian Optimization con el semillerio dentro
   ht <- HT_tuning_semillerio(
     semillerio = 100, # semillerio dentro de la Bayesian Optim
-    bo_iteraciones = 50  # iteraciones inteligentes, apenas 10
+    bo_iteraciones = 30  # iteraciones inteligentes, apenas 10
   )
 
 
@@ -517,6 +517,6 @@ wf_SEMI_JT_19.mas<- function( pnombrewf )
 # Aqui comienza el programa
 
 # llamo al workflow con future = 202108
-wf_SEMI_JT_19.mas()
+wf_SEMI_JT_18.mas()
 
 
