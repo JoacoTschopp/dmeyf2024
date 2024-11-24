@@ -262,7 +262,7 @@ FEev_creacionismo <- function( pinputexps, k, canaritos_desvio)
 
   param_local$Creacionismo$canaritos_inicio <- TRUE # Si el proceso comienza con una poda antes de la primera gen o no
   param_local$Creacionismo$k <- k # Cantidad de generaciones
-  param_local$Creacionismo$canaritos_ratio <- 1 # Parametro de canaritos ellos proponen 0,2
+  param_local$Creacionismo$canaritos_ratio <- 0.5 # Parametro de canaritos ellos proponen 0,2
   param_local$Creacionismo$canaritos_desvios <- canaritos_desvio # Parametro para la poda, debe ser negativo. Idealmente entre 0 y -2
 
   param_local$Creacionismo$fehist <- FALSE # Si genera variables historicas a partir de las variables evolutivas
