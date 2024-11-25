@@ -1,0 +1,23 @@
+Instructivo de Ejecución - Kaggle DMEyF 2024 Segunda
+A continuación se detalla el orden de ejecución de los archivos para la competencia, basada en los scripts almacenados en la carpeta Entrega_dm-ey-f-2024-primer.
+
+1. Creación del dataset (Clase Ternaria)
+    Archivo: 00TP-Julia-Tschopp.jl
+    Descripción: Este script en Julia genera el dataset base, añadiendo la variable clase_ternaria, que probablemente servirá para la posterior clasificación de los datos.
+                Comando de ejecución:
+
+    julia 00TP-Julia-Tschopp.jl
+    
+    Resultado: Archivo de salida con el dataset creado que incluirá la variable clase_ternaria.
+
+2. Correr el archivo 909_run_orden227.r 
+	-Antes verificar que el archivo de nombre wf_SEMI_JT_19.1-001_990_workflow_orden227.r esta en la misma carpeta y 
+	-El archivo 1201_CA_reparar_dataset.r un una carpeta con los demás script de WUBA
+
+3. Toma del archivo final de predicciones
+    Carpeta: expw227/KA-000#/
+    Descripción: Se debe tomar el archivo de predicciones generado en el paso anterior, específicamente el siguiente archivo:
+
+    KA-0002_KA-0002_01_027_r2_12000.csv
+
+    Acción: Utiliza este archivo para la entrega final en la competencia.
