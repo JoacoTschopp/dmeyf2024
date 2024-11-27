@@ -50,13 +50,16 @@ function ronda_eliminatoria!(planilla, tiros_por_jugadora, num_jugadoras_a_pasar
     planilla[planilla.id.∈ids_juegan, :encestes] .+= resultados
 
     # Ordenar por encestes acumulados
-    planilla_ordenada = sort(planilla[planilla.activa.==1, :], by=:encestes, rev=true)
+    planilla_ordenada = sort(planilla[planilla.activa .== 1, :], :encestes, rev=true)
 
     # Seleccionar las mejores jugadoras para pasar a la siguiente ronda
     if nrow(planilla_ordenada) > num_jugadoras_a_pasar
         ids_eliminadas = planilla_ordenada.id[num_jugadoras_a_pasar+1:end]
-        planilla[planilla.id.∈ids_eliminadas, :activa] .= 0
+    
+        # Actualizar estado de las jugadoras eliminadas
+        planilla[in(ids_eliminadas).(planilla.id), :].activa .= 0
     end
+
 end
 
 # Estrategia Optimizada
@@ -71,22 +74,32 @@ function estrategia_optimizada()
     )
 
     # Ronda 1
-    tiros_ronda1 = 20
-    num_jugadoras_ronda1 = 50  # Pasan las mejores 50
+    tiros_ronda1 = 400
+    num_jugadoras_ronda1 = 80  # Pasan las mejores 50
     ronda_eliminatoria!(planilla, tiros_ronda1, num_jugadoras_ronda1)
 
     # Ronda 2
-    tiros_ronda2 = 30
-    num_jugadoras_ronda2 = 20  # Pasan las mejores 20
+    tiros_ronda2 = 400
+    num_jugadoras_ronda2 = 60  # Pasan las mejores 20
     ronda_eliminatoria!(planilla, tiros_ronda2, num_jugadoras_ronda2)
 
     # Ronda 3
-    tiros_ronda3 = 50
-    num_jugadoras_ronda3 = 5  # Pasan las mejores 5
+    tiros_ronda3 = 400
+    num_jugadoras_ronda3 = 40  # Pasan las mejores 5
     ronda_eliminatoria!(planilla, tiros_ronda3, num_jugadoras_ronda3)
 
+    # Ronda 4
+    tiros_ronda4 = 400
+    num_jugadoras_ronda4 = 20  # Pasan las mejores 5
+    ronda_eliminatoria!(planilla, tiros_ronda4, num_jugadoras_ronda4)
+
+    # Ronda 5
+    tiros_ronda5 = 400
+    num_jugadoras_ronda5 = 5  # Pasan las mejores 5
+    ronda_eliminatoria!(planilla, tiros_ronda5, num_jugadoras_ronda5)
+
     # Ronda Final
-    tiros_ronda_final = 200
+    tiros_ronda_final = 600
     ronda_eliminatoria!(planilla, tiros_ronda_final, 1)  # Seleccionamos a la mejor
 
     # Obtener la jugadora seleccionada

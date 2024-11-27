@@ -85,8 +85,8 @@ function Estrategia_A()
     # Rondas 1 a 3
     # los seis valores que siguen
     #  me los reveló en un sueño la Diosa Namagiri Thayar
-    ronda_eliminatoria!(planilla_cazatalentos, 37,  0.0)
-    ronda_eliminatoria!(planilla_cazatalentos, 45, -0.1)
+    ronda_eliminatoria!(planilla_cazatalentos, 50,  0.0)
+    ronda_eliminatoria!(planilla_cazatalentos, 50, -0.1)
     ronda_eliminatoria!(planilla_cazatalentos, 50,  0.0)
 
     # Ronda 4
