@@ -10,7 +10,7 @@ periodo_anterior(x::Integer) = x % 100 > 1 ? x - 1 : 12 + (div(x, 100) - 1) * 10
 #ruta = "/home/joaquintschopp/datasets/competencia_01_crudo.csv"
 
 
-df = CSV.read( "D:/Backup DMEYF/competencia_02_crudo.csv.gz", DataFrame )
+df = CSV.read( "D:/Backup DMEYF/competencia_03_crudo.csv.gz", DataFrame )
 
 # Lee el archivo como un DataFrame
 #df = CSV.read(ruta, DataFrame)
@@ -42,5 +42,5 @@ for i in 1:last
   end
 end
 #CSV.write( "G:/Mi unidad/01-Maestria Ciencia de Datos/DMEyF/TPs/dmeyf-2024/datasets/competencia_01_julia.csv", df )
-CSV.write( "D:/Backup DMEYF/competencia_02_ct.csv", df )
+CSV.write( "D:/Backup DMEYF/competencia_03_ct.csv", df )
 #CSV.write("/home/joaquintschopp/datasets/competencia_01_ct.csv", df)

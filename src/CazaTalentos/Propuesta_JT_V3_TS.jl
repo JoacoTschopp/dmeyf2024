@@ -1,11 +1,11 @@
 using Random
-using Distributions
+using Statistics
 using DataFrames
 using Base.Threads
 
 # Función auxiliar para los tiros
 function ftirar(prob, qty)
-    return sum(rand() < prob for _ in 1:qty)
+    return sum(rand() < prob for i in 1:qty)
 end
 
 # Variables globales para el gimnasio
@@ -15,9 +15,13 @@ GLOBAL_gimnasio = Dict()
 function gimnasio_init()
     # Definir las jugadoras
     taurasita = [0.5]
-    peloton = collect(0.204:0.002:0.400)  # 99 jugadoras
-    jugadoras = shuffle(append!(peloton, taurasita))  # Mezclar las jugadoras
-    GLOBAL_gimnasio[:jugadoras] = jugadoras
+    GLOBAL_gimnasio[:taurasita] = taurasita
+    GLOBAL_gimnasio[:jugadoras] = shuffle(append!([0.204:0.002:0.400;],
+        GLOBAL_gimnasio[:taurasita]))
+    jugadoras =  GLOBAL_gimnasio[:jugadoras]
+    #peloton = collect(0.204:0.002:0.400)  # 99 jugadoras
+    #jugadoras = shuffle(append!(peloton, taurasita))  # Mezclar las jugadoras
+    #GLOBAL_gimnasio[:jugadoras] = jugadoras
     GLOBAL_gimnasio[:tiros_total] = 0
     GLOBAL_gimnasio[:mejor_jugadora_id] = findall(x -> x == 0.5, jugadoras)[1]
 end
@@ -46,9 +50,10 @@ function estrategia_mejorada(desviacion_corte=0.0)
     activa = trues(num_jugadoras)  # Vector booleano que indica si la jugadora sigue activa
 
     ronda_num = 1
-    while count(activa) > 6
+    tiros_por_ronda = 50  # Tiros iniciales
+
+    while ronda_num<=3 #count(activa) > 6
         # Realizar tiros según la ronda
-        tiros_por_ronda = 50  # Cantidad de tiros por ronda para mantener el azar bajo control
         jugadoras_activas = findall(activa)
         resultados_ronda = gimnasio_tirar(jugadoras_activas, tiros_por_ronda)
 
@@ -68,6 +73,10 @@ function estrategia_mejorada(desviacion_corte=0.0)
                 activa[jugadora] = false
             end
         end
+
+        # Incrementar la cantidad de tiros por ronda y reducir el corte del desvío
+        #tiros_por_ronda += 5
+        #desviacion_corte -= 0.01
 
         ronda_num += 1
     end
@@ -109,6 +118,6 @@ end
 # Ejecutar la estrategia
 Random.seed!(214363)  # Fijar semilla para reproducibilidad
 n_repeticiones = 100000  # Número de simulaciones
-@time ejecutar_estrategia_multihilo(n_repeticiones, -1)
+@time ejecutar_estrategia_multihilo(n_repeticiones, -0.0)
 
 
