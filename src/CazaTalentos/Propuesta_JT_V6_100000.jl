@@ -133,24 +133,59 @@ tiros_por_ronda_vals = 30:5:60
 sum_tiros_vals = 5:2:15
 sum_desvio_vals = 0.01:0.01:0.1
 corte_ronda_vals = 5:5:20
-
-#desviacion_corte_vals = 0.2
-#tiros_por_ronda_vals = 50
-#sum_tiros_vals = 15
-#sum_desvio_vals = 0.07
-#corte_ronda_vals = 10
 tiro_ultima_ronda_vals = 100:50:300
 
-# Inicializar archivo CSV para almacenar los resultados parciales
-result_file = "resultados_grid_search.csv"
-open(result_file, "w") do io
-    println(io, "desviacion_corte,tiros_por_ronda,sum_tiros,sum_desvio,corte_ronda,tiro_ultima_ronda,tasa_acierto,tiros_promedio,mejor")
-end
+
+# Definir nombre del archivo de resultados
+result_file = "resultados_grid_search_100000.csv"
 
 # Inicializar variables para almacenar los resultados
 global mejor_tasa_acierto = 0.0
 global mejor_tiros_promedio = typemax(Int)
 global mejor_parametros = nothing
+
+# Crear un DataFrame para almacenar los resultados si el archivo ya existe
+if isfile(result_file)
+    println("El archivo de resultados ya existe. Cargando y volviendo a evaluar...")
+    # Leer el archivo de resultados existente
+    df_resultados = CSV.read(result_file, DataFrame)
+
+    # Re-ejecutar cada combinación de parámetros previamente almacenados
+    for row in eachrow(df_resultados)
+        desviacion_corte = row.desviacion_corte
+        tiros_por_ronda = row.tiros_por_ronda
+        sum_tiros = row.sum_tiros
+        sum_desvio = row.sum_desvio
+        corte_ronda = row.corte_ronda
+        tiro_ultima_ronda = row.tiro_ultima_ronda
+
+        # Ejecutar la estrategia con los parámetros actuales
+        tasa_acierto, tiros_promedio = ejecutar_estrategia_multihilo(
+            n_repeticiones,  # Menos iteraciones para ahorrar tiempo en la evaluación
+            desviacion_corte,
+            tiros_por_ronda,
+            sum_tiros,
+            sum_desvio,
+            corte_ronda,
+            tiro_ultima_ronda
+        )
+
+        # Evaluar si supera la tasa de acierto de 0.99
+        mejor = tasa_acierto > 0.99
+
+        # Solo grabar resultados parciales en archivo CSV si la tasa_acierto > 0.99
+        if mejor
+            open(result_file, "a") do io
+                println(io, "$desviacion_corte,$tiros_por_ronda,$sum_tiros,$sum_desvio,$corte_ronda,$tiro_ultima_ronda,$tasa_acierto,$tiros_promedio,true")
+            end
+        end
+    end
+else
+    # Si el archivo no existe, inicializarlo con las cabeceras
+    open(result_file, "w") do io
+        println(io, "desviacion_corte,tiros_por_ronda,sum_tiros,sum_desvio,corte_ronda,tiro_ultima_ronda,tasa_acierto,tiros_promedio,mejor")
+    end
+end
 
 # Grid Search
 for desviacion_corte in desviacion_corte_vals
@@ -161,7 +196,7 @@ for desviacion_corte in desviacion_corte_vals
                     for tiro_ultima_ronda in tiro_ultima_ronda_vals
                         # Ejecutar la estrategia con los parámetros actuales
                         local tasa_acierto, tiros_promedio = ejecutar_estrategia_multihilo(
-                            100000,  # Menos iteraciones para ahorrar tiempo en la búsqueda inicial
+                            n_repeticiones,  # Menos iteraciones para ahorrar tiempo en la búsqueda inicial
                             desviacion_corte,
                             tiros_por_ronda,
                             sum_tiros,
@@ -175,18 +210,21 @@ for desviacion_corte in desviacion_corte_vals
                         global mejor_tiros_promedio
                         global mejor_parametros
 
-                        # Evaluar si es un mejor resultado
-                        mejor = false
-                        if tasa_acierto > 0.99 && tiros_promedio < mejor_tiros_promedio
+                        # Evaluar si supera la tasa de acierto de 0.99
+                        mejor = tasa_acierto > 0.99
+
+                        # Si además es el mejor resultado hasta el momento, actualizar variables
+                        if mejor && tiros_promedio < mejor_tiros_promedio
                             mejor_tasa_acierto = tasa_acierto
                             mejor_tiros_promedio = tiros_promedio
                             mejor_parametros = (desviacion_corte, tiros_por_ronda, sum_tiros, sum_desvio, corte_ronda, tiro_ultima_ronda)
-                            mejor = true  # Marcamos que esta es la mejor combinación encontrada
                         end
 
-                        # Guardar resultados parciales en archivo CSV
-                        open(result_file, "a") do io
-                            println(io, "$desviacion_corte,$tiros_por_ronda,$sum_tiros,$sum_desvio,$corte_ronda,$tiro_ultima_ronda,$tasa_acierto,$tiros_promedio,$mejor")
+                        # Solo grabar resultados parciales en archivo CSV si la tasa_acierto > 0.99
+                        if mejor
+                            open(result_file, "a") do io
+                                println(io, "$desviacion_corte,$tiros_por_ronda,$sum_tiros,$sum_desvio,$corte_ronda,$tiro_ultima_ronda,$tasa_acierto,$tiros_promedio,true")
+                            end
                         end
                     end
                 end

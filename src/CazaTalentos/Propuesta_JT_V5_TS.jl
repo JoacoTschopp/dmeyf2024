@@ -43,7 +43,7 @@ function gimnasio_veredicto(jugadora_id)
 end
 
 # Estrategia Mejorada
-function estrategia_mejorada(desviacion_corte=0.0, tiros_por_ronda=25, sum_tiros=9, sum_desvio=0.05, corte_ronda=10, tiro_ultima_ronda=200)
+function estrategia_mejorada(desviacion_corte, tiros_por_ronda, sum_tiros, sum_desvio, corte_ronda, tiro_ultima_ronda)
     gimnasio_init()  # Inicializar el gimnasio
 
     # Inicializar la planilla con los encestes y estados iniciales de las jugadoras
@@ -83,7 +83,7 @@ function estrategia_mejorada(desviacion_corte=0.0, tiros_por_ronda=25, sum_tiros
         ronda_num += 1
     end
 
-    # Ronda Final: Realizar 200 tiros para las jugadoras restantes (cuando quedan 6 o menos)
+    # Ronda Final: Realizar 200 tiros para las jugadoras restantes
     jugadoras_activas = findall(activa)
     resultados_ronda_final = gimnasio_tirar(jugadoras_activas, tiro_ultima_ronda)
 
@@ -100,7 +100,7 @@ function estrategia_mejorada(desviacion_corte=0.0, tiros_por_ronda=25, sum_tiros
 end
 
 # Ejecutar la estrategia con un número determinado de repeticiones (multi-hilo)
-function ejecutar_estrategia_multihilo(n_repeticiones, desviacion_corte=0.0, tiros_por_ronda=25, sum_tiros=9, sum_desvio=0.05, corte_ronda=10, tiro_ultima_ronda=200)
+function ejecutar_estrategia_multihilo(n_repeticiones, desviacion_corte, tiros_por_ronda, sum_tiros, sum_desvio, corte_ronda, tiro_ultima_ronda)
     aciertos = Atomic{Int}(0)  # Usamos variables atómicas para evitar conflictos de escritura entre hilos
     tiros_totales = Atomic{Int}(0)
 
@@ -123,89 +123,13 @@ end
 Random.seed!(214363)  # Fijar semilla para reproducibilidad
 
 n_repeticiones = 100000  # Número de simulaciones
-
-#@time tasa_acierto, tiros_promedio = ejecutar_estrategia_multihilo(n_repeticiones, 0.2, 50, 15, 0.07, 10, 200)
-
-
-# Definir los valores para cada parámetro que queremos explorar
-desviacion_corte_vals = -0.5:0.1:0.5
-tiros_por_ronda_vals = 30:5:60
-sum_tiros_vals = 5:2:15
-sum_desvio_vals = 0.01:0.01:0.1
-corte_ronda_vals = 5:5:20
-
-#desviacion_corte_vals = 0.2
-#tiros_por_ronda_vals = 50
-#sum_tiros_vals = 15
-#sum_desvio_vals = 0.07
-#corte_ronda_vals = 10
-tiro_ultima_ronda_vals = 100:50:300
-
-# Inicializar archivo CSV para almacenar los resultados parciales
-result_file = "resultados_grid_search.csv"
-open(result_file, "w") do io
-    println(io, "desviacion_corte,tiros_por_ronda,sum_tiros,sum_desvio,corte_ronda,tiro_ultima_ronda,tasa_acierto,tiros_promedio,mejor")
-end
-
-# Inicializar variables para almacenar los resultados
-global mejor_tasa_acierto = 0.0
-global mejor_tiros_promedio = typemax(Int)
-global mejor_parametros = nothing
-
-# Grid Search
-for desviacion_corte in desviacion_corte_vals
-    for tiros_por_ronda in tiros_por_ronda_vals
-        for sum_tiros in sum_tiros_vals
-            for sum_desvio in sum_desvio_vals
-                for corte_ronda in corte_ronda_vals
-                    for tiro_ultima_ronda in tiro_ultima_ronda_vals
-                        # Ejecutar la estrategia con los parámetros actuales
-                        local tasa_acierto, tiros_promedio = ejecutar_estrategia_multihilo(
-                            100000,  # Menos iteraciones para ahorrar tiempo en la búsqueda inicial
-                            desviacion_corte,
-                            tiros_por_ronda,
-                            sum_tiros,
-                            sum_desvio,
-                            corte_ronda,
-                            tiro_ultima_ronda
-                        )
-                        
-                        # Declarar las variables como globales dentro del bucle
-                        global mejor_tasa_acierto
-                        global mejor_tiros_promedio
-                        global mejor_parametros
-
-                        # Evaluar si es un mejor resultado
-                        mejor = false
-                        if tasa_acierto > 0.99 && tiros_promedio < mejor_tiros_promedio
-                            mejor_tasa_acierto = tasa_acierto
-                            mejor_tiros_promedio = tiros_promedio
-                            mejor_parametros = (desviacion_corte, tiros_por_ronda, sum_tiros, sum_desvio, corte_ronda, tiro_ultima_ronda)
-                            mejor = true  # Marcamos que esta es la mejor combinación encontrada
-                        end
-
-                        # Guardar resultados parciales en archivo CSV
-                        open(result_file, "a") do io
-                            println(io, "$desviacion_corte,$tiros_por_ronda,$sum_tiros,$sum_desvio,$corte_ronda,$tiro_ultima_ronda,$tasa_acierto,$tiros_promedio,$mejor")
-                        end
-                    end
-                end
-            end
-        end
+global AUX1 = 0
+repeticionesExp = 10
+for _ in 1:repeticionesExp
+    @time tasa_acierto, tiros_promedio = ejecutar_estrategia_multihilo(n_repeticiones, -0.4, 30, 5, 0.03, 5, 300)
+    #-0.4,30,5,0.03,5,300,0.99025,10285.60275
+    if tasa_acierto >= 0.99
+        global AUX1 +=1
     end
 end
-
-# Al final, imprimir los mejores resultados encontrados
-if mejor_parametros != nothing
-    println("Mejores parámetros encontrados durante el Grid Search:")
-    println("Desviación Corte: ", mejor_parametros[1])
-    println("Tiros por Ronda: ", mejor_parametros[2])
-    println("Suma Tiros: ", mejor_parametros[3])
-    println("Suma Desvío: ", mejor_parametros[4])
-    println("Corte Ronda: ", mejor_parametros[5])
-    println("Tiros Última Ronda: ", mejor_parametros[6])
-    println("Tasa de Acierto: ", mejor_tasa_acierto)
-    println("Promedio de Tiros: ", mejor_tiros_promedio)
-else
-    println("No se encontraron parámetros que cumplan con tasa_acierto > 0.99")
-end
+println("De ", repeticionesExp, " repeticiones, resultaron superior a 0,99 de ratio: ",  AUX1)
