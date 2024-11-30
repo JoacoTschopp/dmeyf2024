@@ -26,7 +26,7 @@ print("Data splitting complete.")
 
 # Define feature columns (excluding only the target column)
 print("Defining feature columns...")
-feature_cols = [col for col in df.columns if col not in ['target']]
+feature_cols = [col for col in df.columns if col not in ['target', 'clase_ternaria']]
 print("Feature columns defined.")
 
 X_train = train[feature_cols]
