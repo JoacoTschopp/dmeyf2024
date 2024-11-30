@@ -6,7 +6,8 @@ from sklearn.base import BaseEstimator, TransformerMixin
 import lightgbm as lgb
 
 # Load dataset
-data_path = '/home/joaquintschopp/dataset/competencia_03_ct.csv.gz'
+#data_path = '/home/joaquintschopp/dataset/competencia_03_ct.csv.gz'
+data_path = '~/dataset/competencia_03_ct.csv.gz'
 df = pd.read_csv(data_path)
 
 # Transform 'clase_ternaria' into binary target variable
