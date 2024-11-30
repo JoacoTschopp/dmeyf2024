@@ -209,40 +209,6 @@ AgregarVariables_IntraMes <- function(dataset) {
     dataset[, vmr_mpagominimo := vm_mpagominimo / vm_mlimitecompra]
 
   # Aqui debe usted agregar sus propias nuevas variables
-  #CAntidad de nan en el registro:
-  # Generar una nueva columna llamada 'cantidad_na' que cuente los NA por cada fila
-  dataset[, cantidad_na := rowSums(is.na(.SD))]
-
-  #
-  # Crear la nueva columna 'cantidad_productos' contando cuántas de las variables específicas NO son NA por cada fila.
-  cols_to_count <- c("cproductos", "ccuenta_corriente", "ccaja_ahorro", "ctarjeta_debito", "ctarjeta_visa", 
-                   "ctarjeta_master", "cprestamos_personales", "cprestamos_prendarios", "cprestamos_hipotecarios", 
-                   "cplazo_fijo", "cinversion1", "cinversion2", "cseguro_vida", "cseguro_auto", 
-                   "cseguro_vivienda", "cseguro_accidentes_personales", "ccaja_seguridad", "Master_cconsumos")
-
-  # Utilizar rowSums para contar las columnas que no son NA
-  dataset[, cantidad_productos := rowSums(!is.na(.SD)), .SDcols = cols_to_count]
-
-  # Crear la nueva columna 'cantidad_consumos_compras' contando cuántas de las variables específicas NO son NA por cada fila.
-  cols_consumos_compras <- c("ctarjeta_debito_transacciones", "ctarjeta_visa_transacciones", "ctarjeta_master_transacciones", 
-                           "ccuenta_debitos_automaticos", "ctarjeta_visa_debitos_automaticos", 
-                           "ctarjeta_master_debitos_automaticos", "cpagodeservicios", "cpagomiscuentas", 
-                           "Visa_cconsumos", "Visa_cadelantosefectivo")
-
-  # Utilizar rowSums para contar las columnas que no son NA
-  dataset[, cantidad_consumos_compras := rowSums(!is.na(.SD)), .SDcols = cols_consumos_compras]
-
-  # Crear la nueva columna 'total_transacciones_voluntarias' sumando todas las transacciones voluntarias de cada fila
-  cols_transacciones_voluntarias <- c("cpayroll_trx", "cpayroll2_trx", "cforex", "cforex_buy", "cforex_sell",
-                                    "ctransferencias_recibidas", "ctransferencias_emitidas", "cextraccion_autoservicio",
-                                    "ccheques_depositados", "ccheques_emitidos", "ccheques_depositados_rechazados", 
-                                    "ccheques_emitidos_rechazados", "ccallcenter_transacciones", "chomebanking_transacciones",
-                                    "ccajas_transacciones", "ccajas_consultas", "ccajas_depositos", 
-                                    "ccajas_extracciones", "ccajas_otras", "catm_trx", "catm_trx_other", 
-                                    "ctrx_quarter", "Visa_madelantopesos", "Visa_madelantodolares")
-
-  # Utilizar rowSums para sumar las columnas que no son NA
-  dataset[, total_transacciones_voluntarias := rowSums(.SD, na.rm = TRUE), .SDcols = cols_transacciones_voluntarias]
 
   # valvula de seguridad para evitar valores infinitos
   # paso los infinitos a NULOS
