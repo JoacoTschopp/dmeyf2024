@@ -4,6 +4,7 @@ import numpy as np
 from sklearn.pipeline import Pipeline
 from sklearn.base import BaseEstimator, TransformerMixin
 import lightgbm as lgb
+from lightgbm import early_stopping
 
 # Load dataset
 print("Loading dataset...")
@@ -74,11 +75,29 @@ class FeatureCreator(BaseEstimator, TransformerMixin):
 
 # Hyperparameters for LightGBM
 lgb_params = {
+    'boosting_type': 'gbdt',
     'objective': 'binary',
     'metric': 'binary_logloss',
-    'verbose':-1
-    # Add other hyperparameters here
+    'first_metric_only': True,
+    'boost_from_average': True,
+    'feature_pre_filter': False,
+    'force_row_wise': True,
+    'verbosity': -100,
+    'max_depth': -1,
+    'min_gain_to_split': 0.0,
+    'min_sum_hessian_in_leaf': 0.001,
+    'lambda_l1': 0.0,
+    'lambda_l2': 0.0,
+    'max_bin': 31,
+    'bagging_fraction': 1.0,
+    'is_unbalance': False,
+    'scale_pos_weight': 1.0,
+    'learning_rate': 0.02,
+    'feature_fraction': 0.01,
+    'num_leaves': 2096,
+    'min_data_in_leaf': 1000
 }
+
 
 # Build the pipeline
 pipeline = Pipeline([
@@ -103,11 +122,11 @@ print("Datasets prepared.")
 # Train the LightGBM model
 print("Training LightGBM model...")
 model = lgb.train(
-    lgb_params,
-    lgb_train,
+    params=lgb_params,
+    train_set=lgb_train,
+    num_boost_round=9999,
     valid_sets=[lgb_train, lgb_valid],
-    num_boost_round=1000,
-    early_stopping_rounds=100
+    callbacks=[early_stopping(stopping_rounds=200)]
 )
 print("Model training complete.")
 
