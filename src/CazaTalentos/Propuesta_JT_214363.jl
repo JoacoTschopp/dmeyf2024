@@ -1,7 +1,7 @@
 using Random
 using Statistics
 using DataFrames
-using Primes 
+using Primes
 
 # Función auxiliar para los tiros
 function ftirar(prob, qty)
@@ -18,7 +18,7 @@ function gimnasio_init()
     GLOBAL_gimnasio[:taurasita] = taurasita
     GLOBAL_gimnasio[:jugadoras] = shuffle(append!([0.204:0.002:0.400;],
         GLOBAL_gimnasio[:taurasita]))
-    jugadoras =  GLOBAL_gimnasio[:jugadoras]
+    jugadoras = GLOBAL_gimnasio[:jugadoras]
     GLOBAL_gimnasio[:tiros_total] = 0
     GLOBAL_gimnasio[:mejor_jugadora_id] = findall(x -> x == 0.5, jugadoras)[1]
 end
@@ -43,13 +43,13 @@ function estrategia_mejorada(desviacion_corte, tiros_por_ronda, sum_tiros, sum_d
 
     # Inicializar la planilla con los encestes y estados iniciales de las jugadoras
     num_jugadoras = length(GLOBAL_gimnasio[:jugadoras])
-    encestes = zeros(Int, num_jugadoras)  
-    activa = trues(num_jugadoras)  
+    encestes = zeros(Int, num_jugadoras)
+    activa = trues(num_jugadoras)
 
     ronda_num = 1
-    
+
     # Corta caundo quedan menos de lo indicado de participantes
-    while count(activa) > corte_ronda 
+    while count(activa) > corte_ronda
         # Realizar tiros según la ronda
         jugadoras_activas = findall(activa)
         resultados_ronda = gimnasio_tirar(jugadoras_activas, tiros_por_ronda)
@@ -97,7 +97,7 @@ end
 function ejecutar_estrategia(n_repeticiones, desviacion_corte, tiros_por_ronda, sum_tiros, sum_desvio, corte_ronda, tiro_ultima_ronda)
     aciertos = 0
     tiros_totales = 0
-    
+
     for _ in 1:n_repeticiones
         veredicto = estrategia_mejorada(desviacion_corte, tiros_por_ronda, sum_tiros, sum_desvio, corte_ronda, tiro_ultima_ronda)
         aciertos += veredicto["acierto"]
@@ -121,18 +121,18 @@ n_repeticiones = 100000  # Número de simulaciones
 global AUX1 = 0
 repeticionesExp = 10 # Numero de repeticiones del experimento con la misma semilla
 
-semillas = shuffle(primes(100000,999999))[1:repeticionesExp]
+semillas = shuffle(primes(100000, 999999))[1:repeticionesExp]
 
 for experimento in 1:repeticionesExp
     Random.seed!(semillas[experimento])  # Variar la semilla con cada repetición usando un número primo inicial
     #Este tiene un ratio de validez del 50% de las veces con 10288 tiros de promedio
     @time tasa_acierto, tiros_promedio = ejecutar_estrategia(n_repeticiones, -0.4, 30, 5, 0.03, 5, 300) # Parametros Misteriosos, logrados claro a fuerza de CPU.
-    
+
     #Este el 100% de las veces da positivo apra 0,99 de ratio de elegir a Taurasita con 10345 tiros de promedio
     #@time tasa_acierto, tiros_promedio = ejecutar_estrategia(n_repeticiones, -0.3, 35, 5, 0.02, 5, 260) # Parametros Misteriosos, logrados claro a fuerza de CPU.
 
     if tasa_acierto >= 0.99
-        global AUX1 +=1
+        global AUX1 += 1
     end
 end
-println("De ", repeticionesExp, " repeticiones, resultaron superior a 0,99 de ratio: ",  AUX1)
+println("De ", repeticionesExp, " repeticiones, resultaron superior a 0,99 de ratio: ", AUX1)
