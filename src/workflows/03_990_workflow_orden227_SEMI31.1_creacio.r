@@ -253,6 +253,80 @@ CN_canaritos_asesinos_base <- function( pinputexps, ratio, desvio)
   return( exp_correr_script( param_local ) ) # linea fija
 }
 #------------------------------------------------------------------------------
+FEev_creacionismo <- function( pinputexps, k, canaritos_desvio)
+{
+  if( -1 == (param_local <- exp_init())$resultado ) return( 0 )# linea fija
+
+
+  param_local$meta$script <- "/src/wf-etapas/1550_FEev_variables_evolutivas_v5.r"
+
+  param_local$Creacionismo$canaritos_inicio <- TRUE # Si el proceso comienza con una poda antes de la primera gen o no
+  param_local$Creacionismo$k <- k # Cantidad de generaciones
+  param_local$Creacionismo$canaritos_ratio <- 0.5 # Parametro de canaritos ellos proponen 0,2
+  param_local$Creacionismo$canaritos_desvios <- canaritos_desvio # Parametro para la poda, debe ser negativo. Idealmente entre 0 y -2
+
+  param_local$Creacionismo$fehist <- FALSE # Si genera variables historicas a partir de las variables evolutivas
+  param_local$lag1 <- FALSE # Si genera lags1 y delta lags de las variables evolutivas
+  param_local$lag2 <- FALSE # Si genera lags2 y delta lags de las variables evolutivas
+
+  param_local$Creacionismo$ferf <- FALSE # Si genera arbolitos a partir de las variables evolutivas o no
+
+  # Parametros de un LightGBM que se genera para estimar la column importance
+  param_local$train$clase01_valor1 <- c( "BAJA+2", "BAJA+1")
+  param_local$train$positivos <- c( "BAJA+2")
+  param_local$train$training <- c( 202011, 202012, 202101, 202102, 202103, 202104) #Podes poner menos o más meses... a gusto del consumidor
+  param_local$train$validation <- c( 202106 )
+  param_local$train$undersampling <- 0.1
+  param_local$train$gan1 <- 273000
+  param_local$train$gan0 <-  -7000
+
+  # parametros para que LightGBM se comporte como Random Forest
+  param_local$lgb_param <- list(
+    # parametros que se pueden cambiar
+    num_iterations = 25,
+    num_leaves  = 16,
+    min_data_in_leaf = 1000,
+    feature_fraction_bynode  = 0.2,
+
+    # para que LightGBM emule Random Forest
+    boosting = "rf",
+    bagging_fraction = ( 1.0 - 1.0/exp(1.0) ),
+    bagging_freq = 1.0,
+    feature_fraction = 1.0,
+
+    # genericos de LightGBM
+    max_bin = 31L,
+    objective = "binary",
+    first_metric_only = TRUE,
+    boost_from_average = TRUE,
+    feature_pre_filter = FALSE,
+    force_row_wise = TRUE,
+    verbosity = -100,
+    max_depth = -1L,
+    min_gain_to_split = 0.0,
+    min_sum_hessian_in_leaf = 0.001,
+    lambda_l1 = 0.0,
+    lambda_l2 = 0.0,
+
+    pos_bagging_fraction = 1.0,
+    neg_bagging_fraction = 1.0,
+    is_unbalance = FALSE,
+    scale_pos_weight = 1.0,
+
+    drop_rate = 0.1,
+    max_drop = 50,
+    skip_drop = 0.5,
+
+    extra_trees = FALSE
+  )
+
+
+
+
+  return( exp_correr_script( param_local ) ) # linea fija
+}
+
+#------------------------------------------------------------------------------
 #------------------------------------------------------------------------------
 # Training Strategy  Baseline
 #  azaroso, utiliza semilla
