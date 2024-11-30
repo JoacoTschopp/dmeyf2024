@@ -6,7 +6,7 @@ from sklearn.base import BaseEstimator, TransformerMixin
 import lightgbm as lgb
 
 # Load dataset
-data_path = '/home/joaquintschopp/buckets/b1/dataset/competencia_03_ct.csv.gz'
+data_path = '/home/joaquintschopp/dataset/competencia_03_ct.csv.gz'
 df = pd.read_csv(data_path)
 
 # Transform 'clase_ternaria' into binary target variable
@@ -96,4 +96,4 @@ submission = pd.DataFrame({
 })
 
 # Save to CSV
-submission.to_csv('/home/joaquintschopp/buckets/b1/salidaspy/submission_py.csv', index=False)
+submission.to_csv('/home/joaquintschopp/salidaspy/submission_py.csv', index=False)
