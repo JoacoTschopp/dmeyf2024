@@ -178,7 +178,7 @@ FErf_attributes_base <- function( pinputexps, ratio, desvio)
 
   # Parametros de un LightGBM que se genera para estimar la column importance
   param_local$train$clase01_valor1 <- c( "BAJA+2", "BAJA+1")
-  param_local$train$training <- c( 202011, 202012, 202101, 202102)
+  param_local$train$training <- c( 202105, 202106, 202107)
 
   # parametros para que LightGBM se comporte como Random Forest
   param_local$lgb_param <- list(
@@ -274,7 +274,7 @@ FEev_creacionismo <- function( pinputexps, k, canaritos_desvio)
   # Parametros de un LightGBM que se genera para estimar la column importance
   param_local$train$clase01_valor1 <- c( "BAJA+2", "BAJA+1")
   param_local$train$positivos <- c( "BAJA+2")
-  param_local$train$training <- c( 202011, 202012, 202101, 202102, 202103, 202104) #Podes poner menos o más meses... a gusto del consumidor
+  param_local$train$training <- c( 202101, 202102, 202105, 202106, 202107) #Podes poner menos o más meses... a gusto del consumidor
   param_local$train$validation <- c( 202106 )
   param_local$train$undersampling <- 0.1
   param_local$train$gan1 <- 273000
@@ -348,12 +348,12 @@ TS_strategy_base8 <- function( pinputexps )
   param_local$final_train$training <- c(
     202107, 202106, 202105,  202102, 202101, 
     202012, 202011, 202010, 202009, 202008, 202007, 
-    # 202006  Excluyo por variables rotas202104, 202103,
+    # 202006  Excluyo por variables rotas 202104, 202103,
     202005,  202002, 202001,
     201912, 201911,
-    # 201910 Excluyo por variables rotas202004, 202003,
-    201909, 201908, 201907, 201906,
-    # 201905  Excluyo por variables rotas201904, 201903
+    # 201910 Excluyo por variables rotas 202004, 202003,
+    201909, 201908, 201907, 201906, 
+    # 201905  Excluyo por variables rotas 201904, 201903
     201902, 201901
   )
 
@@ -523,7 +523,7 @@ KA_evaluate_kaggle_semillerio <- function( pinputexps )
 # Que predice 202107 donde conozco la clase
 # y ya genera graficos
 
-wf_SEMI_K03_30.1_newvar <- function( pnombrewf )
+wf_SEMI_K03_30.1_creacio <- function( pnombrewf )
 {
   param_local <- exp_wf_init( pnombrewf ) # linea fija
 
@@ -564,6 +564,6 @@ wf_SEMI_K03_30.1_newvar <- function( pnombrewf )
 # Aqui comienza el programa
 
 # llamo al workflow con future = 202108
-wf_SEMI_K03_30.1_newvar()
+wf_SEMI_K03_30.1_creacio()
 
 
