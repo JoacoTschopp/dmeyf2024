@@ -523,7 +523,7 @@ KA_evaluate_kaggle_semillerio <- function( pinputexps )
 # Que predice 202107 donde conozco la clase
 # y ya genera graficos
 
-wf_SEMI_K03_30.1_creacio <- function( pnombrewf )
+wf_SEMI_K03_Creando <- function( pnombrewf )
 {
   param_local <- exp_wf_init( pnombrewf ) # linea fija
 
@@ -536,6 +536,11 @@ wf_SEMI_K03_30.1_creacio <- function( pnombrewf )
   FEhist_base()
   ultimo <- FErf_attributes_base()
   #CN_canaritos_asesinos_base(ratio=0.2, desvio=4.0)
+  
+  FEev_creacionismo(
+    k=1,
+    canaritos_desvio=0
+  )
 
   ts8 <- TS_strategy_base8()
 
@@ -564,6 +569,6 @@ wf_SEMI_K03_30.1_creacio <- function( pnombrewf )
 # Aqui comienza el programa
 
 # llamo al workflow con future = 202108
-wf_SEMI_K03_30.1_creacio()
+wf_SEMI_K03_Creando()
 
 
