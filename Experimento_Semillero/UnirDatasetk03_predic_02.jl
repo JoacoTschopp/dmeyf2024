@@ -1,8 +1,8 @@
 using DataFrames, CSV
 
 # Rutas de los archivos
-predicted_file_path = "/home/tschopp_joaquin333/buckets/b1/datasets/Predicted.csv"
-competencia_file_path = "/home/tschopp_joaquin333/buckets/b1/datasets/competencia_03_ct.csv.gz"
+predicted_file_path = "/home/joaquintschopp/buckets/b1/datasets/Predicted.csv"
+competencia_file_path = "/home/joaquintschopp/buckets/b1/datasets/competencia_03_ct.csv.gz"
 
 # Cargar los DataFrames desde los archivos
 println("Cargando el archivo Predicted.csv...")
