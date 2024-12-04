@@ -177,38 +177,28 @@ obj.fun <- makeSingleObjectiveFunction(
     has.simple.signature = FALSE # paso los parametros en una lista
 )
 
-# cada 600 segundos guardo el resultado intermedio
-ctrl <- makeMBOControl(
-  save.on.disk.at.time = 600,
-  save.file.path = "lineademuerte.RDATA"
+
+
+mejores_hiperparametros <- data.table(
+    num_leaves = 966,
+    min_data_in_leaf = 64,
+    num_iterations = 2045
 )
-
-# indico la cantidad de iteraciones que va a tener la Optimización Bayesiana
-ctrl <- setMBOControlTermination(ctrl, iters = 20)
-
-# defino el método estándar para la creación de los puntos iniciales
-ctrl <- setMBOControlInfill(ctrl, crit = makeMBOInfillCritEI())
-
-# configuración del modelo surrogate
-surr.km <- makeLearner("regr.km", predict.type = "se", covtype = "matern3_2", control = list(trace = TRUE))
-
-# correr optimización bayesiana
-bayesiana_salida <- mbo(obj.fun, learner = surr.km, control = ctrl)
-
-# obtener mejores hiperparámetros
-tb_bayesiana <- as.data.table(bayesiana_salida$opt.path)
-setorder(tb_bayesiana, -y, -num_iterations) # ordeno en forma descendente por AUC = y
-mejores_hiperparametros <- tb_bayesiana[1, # el primero es el de mejor AUC
-    list(num_leaves, min_data_in_leaf, num_iterations)]
-
 print(mejores_hiperparametros)
 
 # configuración del modelo final
 set_field(dtrain, "weight", rep(1.0, nrow(dtrain)))
 param_final <- c(param_basicos, mejores_hiperparametros)
 
+
+
+
 # Generación de modelos y predicciones
-library(gmp)
+# Instalación y carga del paquete gmp si no está disponible
+if (!require("gmp")) {
+  install.packages("gmp", repos = "http://cran.us.r-project.org")
+  library(gmp)
+}
 set.seed(214363)
 semillas <- as.numeric(sapply(1:100, function(x) nextprime(sample(100000:999999, 1))))
 
