@@ -434,8 +434,8 @@ KA_evaluate_kaggle_semillerio <- function( pinputexps )
 
   param_local$irepes_submit <- 1:20 # misterioso parametro, no preguntar
 
-  param_local$envios_desde <- 9000L
-  param_local$envios_hasta <- 12050L
+  param_local$envios_desde <- 9500L
+  param_local$envios_hasta <- 11550L
   param_local$envios_salto <-   500L
   param_local$competition <- "dm-ey-f-2024-tercera"
 
@@ -480,7 +480,7 @@ wf_SEMI_K03_SEMI100 <- function( pnombrewf )
   )
 
   SC_scoring_semillerio( c(fm, ts8) )
-  #KA_evaluate_kaggle_semillerio()
+  KA_evaluate_kaggle_semillerio()
   
 
   return( exp_wf_end() ) # linea fija
