@@ -1,3 +1,17 @@
+# Definir ruta del archivo log
+log_file <- "~/buckets/b1/exp/lineademuerte/logs_lineademuerte.txt"
+
+# Crear el archivo log y abrir la conexión
+dir.create(dirname(log_file), recursive = TRUE, showWarnings = FALSE)  # Crear directorio si no existe
+log_con <- file(log_file, open = "wt")
+
+# Redirigir salida y errores a archivo log
+sink(log_con, type = "output")
+sink(log_con, type = "message")
+
+
+
+
 # limpio la memoria
 format(Sys.time(), "%a %b %d %X %Y")
 rm(list = ls(all.names = TRUE)) # remove all objects
@@ -226,3 +240,9 @@ fwrite(tb_entrega, file = "lineademuerte_11000.csv")
 
 # marcar el fin del script
 format(Sys.time(), "%a %b %d %X %Y")
+
+
+# Al final del script, cerrar las conexiones
+sink(type = "output")
+sink(type = "message")
+close(log_con)
