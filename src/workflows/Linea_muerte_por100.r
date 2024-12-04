@@ -87,7 +87,11 @@ bayesiana_salida <- mbo(ojb.fun, learner = surr.km, control = ctrl)
 
 # obtener mejores hiperparámetros
 tb_bayesiana <- as.data.table(bayesiana_salida$opt.path)
-setorder(tb_bayesiana, -y, -num_iterations)
+# Verificar si la columna 'num_iterations' existe antes de ordenar
+if (!"num_iterations" %in% colnames(tb_bayesiana)) {
+  tb_bayesiana[, num_iterations := NA]  # Agregar columna vacía si no existe
+}
+setorder(tb_bayesiana, -y)
 mejores_hiperparametros <- tb_bayesiana[1, list(num_leaves, min_data_in_leaf, num_iterations)]
 print(mejores_hiperparametros)
 
