@@ -12,8 +12,8 @@ if( !exists("envg") ) envg <- env()  # global environment
 
 envg$EXPENV <- list()
 envg$EXPENV$bucket_dir <- "~/buckets/b1"
-envg$EXPENV$exp_dir <- "~/buckets/b1/expw_K03_Emb/"
-envg$EXPENV$wf_dir <- "~/buckets/b1/flow_K03_Emb/"
+envg$EXPENV$exp_dir <- "~/buckets/b1/expw_K03_ULTIMA/"
+envg$EXPENV$wf_dir <- "~/buckets/b1/flow_K03_ULTIMA/"
 envg$EXPENV$repo_dir <- "~/dmeyf2024/"
 envg$EXPENV$datasets_dir <- "~/buckets/b1/datasets/"
 envg$EXPENV$messenger <- "~/install/zulip_enviar.sh"
@@ -104,7 +104,7 @@ FEintra_manual_base <- function( pinputexps )
   if( -1 == (param_local <- exp_init())$resultado ) return( 0 ) # linea fija
 
   
-  param_local$meta$script <- "/src/wf-etapas/1301_FE_intrames_manual.r"
+  param_local$meta$script <- "/src/wf-etapas/z1301_FE_intrames_manual.r"
 
   param_local$semilla <- NULL  # no usa semilla, es deterministico
 
@@ -144,7 +144,7 @@ FEhist_base <- function( pinputexps)
   param_local$lag3 <- FALSE # no me engraso con los lags de orden 3
 
   # no me engraso las manos con las tendencias
-  param_local$Tendencias1$run <- FALSE  # FALSE, no corre nada de lo que sigue
+  param_local$Tendencias1$run <- TRUE  # FALSE, no corre nada de lo que sigue
   param_local$Tendencias1$ventana <- 6
   param_local$Tendencias1$tendencia <- TRUE
   param_local$Tendencias1$minimo <- FALSE
@@ -274,24 +274,19 @@ TS_strategy_base8 <- function( pinputexps )
 
   param_local$final_train$undersampling <- 0.2
   param_local$final_train$clase_minoritaria <- c( "BAJA+1", "BAJA+2")
-  param_local$final_train$training <- c(202007, 202106, 202105,  202102, 202101,
-                                       202012, 202011, 202010, 202009, 202008, 202007,
-                                       202005, 202002, 202001, 201912, 
-                                       201911,  201909, 201908, 201907, 201906)
-                                       #202104, 202103, 202004, 202003,201910,201905, 201904, 201903,
+  param_local$final_train$training <- c(202007, 202106, 202105,  
+                                       202012, 202011, 202010, 202009, 202008, 202007, 202006, 202005, 
+                                       201912, 201911,  201910, 201909, 201908, 201907, 201906, 201905)
 
-
-  param_local$train$training <- c(202105, 202102, 202101, 202012, 202011,
-                                 202010, 202009, 202008, 202007, 202005,
-                                 202002, 202001, 201912, 201911, 
-                                 201909, 201908, 201907, 201906)
+  param_local$train$training <- c(202105, 202012, 202011, 202010, 202009, 202008, 202007, 202005,
+                                 201912, 201911,201910, 201909, 201908, 201907, 201906, 201905)
                                  #
   param_local$train$validation <- c(202106)
   param_local$train$testing <- c(202107)
 
   # Atencion  0.2  de  undersampling de la clase mayoritaria,  los CONTINUA
   # 1.0 significa NO undersampling
-  param_local$train$undersampling <- 0.2
+  param_local$train$undersampling <- 0.02
   param_local$train$clase_minoritaria <- c( "BAJA+1", "BAJA+2")
 
   return( exp_correr_script( param_local ) ) # linea fija
@@ -370,7 +365,7 @@ FM_final_models_lightgbm <- function( pinputexps, ranks, qsemillas )
 {
   if( -1 == (param_local <- exp_init())$resultado ) return( 0 )# linea fija
 
-  param_local$meta$script <- "/src/wf-etapas/2301_FM_final_models_lightgbm.r"
+  param_local$meta$script <- "/src/wf-etapas/z2301_FM_final_models_lightgbm.r"
 
   # Que modelos quiero, segun su posicion en el ranking de la Bayesian Optimizacion, ordenado por metrica descendente
   param_local$modelos_rank <- ranks
@@ -409,16 +404,16 @@ KA_evaluate_kaggle <- function( pinputexps )
 {
   if( -1 == (param_local <- exp_init())$resultado ) return( 0 )# linea fija
 
-  param_local$meta$script <- "/src/wf-etapas/z2601_KA_evaluate_kaggle.r"
+  param_local$meta$script <- "/src/wf-etapas/z2603_KA_evaluate_kaggle.r"
 
   param_local$semilla <- NULL  # no usa semilla, es deterministico
 
   param_local$isems_submit <- 1:20 # misterioso parametro, no preguntar
 
   param_local$envios_desde <-   9000L
-  param_local$envios_hasta <-  1400L
+  param_local$envios_hasta <-  11505L
   param_local$envios_salto <-   500L
-  param_local$competition <- "dm-ey-f-2024-segunda"
+  param_local$competition <- "dm-ey-f-2024-tercera"
 
   return( exp_correr_script( param_local ) ) # linea fija
 }
@@ -429,7 +424,7 @@ KA_evaluate_kaggle <- function( pinputexps )
 # Este es el  Workflow Baseline
 # Que predice 202108 donde NO conozco la clase
 
-wf_Kaggle03_Tschopp_Embeding <- function( pnombrewf )
+wf_Kaggle03_Tschopp_ULTIMO <- function( pnombrewf )
 {
   param_local <- exp_wf_init( pnombrewf ) # linea workflow inicial fija
 
@@ -453,12 +448,12 @@ wf_Kaggle03_Tschopp_Embeding <- function( pnombrewf )
 
   # Etapas modelado
   ts8 <- TS_strategy_base8()
-  ht <- HT_tuning_base( bo_iteraciones = 40 )  # iteraciones inteligentes
+  ht <- HT_tuning_base( bo_iteraciones = 15 )  # iteraciones inteligentes
 
   # Etapas finales
-  fm <- FM_final_models_lightgbm( c(ht, ts8), ranks=c(1), qsemillas=100 )
+  fm <- FM_final_models_lightgbm( c(ht, ts8), ranks=c(1), qsemillas=10 )
   SC_scoring( c(fm, ts8) )
-  #KA_evaluate_kaggle()  # genera archivos para Kaggle
+  KA_evaluate_kaggle()  # genera archivos para Kaggle
 
   return( exp_wf_end() ) # linea workflow final fija
 }
@@ -467,7 +462,7 @@ wf_Kaggle03_Tschopp_Embeding <- function( pnombrewf )
 # Aqui comienza el programa
 
 # llamo al workflow con future = 202108
-wf_Kaggle03_Tschopp_Embeding()
+wf_Kaggle03_Tschopp_ULTIMO()
 
 
 
