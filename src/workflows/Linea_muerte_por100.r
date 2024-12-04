@@ -194,13 +194,20 @@ param_final <- c(param_basicos, mejores_hiperparametros)
 
 
 # Generación de modelos y predicciones
-# Instalación y carga del paquete gmp si no está disponible
-if (!require("gmp")) {
-  install.packages("gmp", repos = "http://cran.us.r-project.org")
-  library(gmp)
+# Generación de semillas sin necesidad de gmp
+# Función para encontrar el siguiente número primo
+encontrar_siguiente_primo <- function(n) {
+  while (TRUE) {
+    n <- n + 1
+    if (all(n %% 2:max(2, floor(sqrt(n))) != 0)) {
+      return(n)
+    }
+  }
 }
+
+# Generación de números primos entre 100000 y 999999
 set.seed(214363)
-semillas <- as.numeric(sapply(1:100, function(x) nextprime(sample(100000:999999, 1))))
+semillas <- sapply(1:100, function(x) encontrar_siguiente_primo(sample(100000:999999, 1)))
 
 predicciones_list <- list()
 
