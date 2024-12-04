@@ -179,7 +179,7 @@ ctrl <- setMBOControlInfill(ctrl, crit = makeMBOInfillCritEI())
 surr.km <- makeLearner("regr.km", predict.type = "se", covtype = "matern3_2", control = list(trace = TRUE))
 
 # correr optimización bayesiana
-bayesiana_salida <- mbo(ojb.fun, learner = surr.km, control = ctrl)
+bayesiana_salida <- mbo(obj.fun, learner = surr.km, control = ctrl)
 
 # obtener mejores hiperparámetros
 tb_bayesiana <- as.data.table(bayesiana_salida$opt.path)
