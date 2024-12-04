@@ -478,7 +478,7 @@ wf_SEMI_K03_SEMI100_mejorado <- function( pnombrewf )
   )
 
   SC_scoring_semillerio( c(fm, ts8) )
-  #KA_evaluate_kaggle_semillerio()
+  KA_evaluate_kaggle_semillerio()
   
 
   return( exp_wf_end() ) # linea fija
