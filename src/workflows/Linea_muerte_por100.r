@@ -9,7 +9,7 @@ setwd("~/buckets/b1/exp/lineademuerte/")
 require("data.table")
 
 # leo el dataset
-dataset <- fread("~/buckets/b1/datasets/competencia_03_crudo.csv.gz")
+dataset <- fread("~/buckets/b1/datasets/competencia_03_ct.csv.gz")
 
 # calculo el periodo0 consecutivo
 setorder(dataset, numero_de_cliente, foto_mes)
