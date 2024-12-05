@@ -1,0 +1,10 @@
+Instructivo de Ejecución - Kaggle DMEyF 2024 Segunda
+A continuación se detalla el orden de ejecución de los archivos para la competencia, basada en los scripts almacenados en la carpeta Entrega_dm-ey-f-2024-primer.
+
+
+1. Diferentes predicciones de 9 modelos diferentes.
+2. Se realizó una votación, si tiene más de 5 votos, ¡se va!
+3. Elección anterior dado que un modelo era muy malo, un RF. La cuenta da 60%, 5.4 aprox.
+4. Se toman como predichos por los diferentes modelos con un corte de 11000.
+5. Se elige la votación dado que el embedding no funcionó.
+6. Los archivos están con extensión .txt para que los suba a Git fácilmente, pero son .csv.
