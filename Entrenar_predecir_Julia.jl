@@ -36,14 +36,71 @@ file = CSV.File(param_local["dataset"]; buffer_in_memory=true)
 dataset = DataFrame(file)
 @info "Fin Carga - $(now())"
 
-@info "Pipline de entrenamiento"
+############################################################################
+@info "Comienza BO - $(now())"
+
+# Crear una copia del dataset para trabajar con `train_bo`
+dataset_bo = deepcopy(dataset)
+
+# Extraer parámetros de train_bo
+train_bo_params = param_local["train_bo"]
+training_bo = train_bo_params["training"]
+validation_bo = train_bo_params["validation"]
+testing_bo = train_bo_params["testing"]
+undersampling_bo = train_bo_params["undersampling"]
+clase_minoritaria = train_bo_params["clase_minoritaria"]
+
+# Filtrar conjuntos según los parámetros
+training_data_bo = filter(row -> row.foto_mes in training_bo, dataset_bo)
+validation_data_bo = filter(row -> row.foto_mes in validation_bo, dataset_bo)
+testing_data_bo = filter(row -> row.foto_mes in testing_bo, dataset_bo)
+
+# Submuestreo para la clase mayoritaria en el conjunto de entrenamiento (train_bo)
+majority_class_rows = filter(row -> row.clase_ternaria != clase_minoritaria, training_data_bo)
+minority_class_rows = filter(row -> row.clase_ternaria == clase_minoritaria, training_data_bo)
+
+# Submuestrear aleatoriamente las filas de la clase mayoritaria
+sample_size_bo = min(undersampling_bo, size(majority_class_rows, 1))  # Asegurarse de no exceder el tamaño disponible
+selected_majority = shuffle(majority_class_rows)[1:sample_size_bo]
+
+# Combinar clase minoritaria y submuestreo de clase mayoritaria
+training_data_bo = vcat(minority_class_rows, selected_majority)
+
+# Información final del dataset bo
+println("Tamaño de training_data_bo: ", size(training_data_bo, 1))
+println("Tamaño de validation_data_bo: ", size(validation_data_bo, 1))
+println("Tamaño de testing_data_bo: ", size(testing_data_bo, 1))
+
+HT_BO_Julia(training_data_bo, validation_data_bo, testing_data_bo)
+
+@info "Fin BO - $(now())"
+############################################################################
+
+@info "Pipline de entrenamiento FINAL"
+
+######################################
+#
+# Preaprado de dataset para entrenamiento FINAL
 
 # Definir `future` y `training` utilizando los valores del diccionario
 future = param_local["future"]
 training = param_local["final_train"]["training"]
+undersampling_final_training = param_local["final_train"]["undersampling"]
 
 # Filtrar los datos para `X_train` y `predic`
 X_train_data = filter(row -> row.foto_mes in training, dataset)
+
+# Separar las filas de la clase CONTINUA
+continua_rows = filter(row -> row.clase_ternaria == "CONTINUA", X_train_data)
+
+# Filtrar aleatoriamente las filas de CONTINUA según undersampling_final_training
+sample_size = min(undersampling_final_training, size(continua_rows, 1))  # Asegurar que no se exceda el tamaño real
+selected_continua = shuffle(continua_rows)[1:sample_size]
+
+# Combinar las filas seleccionadas de CONTINUA con las otras clases
+other_rows = filter(row -> row.clase_ternaria != "CONTINUA", X_train_data)
+X_train_data = vcat(other_rows, selected_continua)
+
 println(size(X_train_data))  # Tamaño del DataFrame filtrado
 
 # Filtrado para `predic_data`
@@ -76,12 +133,16 @@ entrenar(modelo, X_train, y_train)
 
 # Guardar el modelo en un archivo
 @info "Guardo el modelo"
-#LightGBM.savemodel(modelo, "D:/DmEyF_Julia/exportaJulia/modelo_entrenado.txt")
+LightGBM.savemodel(modelo, "/home/joaquintschopp/buckets/b1/expe_julia/modelo_entrenado.txt")
 
 # Cargar el modelo en otra sesión o script
 #@info "Cargo modelo guardado"
 #LightGBM.loadmodel!(modelo, "D:/DmEyF_Julia/exportaJulia/modelo_entrenado.txt")
 
+
+######################################################################################
+#
+# Generamos prediccion y cortes.
 
 @info "Predicciones sobre el modelo"
 # Predecir con el modelo
