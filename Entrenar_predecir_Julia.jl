@@ -35,7 +35,12 @@ modelo = LGBMClassification()
 file = CSV.File(param_local["dataset"]; buffer_in_memory=true)
 dataset = DataFrame(file)
 @info "Fin Carga - $(now())"
+############################################################################
+#Generamos clase clase_ternaria
+@info "Comienza clase_ternaria - $(now())"
+dataset = gen_calse_ternaria(dataset)
 
+@info "Fin clase_ternaria"
 ############################################################################
 @info "Comienza BO - $(now())"
 
