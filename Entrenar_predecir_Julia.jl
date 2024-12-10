@@ -14,6 +14,7 @@ using CSV, DataFrames
 using Dates
 using YAML
 using Random
+using MLJ
 
 param_local = YAML.load_file("Parametros_Julia_LGBM.yaml")
 
@@ -87,10 +88,10 @@ entrenar(modelo, X_train, y_train)
 predicciones = predecir(modelo, X_future)
 
 # Extraer el número de cliente de `predic_data`
-numero_de_cliente = predic_data[:, :numero_de_cliente]  
+numero_de_cliente = predic_data[:, :numero_de_cliente]
 # Crear DataFrame con `numero_de_cliente` y las `predicciones`
 df_predicciones = DataFrame(numero_de_cliente=numero_de_cliente, Predicted=vec(predicciones))
-    
+
 
 @info "Genero contes y archivos para Kaggle"
 generar_csv_cortes(df_predicciones)
