@@ -7,7 +7,7 @@ using MLJ
 #
 #Genera Clase clase_ternaria
 
-function gen_calse_ternaria(df::DataFrames)
+function gen_calse_ternaria(df::DataFrame)
 
     size(df)
 
