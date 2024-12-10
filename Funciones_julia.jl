@@ -244,6 +244,7 @@ function generar_csv_cortes(predicciones::DataFrame)
     @info "Guardado de Predicciones ordenadas."
     # Guardar las predicciones ordenadas en un archivo .txt
     nombre_archivo_predicciones = "/home/joaquintschopp/buckets/b1/expe_julia/predicciones_ordenadas.txt"
+    #nombre_archivo_predicciones = "D:\\Backup DMEYF\\expe_julia\\predicciones_ordenadas.txt"
     open(nombre_archivo_predicciones, "w") do io
         for (i, row) in enumerate(eachrow(predicciones))
             println(io, "Cliente $(row.numero_de_cliente): $(row.Predicted)")
@@ -264,6 +265,9 @@ function generar_csv_cortes(predicciones::DataFrame)
 
         # Guardar el archivo CSV con el nombre correspondiente al corte
         nombre_archivo = "/home/joaquintschopp/buckets/b1/expe_julia/predicciones_corte_$corte.csv"
+        
+        #nombre_archivo = "D:\\Backup DMEYF\\expe_julia\\predicciones_corte_$corte.csv"
+
         CSV.write(nombre_archivo, resultados_corte; header=["numero_de_cliente", "Predicted"])
         println("Archivo generado: $nombre_archivo")
 

@@ -1,4 +1,5 @@
 dataset: "/home/joaquintschopp/buckets/b1/datasets/competencia_03_ct.csv"
+#dataset: "D:\\Backup DMEYF\\datasets\\competencia_03_ct.csv.gz"
 
 competencia_kaggle: dm-ey-f-2024-tercera
 
