@@ -74,7 +74,7 @@ selected_majority = DataFrame(shuffle(majority_class_rows)[1:sample_size_bo])
 dataset_bo = vcat(minority_class_rows, selected_majority, validation_testing_bo, cols=:union)
 
 # Guardar el DataFrame combinado en un archivo CSV
-output_file_path = "/home/joaquintschopp/buckets/b1/expe_julia/dataset_bo.csv"
+output_file_path = joinpath(param_local["experimento"], "dataset_bo.csv")
 CSV.write(output_file_path, dataset_bo)
 
 println("Proceso completado. El archivo se ha guardado en: $output_file_path")
@@ -141,7 +141,7 @@ entrenar(modelo, X_train, y_train)
 
 # Guardar el modelo en un archivo
 @info "Guardo el modelo"
-LightGBM.savemodel(modelo, "/home/joaquintschopp/buckets/b1/expe_julia/modelo_entrenado.txt")
+LightGBM.savemodel(modelo, joinpath(param_local["experimento"], "modelo_entrenado.txt"))
 
 # Cargar el modelo en otra sesión o script
 #@info "Cargo modelo guardado"

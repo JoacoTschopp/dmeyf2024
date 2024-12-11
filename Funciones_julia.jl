@@ -278,7 +278,7 @@ function generar_csv_cortes(predicciones::DataFrame)
 
     @info "Guardado de Predicciones ordenadas."
     # Guardar las predicciones ordenadas en un archivo .txt
-    nombre_archivo_predicciones = "/home/tschopp_joaquin333/buckets/b1/expe_julia/predicciones_ordenadas.txt"
+    nombre_archivo_predicciones = joinpath(param_local["experimento"], "predicciones_ordenadas.txt")
     #nombre_archivo_predicciones = "D:\\Backup DMEYF\\expe_julia\\predicciones_ordenadas.txt"
     open(nombre_archivo_predicciones, "w") do io
         for (i, row) in enumerate(eachrow(predicciones))
@@ -299,7 +299,7 @@ function generar_csv_cortes(predicciones::DataFrame)
         resultados_corte[1:corte, :Predicted] .= 1
 
         # Guardar el archivo CSV con el nombre correspondiente al corte
-        nombre_archivo = "/home/tschopp_joaquin333/buckets/b1/expe_julia/predicciones_corte_$corte.csv"
+        nombre_archivo = joinpath(param_local["experimento"], "predicciones_corte_$corte.csv")
 
         #nombre_archivo = "D:\\Backup DMEYF\\expe_julia\\predicciones_corte_$corte.csv"
 
