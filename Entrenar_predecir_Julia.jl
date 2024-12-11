@@ -43,6 +43,7 @@ dataset = gen_calse_ternaria(dataset)
 @info "Fin clase_ternaria"
 ############################################################################
 @info "Comienza BO - $(now())"
+println("Filtrando y submuestreando el dataset...")
 
 # Crear una copia del dataset para trabajar con `train_bo`
 dataset_bo = deepcopy(dataset)
@@ -55,36 +56,33 @@ testing_bo = train_bo_params["testing"]
 undersampling_bo = train_bo_params["undersampling"]
 clase_minoritaria = train_bo_params["clase_minoritaria"]
 
-# Filtrar conjuntos según los parámetros
-training_data_bo = filter(row -> row.foto_mes in training_bo, dataset_bo)
-validation_data_bo = filter(row -> row.foto_mes in validation_bo, dataset_bo)
-testing_data_bo = filter(row -> row.foto_mes in testing_bo, dataset_bo)
+# Filtrar los conjuntos de validación y testing
+validation_testing_bo = filter(row -> row.foto_mes in validation_bo || row.foto_mes in testing_bo, dataset_bo)
 
-# Submuestreo para la clase mayoritaria en el conjunto de entrenamiento (train_bo)
-majority_class_rows = filter(row -> row.clase_ternaria != clase_minoritaria, training_data_bo)
-minority_class_rows = filter(row -> row.clase_ternaria == clase_minoritaria, training_data_bo)
+# Filtrar el conjunto de entrenamiento y aplicar submuestreo
+training_bo_dataset = filter(row -> row.foto_mes in training_bo, dataset_bo)
 
-# Submuestrear aleatoriamente las filas de la clase mayoritaria
-sample_size_bo = min(undersampling_bo, size(majority_class_rows, 1))  # Asegurarse de no exceder el tamaño disponible
-majority_class_rows = collect(eachrow(majority_class_rows))
+# Separar clases mayoritaria y minoritaria
+majority_class_rows = filter(row -> row.clase_ternaria != clase_minoritaria, training_bo_dataset)
+minority_class_rows = filter(row -> row.clase_ternaria == clase_minoritaria, training_bo_dataset)
+
+# Submuestrear aleatoriamente la clase mayoritaria
+sample_size_bo = min(undersampling_bo, nrow(majority_class_rows))
 selected_majority = shuffle(majority_class_rows)[1:sample_size_bo]
 
 # Combinar clase minoritaria y submuestreo de clase mayoritaria
-training_data_bo = vcat(minority_class_rows, selected_majority)
+training_bo_dataset = vcat(minority_class_rows, selected_majority, cols=:union)
 
-# Información final del dataset bo
-println("Tamaño de training_data_bo: ", size(training_data_bo, 1))
-println("Tamaño de validation_data_bo: ", size(validation_data_bo, 1))
-println("Tamaño de testing_data_bo: ", size(testing_data_bo, 1))
+# Combinar todo el dataset
+dataset_bo = vcat(training_bo_dataset, validation_testing_bo, cols=:union)
 
-#Guardado para repruducibilidad del entrenamietno.
-dataset_bo = vcat(training_data_bo, validation_data_bo, testing_data_bo, cols=:union)
+# Guardar el DataFrame combinado en un archivo CSV
 output_file_path = "/home/joaquintschopp/buckets/b1/expe_julia/dataset_bo.csv"
 CSV.write(output_file_path, dataset_bo)
 
 println("Proceso completado. El archivo se ha guardado en: $output_file_path")
 
-HT_BO_Julia(training_data_bo, validation_data_bo, testing_data_bo)
+HT_BO_Julia(tdataset_bo, validation_bo, testing_bo, train_bo_params)
 
 @info "Fin BO - $(now())"
 ############################################################################

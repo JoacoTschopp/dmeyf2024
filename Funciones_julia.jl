@@ -44,7 +44,7 @@ end
 #
 # Funcion apra buscar Hiperparametros con una bo
 
-function HT_BO_Julia(training_data_bo::DataFrame, validation_data_bo::DataFrame, testing_data_bo::DataFrame)
+function HT_BO_Julia(dataset_bo::DataFrame, validation_data_bo::DataFrame, testing_data_bo::DataFrame)
 
     # Cargar parámetros de LightGBM para BO
     lgb_params = Dict(
