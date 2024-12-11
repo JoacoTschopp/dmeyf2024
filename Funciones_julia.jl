@@ -8,6 +8,7 @@ using MLJ
 #Genera Clase clase_ternaria
 
 function gen_calse_ternaria(df::DataFrame)
+    periodo_anterior(x::Integer) = x % 100 > 1 ? x - 1 : 12 + (div(x, 100) - 1) * 100
 
     size(df)
 
