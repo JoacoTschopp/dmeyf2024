@@ -79,7 +79,7 @@ CSV.write(output_file_path, dataset_bo)
 
 println("Proceso completado. El archivo se ha guardado en: $output_file_path")
 
-HT_BO_Julia(dataset_bo, validation_bo, testing_bo, train_bo_params)
+HT_BO_Julia(dataset_bo, validation_bo, testing_bo, train_bo_params, param_local)
 
 @info "Fin BO - $(now())"
 ############################################################################
