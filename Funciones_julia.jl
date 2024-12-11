@@ -44,50 +44,29 @@ end
 #
 # Funcion apra buscar Hiperparametros con una bo
 
-function HT_BO_Julia(dataset_bo::DataFrame, validation_data_bo::DataFrame, testing_data_bo::DataFrame)
+# Función para entrenamiento y optimización
+function HT_BO_Julia(dataset_bo::DataFrame, validation_data_bo::DataFrame, testing_data_bo::DataFrame, train_bo_params::Dict, parametros::Dict)
+    println("Iniciando entrenamiento con optimización bayesiana...")
 
-    # Cargar parámetros de LightGBM para BO
-    lgb_params = Dict(
-        "boosting" => "gbdt",
-        "objective" => "binary",
-        "metric" => ["custom"],
-        "boost_from_average" => true,
-        "feature_pre_filter" => false,
-        "force_row_wise" => true,
-        "max_depth" => -1,
-        "min_gain_to_split" => 0.0,
-        "min_sum_hessian_in_leaf" => 0.001,
-        "lambda_l1" => 0.0,
-        "lambda_l2" => 0.0,
-        "max_bin" => 31,
-        "num_iterations" => 9999,
-        "bagging_fraction" => 1.0,
-        "pos_bagging_fraction" => 1.0,
-        "neg_bagging_fraction" => 1.0,
-        "is_unbalance" => false,
-        "scale_pos_weight" => 1.0,
-        "drop_rate" => 0.1,
-        "max_drop" => 50,
-        "skip_drop" => 0.5,
-        "extra_trees" => false
-    )
+    # Cargar parámetros de LightGBM desde YAML
+    lgb_params = parametros["lgb_param_BO"]
 
-    # Parámetros con rangos para optimización
-    # Estos serán los que se buscarán optimizar
+    # Extraer rangos para optimización
     optimization_params = Dict(
-        "learning_rate" => [0.02, 0.3],
-        "feature_fraction" => [0.5, 0.9],
-        "num_leaves" => [8, 2024],
-        "min_data_in_leaf" => [100, 10000]
+        "learning_rate" => lgb_params["learning_rate"],
+        "feature_fraction" => lgb_params["feature_fraction"],
+        "num_leaves" => lgb_params["num_leaves"],
+        "min_data_in_leaf" => lgb_params["min_data_in_leaf"]
     )
 
     # Configurar modelo de MLJ para LightGBM
     LightGBM = @load LightGBMClassifier pkg = LightGBM
-
     model = LightGBM(; lgb_params...)
 
     # Crear la tarea de predicción
-    task = MLJ.Machine(model, training_data_bo[:, Not(:clase_ternaria)], training_data_bo.clase_ternaria)
+    task_X = dataset_bo[:, Not(:clase_ternaria)]
+    task_y = dataset_bo.clase_ternaria
+    task = machine(model, task_X, task_y)
 
     # Definir los rangos para la optimización bayesiana
     ranges = NamedTuple(
@@ -97,23 +76,37 @@ function HT_BO_Julia(dataset_bo::DataFrame, validation_data_bo::DataFrame, testi
         "min_data_in_leaf" => range(model, :min_data_in_leaf, lower=optimization_params["min_data_in_leaf"][1], upper=optimization_params["min_data_in_leaf"][2], scale=:log)
     )
 
+    # Ruta para el archivo de log
+    log_file_path = joinpath(param_local["experimento"], "log_bo.txt")
+
+    # Función para registrar los resultados en cada iteración
+    function log_iteration(params, score)
+        open(log_file_path, "a") do io
+            println(io, "Parametros: ", params, " | Score: ", score)
+        end
+    end
+
     # Configurar estrategia de optimización bayesiana
     tuning = TunedModel(
         model=model,
         resampling=CV(nfolds=5),
         range=ranges,
         measure=MLJ.binary_log_loss,
-        tuning=RandomSearch(max_attempts=100)
+        tuning=RandomSearch(max_attempts=100),
+        logger=log_iteration
     )
 
     # Entrenar modelo con optimización
-    machine = machine(tuning, training_data_bo[:, Not(:clase_ternaria)], training_data_bo.clase_ternaria)
-    fit!(machine)
+    machine_tuning = machine(tuning, task_X, task_y)
+    fit!(machine_tuning)
 
     # Mostrar mejores hiperparámetros
     println("Mejores hiperparámetros:")
-    println(report(machine))
+    println(report(machine_tuning))
+
+    return machine_tuning
 end
+
 
 
 
