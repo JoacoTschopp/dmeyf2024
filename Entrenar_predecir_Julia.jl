@@ -66,6 +66,7 @@ minority_class_rows = filter(row -> row.clase_ternaria == clase_minoritaria, tra
 
 # Submuestrear aleatoriamente las filas de la clase mayoritaria
 sample_size_bo = min(undersampling_bo, size(majority_class_rows, 1))  # Asegurarse de no exceder el tamaño disponible
+majority_class_rows = collect(eachrow(majority_class_rows))
 selected_majority = shuffle(majority_class_rows)[1:sample_size_bo]
 
 # Combinar clase minoritaria y submuestreo de clase mayoritaria
@@ -75,6 +76,13 @@ training_data_bo = vcat(minority_class_rows, selected_majority)
 println("Tamaño de training_data_bo: ", size(training_data_bo, 1))
 println("Tamaño de validation_data_bo: ", size(validation_data_bo, 1))
 println("Tamaño de testing_data_bo: ", size(testing_data_bo, 1))
+
+#Guardado para repruducibilidad del entrenamietno.
+dataset_bo = vcat(training_data_bo, validation_data_bo, testing_data_bo, cols=:union)
+output_file_path = "/home/joaquintschopp/buckets/b1/expe_julia/dataset_bo.csv"
+CSV.write(output_file_path, dataset_bo)
+
+println("Proceso completado. El archivo se ha guardado en: $output_file_path")
 
 HT_BO_Julia(training_data_bo, validation_data_bo, testing_data_bo)
 
