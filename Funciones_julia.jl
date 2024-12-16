@@ -60,8 +60,9 @@ function HT_BO_Julia(dataset_bo::DataFrame, validation_data_bo::Vector, testing_
     )
 
     # Configurar modelo de MLJ para LightGBM
-    @load LightGBMClassifier pkg=LightGBM
-    model = LightGBMClassifier(; lgb_params...)
+
+    @load LGBMClassification() pkg = LightGBM
+    model = LGBMClassification(; lgb_params...)
 
     # Crear la tarea de predicción
     task_X = dataset_bo[:, Not(:clase_ternaria)]
