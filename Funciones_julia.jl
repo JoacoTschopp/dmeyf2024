@@ -45,7 +45,7 @@ end
 # Funcion apra buscar Hiperparametros con una bo
 
 # Función para entrenamiento y optimización
-function HT_BO_Julia(dataset_bo::DataFrame, validation_data_bo::Vector, testing_data_bo::Vector, train_bo_params::Dict, parametros::Dict)
+function HT_BO_Julia(dataset_bo::DataFrame, validation_data_bo::Vector, testing_data_bo::Vector, parametros::Dict)
     println("Iniciando entrenamiento con optimización bayesiana...")
 
     # Cargar parámetros de LightGBM desde YAML
@@ -61,9 +61,12 @@ function HT_BO_Julia(dataset_bo::DataFrame, validation_data_bo::Vector, testing_
 
     # Configurar modelo de MLJ para LightGBM
 
-   
-    model = LGBMClassification(; lgb_params...)
+    # Convertir claves del diccionario lgb_params a Symbol
+    lgb_params_symbol = Dict(Symbol(k) => v for (k, v) in parametros["lgb_param_BO"])
 
+    # Crear el modelo con los parámetros convertidos
+    model = LGBMClassification(; lgb_params_symbol...)
+    
     # Crear la tarea de predicción
     task_X = dataset_bo[:, Not(:clase_ternaria)]
     task_y = dataset_bo.clase_ternaria
