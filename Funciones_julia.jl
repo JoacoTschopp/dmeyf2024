@@ -197,7 +197,7 @@ function HT_BO_Julia(dataset_bo::DataFrame, param_local::Dict)
 
     # Definir la estrategia de Optimización Bayesiana
     # Nota: Puede ser necesario `using MLJTuning: bayesopt`
-    tuning_strategy = MLJTuning.bayesopt(n_iters=30) # Ajustar n_iters según necesidad
+    tuning_strategy = TuringBayesianOptimization(n_iters=30) # Ajustar n_iters según necesidad
 
     # Ruta para el archivo de log
     log_file_path = joinpath(param_local["experimento"], "log_bo.txt")

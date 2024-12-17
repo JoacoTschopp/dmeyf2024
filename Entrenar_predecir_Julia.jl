@@ -19,7 +19,8 @@ using MLJTuning
 using MLJBase
 using MLJModels
 using MLJIteration
-using MLJTuning: bayesopt
+using MLJTuning
+using Turing
 
 
 param_local = YAML.load_file("Parametros_Julia_LGBM.yaml")
