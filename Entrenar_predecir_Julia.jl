@@ -16,7 +16,6 @@ using YAML
 using Random
 using MLJ
 using MLJTuning
-using MLJLightGBMInterface
 using MLJBase
 using MLJModels
 using MLJIteration
