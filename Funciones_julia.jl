@@ -183,10 +183,10 @@ function HT_BO_Julia(dataset_bo::DataFrame, param_local::Dict)
 
     # Definir los rangos (NamedTuple con campos por parámetro)
     ranges = (
-        learning_rate = NumericRange(:learning_rate, start=optimization_params["learning_rate"][1], stop=optimization_params["learning_rate"][2]),
-        feature_fraction = NumericRange(:feature_fraction, start=optimization_params["feature_fraction"][1], stop=optimization_params["feature_fraction"][2]),
-        num_leaves = NumericRange(:num_leaves, start=optimization_params["num_leaves"][1], stop=optimization_params["num_leaves"][2], scale=:log),
-        min_data_in_leaf = NumericRange(:min_data_in_leaf, start=optimization_params["min_data_in_leaf"][1], stop=optimization_params["min_data_in_leaf"][2], scale=:log)
+        learning_rate = range(:learning_rate, start=optimization_params["learning_rate"][1], stop=optimization_params["learning_rate"][2]),
+        feature_fraction = range(:feature_fraction, start=optimization_params["feature_fraction"][1], stop=optimization_params["feature_fraction"][2]),
+        num_leaves = range(:num_leaves, start=optimization_params["num_leaves"][1], stop=optimization_params["num_leaves"][2], scale=:log),
+        min_data_in_leaf = range(:min_data_in_leaf, start=optimization_params["min_data_in_leaf"][1], stop=optimization_params["min_data_in_leaf"][2], scale=:log)
     )
     
 
