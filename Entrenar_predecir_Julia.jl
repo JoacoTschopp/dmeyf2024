@@ -15,6 +15,11 @@ using Dates
 using YAML
 using Random
 using MLJ
+using MLJTuning
+using MLJLightGBMInterface
+using MLJBase
+using MLJModels
+using MLJIteration
 
 param_local = YAML.load_file("Parametros_Julia_LGBM.yaml")
 
@@ -43,43 +48,25 @@ dataset = gen_calse_ternaria(dataset)
 @info "Fin clase_ternaria"
 ############################################################################
 @info "Comienza BO - $(now())"
-println("Filtrando y submuestreando el dataset...")
-
-# Crear una copia del dataset para trabajar con `train_bo`
-dataset_bo = deepcopy(dataset)
 
 # Extraer parámetros de train_bo
 train_bo_params = param_local["train_bo"]
 training_bo = train_bo_params["training"]
 validation_bo = train_bo_params["validation"]
 testing_bo = train_bo_params["testing"]
-undersampling_bo = train_bo_params["undersampling"]
-clase_minoritaria = train_bo_params["clase_minoritaria"]
 
-# Filtrar los conjuntos de validación y testing
-validation_testing_bo = filter(row -> row.foto_mes in validation_bo || row.foto_mes in testing_bo, dataset_bo)
-
-# Filtrar el conjunto de entrenamiento y aplicar submuestreo
-training_bo_dataset = filter(row -> row.foto_mes in training_bo, dataset_bo)
-
-# Separar clases mayoritaria y minoritaria
-majority_class_rows = collect(eachrow(filter(row -> row.clase_ternaria != clase_minoritaria, training_bo_dataset)))
-minority_class_rows = filter(row -> row.clase_ternaria == clase_minoritaria, training_bo_dataset)
-
-# Submuestrear aleatoriamente la clase mayoritaria
-sample_size_bo = min(undersampling_bo, length(majority_class_rows))
-selected_majority = DataFrame(shuffle(majority_class_rows)[1:sample_size_bo])
-
-# Combinar todo el dataset en una sola llamada
-dataset_bo = vcat(minority_class_rows, selected_majority, validation_testing_bo, cols=:union)
-
-# Guardar el DataFrame combinado en un archivo CSV
 output_file_path = joinpath(param_local["experimento"], "dataset_bo.csv")
-CSV.write(output_file_path, dataset_bo)
 
-println("Proceso completado. El archivo se ha guardado en: $output_file_path")
+if isfile(output_file_path)
+    # Cargar el dataset desde el archivo
+    dataset_bo = CSV.read(output_file_path, DataFrame)
+else
+    # Generar el dataset y guardarlo
+    dataset_bo = Gen_dataset(dataset, param_local)
+    CSV.write(output_file_path, dataset_bo)
+end
 
-HT_BO_Julia(dataset_bo, validation_bo, testing_bo, param_local)
+machine_tuning = HT_BO_Julia(dataset_bo, param_local)
 
 @info "Fin BO - $(now())"
 ############################################################################

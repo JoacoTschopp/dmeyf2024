@@ -42,10 +42,52 @@ end
 
 #####################################################################################
 #
+# Funcion para generar dataset para BO y final_train
+function Gen_dataset(dataset::DataFrame, param_local)
+    
+    println("Filtrando y submuestreando el dataset...")
+
+    # Crear una copia del dataset para trabajar con `train_bo`
+    dataset_bo = deepcopy(dataset)
+
+    train_bo_params = param_local["train_bo"]
+    undersampling_bo = train_bo_params["undersampling"]
+    clase_minoritaria = train_bo_params["clase_minoritaria"]
+
+    # Filtrar los conjuntos de validación y testing
+    validation_testing_bo = filter(row -> row.foto_mes in validation_bo || row.foto_mes in testing_bo, dataset_bo)
+
+    # Filtrar el conjunto de entrenamiento y aplicar submuestreo
+    training_bo_dataset = filter(row -> row.foto_mes in training_bo, dataset_bo)
+
+    # Separar clases mayoritaria y minoritaria
+    majority_class_rows = collect(eachrow(filter(row -> row.clase_ternaria != clase_minoritaria, training_bo_dataset)))
+    minority_class_rows = filter(row -> row.clase_ternaria == clase_minoritaria, training_bo_dataset)
+
+    # Submuestrear aleatoriamente la clase mayoritaria
+    sample_size_bo = min(undersampling_bo, length(majority_class_rows))
+    selected_majority = DataFrame(shuffle(majority_class_rows)[1:sample_size_bo])
+
+    # Combinar todo el dataset en una sola llamada
+    dataset_bo = vcat(minority_class_rows, selected_majority, validation_testing_bo, cols=:union)
+
+    # Guardar el DataFrame combinado en un archivo CSV
+    output_file_path = joinpath(param_local["experimento"], "dataset_bo.csv")
+    CSV.write(output_file_path, dataset_bo)
+
+    println("Proceso completado. El archivo se ha guardado en: $output_file_path")
+
+    return dataset_bo
+
+end
+
+
+#####################################################################################
+#
 # Funcion apra buscar Hiperparametros con una bo
 
 # Función para entrenamiento y optimización
-function HT_BO_Julia(dataset_bo::DataFrame, validation_data_bo::Vector, testing_data_bo::Vector, parametros::Dict)
+function HT_BO_Julia1(dataset_bo::DataFrame, validation_data_bo::Vector, testing_data_bo::Vector, parametros::Dict)
     println("Iniciando entrenamiento con optimización bayesiana...")
 
     # Cargar parámetros de LightGBM desde YAML
@@ -111,6 +153,89 @@ function HT_BO_Julia(dataset_bo::DataFrame, validation_data_bo::Vector, testing_
     return machine_tuning
 end
 
+function HT_BO_Julia(dataset_bo::DataFrame, param_local::Dict)
+    println("Iniciando entrenamiento con optimización bayesiana...")
+
+    # Extraer parámetros para LightGBM
+    lgb_params = param_local["lgb_param_BO"]
+    optimization_params = Dict(
+        "learning_rate"     => lgb_params["learning_rate"],     # [0.02, 0.3]
+        "feature_fraction"  => lgb_params["feature_fraction"],  # [0.5, 0.9]
+        "num_leaves"        => lgb_params["num_leaves"],        # [8, 2024]
+        "min_data_in_leaf"  => lgb_params["min_data_in_leaf"]   # [100, 10000]
+    )
+
+    # Convertir las claves de lgb_params a Symbol
+    lgb_params_symbol = Dict(Symbol(k) => v for (k, v) in lgb_params)
+
+    # Crear el modelo
+    model = LGBMClassification(; lgb_params_symbol...)
+
+    # Crear las variables X e y
+    task_X = dataset_bo[:, Not(:clase_ternaria)]
+    task_y = dataset_bo.clase_ternaria
+
+    # Definir los rangos (NamedTuple con campos por parámetro)
+    ranges = (
+        learning_rate = range(model, :learning_rate,
+                              lower=optimization_params["learning_rate"][1],
+                              upper=optimization_params["learning_rate"][2]),
+        feature_fraction = range(model, :feature_fraction,
+                                 lower=optimization_params["feature_fraction"][1],
+                                 upper=optimization_params["feature_fraction"][2]),
+        num_leaves = range(model, :num_leaves,
+                           lower=optimization_params["num_leaves"][1],
+                           upper=optimization_params["num_leaves"][2],
+                           scale=:log),
+        min_data_in_leaf = range(model, :min_data_in_leaf,
+                                 lower=optimization_params["min_data_in_leaf"][1],
+                                 upper=optimization_params["min_data_in_leaf"][2],
+                                 scale=:log)
+    )
+
+    # Definir la medida, por ejemplo log_loss binario
+    # Revisar la medida apropiada en la documentación:
+    # Para binario: LogLoss(), CrossEntropy() etc.
+    chosen_measure = LogLoss()
+
+    # Definir la estrategia de Optimización Bayesiana
+    # Nota: Puede ser necesario `using MLJTuning: bayesopt`
+    tuning_strategy = MLJTuning.bayesopt(n_iters=30) # Ajustar n_iters según necesidad
+
+    # Ruta para el archivo de log
+    log_file_path = joinpath(param_local["experimento"], "log_bo.txt")
+
+    # Definir una callback para registrar resultados manualmente
+    # MLJTuning no tiene logger directo, pero se puede registrar luego del fit.
+    # Aquí mostramos sólo la idea, se podría mejorar tras obtener los resultados.
+    # De momento, omitimos logger en TunedModel y luego extraemos resultados del reporte.
+
+    tuned_model = TunedModel(
+        model = model,
+        resampling = CV(nfolds=5),
+        range = ranges,
+        measure = chosen_measure,
+        tuning = tuning_strategy,
+        acceleration = CPUThreads(), # Opcional: definir aceleración
+        verbosity = 2
+    )
+
+    machine_tuning = machine(tuned_model, task_X, task_y)
+
+    fit!(machine_tuning)
+
+    println("Mejores hiperparámetros:")
+    best_report = report(machine_tuning)
+    println(best_report)
+
+    # Guardar resultados en log (opcional)
+    open(log_file_path, "a") do io
+        println(io, "Resultados de la Optimización Bayesiana:")
+        println(io, best_report)
+    end
+
+    return machine_tuning
+end
 
 
 
