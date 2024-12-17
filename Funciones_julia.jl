@@ -183,21 +183,12 @@ function HT_BO_Julia(dataset_bo::DataFrame, param_local::Dict)
 
     # Definir los rangos (NamedTuple con campos por parámetro)
     ranges = (
-        learning_rate = range(model, :learning_rate,
-                              lower=optimization_params["learning_rate"][1],
-                              upper=optimization_params["learning_rate"][2]),
-        feature_fraction = range(model, :feature_fraction,
-                                 lower=optimization_params["feature_fraction"][1],
-                                 upper=optimization_params["feature_fraction"][2]),
-        num_leaves = range(model, :num_leaves,
-                           lower=optimization_params["num_leaves"][1],
-                           upper=optimization_params["num_leaves"][2],
-                           scale=:log),
-        min_data_in_leaf = range(model, :min_data_in_leaf,
-                                 lower=optimization_params["min_data_in_leaf"][1],
-                                 upper=optimization_params["min_data_in_leaf"][2],
-                                 scale=:log)
+        learning_rate = NumericRange(:learning_rate, lower=optimization_params["learning_rate"][1], upper=optimization_params["learning_rate"][2]),
+        feature_fraction = NumericRange(:feature_fraction, lower=optimization_params["feature_fraction"][1], upper=optimization_params["feature_fraction"][2]),
+        num_leaves = NumericRange(:num_leaves, lower=optimization_params["num_leaves"][1], upper=optimization_params["num_leaves"][2], scale=:log),
+        min_data_in_leaf = NumericRange(:min_data_in_leaf, lower=optimization_params["min_data_in_leaf"][1], upper=optimization_params["min_data_in_leaf"][2], scale=:log)
     )
+    
 
     # Definir la medida, por ejemplo log_loss binario
     # Revisar la medida apropiada en la documentación:
