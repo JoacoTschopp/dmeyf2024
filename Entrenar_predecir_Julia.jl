@@ -34,17 +34,33 @@ Random.seed!(param_local["semilla_primigenia"])
 # Definir el modelo
 modelo = LGBMClassification()
 
-# Definir el dataset
-@info "Comienza carga de Dataset - $(now())"
-file = CSV.File(param_local["dataset"]; buffer_in_memory=true)
-dataset = DataFrame(file)
-@info "Fin Carga - $(now())"
-############################################################################
-#Generamos clase clase_ternaria
-@info "Comienza clase_ternaria - $(now())"
-dataset = gen_calse_ternaria(dataset)
 
-@info "Fin clase_ternaria"
+
+
+
+
+
+output_file_path = joinpath(param_local["experimento"], "dataset_bo.csv")
+
+if isfile(output_file_path)
+
+    @info "El dataset para la BO existe... no cargo dataset general"
+else
+    # Definir el dataset
+    @info "Comienza carga de Dataset - $(now())"
+    file = CSV.File(param_local["dataset"]; buffer_in_memory=true)
+    dataset = DataFrame(file)
+    @info "Fin Carga - $(now())"
+    ############################################################################
+    #Generamos clase clase_ternaria
+    @info "Comienza clase_ternaria - $(now())"
+    dataset = gen_calse_ternaria(dataset)
+
+    @info "Fin clase_ternaria"
+
+
+end
+
 ############################################################################
 @info "Comienza BO - $(now())"
 
