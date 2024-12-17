@@ -21,7 +21,7 @@ using MLJModels
 using MLJIteration
 using MLJTuning
 using Turing
-
+using Turing: TuringBayesianOptimization
 
 param_local = YAML.load_file("Parametros_Julia_LGBM.yaml")
 
