@@ -165,6 +165,12 @@ function HT_BO_Julia(dataset_bo::DataFrame, param_local::Dict)
         "min_data_in_leaf"  => lgb_params["min_data_in_leaf"]   # [100, 10000]
     )
 
+    #Elimino los parametros de rangos
+    pop!(lgb_params, "learning_rate", nothing)
+    pop!(lgb_params, "feature_fraction", nothing)
+    pop!(lgb_params, "num_leaves", nothing)
+    pop!(lgb_params, "min_data_in_leaf", nothing)
+
     # Convertir las claves de lgb_params a Symbol
     lgb_params_symbol = Dict(Symbol(k) => v for (k, v) in lgb_params)
 

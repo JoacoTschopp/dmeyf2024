@@ -58,8 +58,10 @@ output_file_path = joinpath(param_local["experimento"], "dataset_bo.csv")
 
 if isfile(output_file_path)
     # Cargar el dataset desde el archivo
+    @info "El dataset para la BO existe... Se carga"
     dataset_bo = CSV.read(output_file_path, DataFrame)
 else
+    @info "El dataset para la BO NO existe... Se Genera"
     # Generar el dataset y guardarlo
     dataset_bo = Gen_dataset(dataset, param_local)
     CSV.write(output_file_path, dataset_bo)
